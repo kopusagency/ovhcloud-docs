@@ -93,7 +93,7 @@ Pour vérifier les serveurs DNS déclarés, cliquez sur les onglets ci-dessous p
     <img className="thumbnail" alt="Section Serveurs DNS avec la configuration et la liste des serveurs DNS hébergeant la zone" src="/images/assets/screens/console/product-selection/web-cloud/domain-dns/general-information/dns-servers-ovhcloud.png" loading="lazy" />
   </Tab>
   <Tab label="Étape 3">
-    S’ils sont identiques aux cibles des entrées de type `NS` dans l’onglet <code className="action">Zone DNS</code>, passez à la [partie 3](#etape3). Pour n’afficher que ces entrées, déroulez le menu <code className="action">Tous les types</code> et sélectionnez <code className="action">NS</code> :
+    S’ils sont identiques aux cibles des entrées de type `NS` dans l’onglet <code className="action">Zone DNS</code>, passez à la [partie 3](#etape3). Pour n’afficher que ces entrées, cliquez sur le bouton <code className="action">Filtrer</code> au-dessus du tableau et sélectionnez <code className="action">NS</code> :
 
     <img className="thumbnail" alt="Zone DNS filtrée sur les enregistrements NS d’un nom de domaine" src="/images/assets/screens/console/product-selection/web-cloud/domain-dns/dns-zone/filter-ns.png" loading="lazy" />
   </Tab>
@@ -139,7 +139,7 @@ Il est en effet possible que les serveurs DNS utilisés par votre nom de domaine
 <details>
 <summary>Scénario 3 - Aucune entrée de type NS n’apparaît dans la zone DNS</summary>
 
-La **Zone DNS** de votre domaine ne contient pas d’entrée de type `NS` : avec le filtre <code className="action">NS</code> du menu <code className="action">Tous les types</code>, le tableau n’affiche aucune ligne.
+La **Zone DNS** de votre domaine ne contient pas d’entrée de type `NS` : le bouton <code className="action">Filtrer</code>, qui ne liste que les types présents dans la zone, ne propose pas le type `NS`.
 
 Cliquez sur les onglets ci-dessous pour afficher successivement chacune des **4** étapes.
 
@@ -196,9 +196,9 @@ Si votre site web est hébergé sur l’une de nos [offres d’hébergement web]
   </Tab>
 </Tabs>
 
-Puis reportez-la dans la [zone DNS](/guides/web-cloud/domains/dns-zone-edit) de votre nom de domaine, en modifiant ou créant une ou plusieurs entrées de type `A`. Pour afficher les entrées existantes, utilisez le filtre <code className="action">A</code> du menu <code className="action">Tous les types</code> de l’onglet <code className="action">Zone DNS</code>.
+Puis reportez-la dans la [zone DNS](/guides/web-cloud/domains/dns-zone-edit) de votre nom de domaine, en modifiant ou créant une ou plusieurs entrées de type `A`. Pour afficher les entrées existantes, cliquez sur le bouton <code className="action">Filtrer</code> de l’onglet <code className="action">Zone DNS</code> et sélectionnez <code className="action">A</code>.
 
-<img className="thumbnail" alt="Menu Tous les types déroulé sur les types d’enregistrement" src="/images/assets/screens/console/product-selection/web-cloud/domain-dns/dns-zone/filter-type.png" loading="lazy" />
+<img className="thumbnail" alt="Liste du bouton Filtrer et types d’enregistrement de la zone DNS" src="/images/assets/screens/console/product-selection/web-cloud/domain-dns/dns-zone/filter-type.png" loading="lazy" />
 
 {/* CP-STEPS-END:ip-hebergement */}
 
