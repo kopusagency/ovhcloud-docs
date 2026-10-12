@@ -1,7 +1,7 @@
 ---
 title: Utiliser une passerelle personnalisée sur un cluster OVHcloud Managed Kubernetes
 description: Découvrez comment utiliser une passerelle personnalisée sur un OVHcloud Managed Kubernetes fonctionnant avec un réseau privé vRack.
-lastUpdated: 2026-09-16
+lastUpdated: 2026-10-13
 ---
 
 import Api from '@components/Api';
@@ -36,6 +36,10 @@ Vous allez :
 :::info
 Dans ce tutoriel, nous vous guidons pour créer le réseau privé dans deux régions, mais vous pouvez n'en utiliser qu'une seule si vous le souhaitez, par exemple GRA9.
 
+:::
+
+:::tip
+Avec le plan Standard, les nouveaux clusters en Kubernetes 1.35 peuvent aussi utiliser votre propre routeur ou pare-feu comme passerelle par défaut des nœuds, sans passerelle managée OVHcloud. Consultez la section [Utiliser votre propre routeur ou pare-feu comme passerelle par défaut](#utiliser-votre-propre-routeur-ou-pare-feu-comme-passerelle-par-défaut).
 :::
 
 
@@ -489,6 +493,80 @@ Puis cliquez sur votre cluster Kubernetes `demo` nouvellement créé afin de voi
 <img className="thumbnail" alt="Créer un cluster" src="/images/public-cloud/containers-orchestration/managed-kubernetes/vrack-k8s-custom-gateway/created-cluster.png" loading="lazy" />
 
 Lorsque le statut de votre cluster est `OK`, vous pouvez passer à la section suivante.
+
+## Utiliser votre propre routeur ou pare-feu comme passerelle par défaut
+
+Avec le plan Standard, les nœuds n'ont pas d'IP publique par défaut : ils accèdent à Internet via une passerelle managée OVHcloud, ou via des IP flottantes définies au niveau du pool de nœuds. Les nouveaux clusters en Kubernetes 1.35 peuvent à la place utiliser votre propre routeur ou pare-feu, déployé dans votre réseau privé, comme passerelle par défaut des nœuds. Tout le trafic sortant des nœuds passe par votre équipement, qui peut l'inspecter, le filtrer et le journaliser (architecture hub-and-spoke). Dans cette configuration, aucune passerelle managée OVHcloud (routeur OpenStack) n'est nécessaire.
+
+:::info
+Sur tout nouveau cluster Standard, le trafic entre les nœuds et le control plane Kubernetes passe par un chemin privé opéré par OVHcloud. Le fonctionnement du cluster ne dépend pas de votre passerelle : une modification ou une panne de votre routeur n'affecte pas la communication entre les nœuds et le control plane.
+:::
+
+### Prérequis
+
+- Un cluster du plan Standard en Kubernetes 1.35, créé avec l'API OVHcloud.
+- Un réseau privé (vRack) avec un sous-réseau pour les nœuds.
+- Votre routeur ou pare-feu déployé dans ce réseau privé, avec une adresse IP dans le sous-réseau des nœuds.
+- Votre routeur fournit l'accès sortant à Internet dont vos workloads ont besoin, par exemple pour récupérer des images depuis des registres de conteneurs publics. Les images système et les paquets nécessaires au service lui-même sont fournis par des miroirs OVHcloud.
+
+### Options réseau
+
+Deux attributs contrôlent cette configuration. Tous deux sont optionnels et valent `false` par défaut.
+
+| Attribut | Description |
+|---|---|
+| `disablePublicNetworking` | Désactive l'exposition publique du cluster : aucune IP flottante ne peut être attachée aux nœuds ni aux load balancers, donc aucun load balancer public ne peut être créé, et aucun routeur OpenStack n'est nécessaire pour l'exposition publique. Utilisé seul, il exige toujours une passerelle managée OVHcloud dans le sous-réseau des nœuds pour l'accès sortant à Internet. |
+| `useUserGateway` | Les nœuds utilisent votre routeur comme passerelle par défaut. Exige `disablePublicNetworking` à `true`. L'adresse IP de votre routeur se renseigne dans `privateNetworkConfiguration.defaultVrackGateway`. |
+
+:::warning
+Ces attributs ne peuvent être définis qu'à la création du cluster et ne sont plus modifiables ensuite.
+
+Lorsque `disablePublicNetworking` vaut `true` :
+
+- aucune IP flottante ne peut être attachée aux nœuds ni aux load balancers ;
+- les Services de type `LoadBalancer` ne peuvent pas être exposés via un load balancer public.
+
+Si vous devez exposer des applications sur Internet depuis ce cluster, conservez la configuration par défaut.
+
+:::
+
+### Créer le cluster
+
+Créez le cluster avec l'appel API suivant :
+
+<Api version="v1" section="/cloud" method="POST" route={"/cloud/project/\\{serviceName\\}/kube"} />
+
+Utilisez un corps de requête comme celui-ci, en remplaçant les identifiants de réseau et de sous-réseau par les vôtres, et `192.168.0.254` par l'adresse IP de votre routeur :
+
+```json
+{
+  "name": "my-cluster",
+  "region": "GRA9",
+  "version": "1.35",
+  "plan": "standard",
+  "privateNetworkId": "d9775b7c-c267-44b4-b758-6e827b0a69bb",
+  "nodesSubnetId": "aa9cf7c0-2d48-4ac4-a3d8-b6d1b2e5c1f2",
+  "privateNetworkConfiguration": {
+    "defaultVrackGateway": "192.168.0.254",
+    "privateNetworkRoutingAsDefault": true
+  },
+  "disablePublicNetworking": true,
+  "useUserGateway": true,
+  "nodepools": [
+    {
+      "name": "nodepool-1",
+      "flavorName": "b3-8",
+      "desiredNodes": 3
+    }
+  ]
+}
+```
+
+Une fois le cluster à l'état `READY`, le trafic sortant de vos Pods passe par votre routeur. Vous pouvez le vérifier avec le test décrit dans la section [Test](#test) : l'IP de sortie est l'adresse IP publique de votre routeur.
+
+:::note
+Pour un cluster existant qui ne peut pas être recréé, nos équipes peuvent étudier au cas par cas une migration manuelle vers cette configuration. Contactez votre account manager.
+:::
 
 ## Récupérer le fichier Kubeconfig
 

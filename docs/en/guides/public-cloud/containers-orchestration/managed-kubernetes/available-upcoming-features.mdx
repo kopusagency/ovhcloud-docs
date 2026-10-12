@@ -1,7 +1,7 @@
 ---
 title: OVHcloud Managed Kubernetes - Features and roadmap
 description: Find out how to review the latest product and feature updates for OVHcloud Managed Kubernetes and other Cloud services
-lastUpdated: 2026-01-30
+lastUpdated: 2026-10-13
 ---
 
 ## Cloud roadmap and changelog on our public GitHub repository
@@ -13,6 +13,15 @@ The roadmap and changelog of OVHcloud Managed Kubernetes and all our Public Clou
 [Cloud Roadmap & Changelog](https://github.com/orgs/ovh/projects/16/)
 
 ## Recent Features
+
+### Custom router and disabled public exposure (Available)
+
+New Standard clusters running Kubernetes 1.35 can use your own router or firewall as the default gateway of the nodes, without an OVHcloud managed gateway, and can be created with their public exposure disabled (no Floating IPs, no public Load Balancers). On every new Standard cluster, the traffic between the nodes and the control plane now uses a private path operated by OVHcloud. These options are set when creating the cluster with the OVHcloud API.
+
+For more information, see:
+
+- [Using a custom gateway on an OVHcloud Managed Kubernetes cluster](/guides/public-cloud/containers-orchestration/managed-kubernetes/vrack-custom-gateway#use-your-own-router-or-firewall-as-default-gateway)
+- [Known limits - Custom router and disabled public exposure](/guides/public-cloud/containers-orchestration/managed-kubernetes/known-limits#custom-router-and-disabled-public-exposure)
 
 ### LUKS Encrypted Persistent Volumes (Available)
 

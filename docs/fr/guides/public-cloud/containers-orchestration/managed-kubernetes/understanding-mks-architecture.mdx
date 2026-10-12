@@ -1,7 +1,7 @@
 ---
 title: Comprendre l'architecture d'OVHcloud Managed Kubernetes
 description: "Découvrez le fonctionnement d'OVHcloud Managed Kubernetes Service : control plane, worker nodes, réseau et stockage"
-lastUpdated: 2026-06-22
+lastUpdated: 2026-10-13
 ---
 
 ## Objectif
@@ -446,13 +446,14 @@ Exemple pour la flavor b3-16 : 170m CPU, 1.59GB RAM, 30GB stockage réservés.
 
 ### Options d'accès Internet
 
-Les clusters MKS supportent trois schémas de connectivité Internet :
+Les clusters MKS supportent quatre schémas de connectivité Internet :
 
 | Option | Direction | Cas d'usage |
 |--------|-----------|-------------|
 | **Load Balancer** | Entrant | Exposer des services (recommandé en production) |
 | **Floating IPs sur les nœuds** | Entrant & Sortant | Accès direct aux nœuds, préserver l'IP source |
 | **Gateway (SNAT)** | Sortant uniquement | Sortie par défaut, IP partagée pour tous les nœuds |
+| **Votre propre routeur ou pare-feu** | Sortant uniquement | Architectures hub-and-spoke : inspecter, filtrer et journaliser tout le trafic des nœuds (plan Standard) |
 
 **Option 1 - Load Balancer (Octavia) :**
 
@@ -480,6 +481,20 @@ Pour attacher une Floating IP à un nœud, une Gateway (routeur OpenStack) doit 
 - Tous les nœuds partagent la même IP sortante (IP de la Gateway)
 - N'EXPOSE PAS les services sur Internet
 - L'IP source est traduite (SNAT)
+
+**Option 4 - Votre propre routeur ou pare-feu (plan Standard) :**
+
+- Disponible sur les nouveaux clusters Standard en Kubernetes 1.35, à définir à la création avec l'API OVHcloud (`useUserGateway`, qui exige `disablePublicNetworking`)
+- Tout le trafic sortant des nœuds passe par votre équipement, déployé dans votre réseau privé
+- Aucune passerelle managée OVHcloud n'est nécessaire
+- L'exposition publique est désactivée : pas de Floating IP sur les nœuds ou les load balancers, pas de Load Balancer public
+- Consultez [Utiliser une passerelle personnalisée sur un cluster OVHcloud Managed Kubernetes](/guides/public-cloud/containers-orchestration/managed-kubernetes/vrack-custom-gateway#utiliser-votre-propre-routeur-ou-pare-feu-comme-passerelle-par-défaut)
+
+### Connectivité avec le control plane
+
+Sur tout nouveau cluster Standard, le trafic entre les worker nodes et le control plane Kubernetes passe par un chemin privé opéré par OVHcloud. Il ne transite pas par la passerelle de votre réseau privé : une modification ou une panne de votre passerelle n'affecte pas la communication entre les nœuds et le control plane.
+
+Sur les clusters du plan Free, ce trafic passe par l'interface publique des nœuds. Sur les clusters Standard créés avant la disponibilité de ce chemin privé, il passe par la passerelle du réseau privé.
 
 ### CNI : Container Network Interface
 
@@ -623,7 +638,7 @@ Le vRack permet :
 - Interconnexion avec d'autres produits dédiés OVHcloud
 
 :::warning
-Avec un réseau privé (avec ou sans vRack), vous verrez toujours une IPv4 publique sur les worker nodes. Cette IP n'est pas joignable depuis Internet et est utilisée exclusivement pour l'administration des nœuds et la communication avec le control plane.
+Sur les clusters du plan Free, avec un réseau privé (avec ou sans vRack), vous verrez toujours une IPv4 publique sur les worker nodes. Cette IP n'est pas joignable depuis Internet et est utilisée exclusivement pour l'administration des nœuds et la communication avec le control plane. Sur les clusters du plan Standard, les nœuds n'ont pas d'IP publique par défaut : ils accèdent à Internet via la passerelle managée ou via des Floating IP définies au niveau du pool de nœuds.
 :::
 
 

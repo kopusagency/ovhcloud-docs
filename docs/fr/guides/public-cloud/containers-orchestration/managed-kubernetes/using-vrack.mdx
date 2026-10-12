@@ -1,7 +1,7 @@
 ---
 title: Utiliser un réseau privé vRack
 description: Découvrez comment intégrer un cluster OVHcloud Managed Kubernetes dans un réseau privé vRack
-lastUpdated: 2023-12-11
+lastUpdated: 2026-10-13
 ---
 
 
@@ -34,12 +34,23 @@ Dans le tableau de bord du service Managed Kubernetes, vous verrez le cluster, a
 
 <img className="thumbnail" alt="Informations sur le réseau privé dans la colonne Réseau attaché" src="/images/public-cloud/containers-orchestration/managed-kubernetes/using-vrack/using-vrack-02.png" loading="lazy" />
 
+## Routeur client et exposition publique désactivée (plan Standard)
+
+Avec le plan Standard, les nœuds n'ont pas d'IP publique par défaut : ils accèdent à Internet via une passerelle managée OVHcloud, ou via des IP flottantes définies au niveau du pool de nœuds. Sur les nouveaux clusters Standard en Kubernetes 1.35, vous pouvez aller plus loin à la création du cluster, avec l'API OVHcloud :
+
+- désactiver l'exposition publique du cluster (`disablePublicNetworking`) : ni IP flottante sur les nœuds ou les load balancers, ni load balancer public ;
+- utiliser votre propre routeur ou pare-feu comme passerelle par défaut des nœuds (`useUserGateway`), sans passerelle managée OVHcloud.
+
+Sur tout nouveau cluster Standard, le trafic entre les nœuds et le control plane Kubernetes passe par un chemin privé opéré par OVHcloud.
+
+La configuration et ses limites sont détaillées dans le guide [Utiliser une passerelle personnalisée sur un cluster OVHcloud Managed Kubernetes](/guides/public-cloud/containers-orchestration/managed-kubernetes/vrack-custom-gateway#utiliser-votre-propre-routeur-ou-pare-feu-comme-passerelle-par-défaut).
+
 ## Limites connues
 
 - Tous les nœuds d'un cluster Kubernetes avec un réseau privé vRack activé sont disponibles au sein de ce seul réseau privé. (Pas de mélange public/privé, un seul réseau privé disponible.)
-- Pour exposer certains workloads sur Internet, vous pouvez utiliser les Load Balancers externes, désormais compatibles avec les nœuds en vRack.
+- Pour exposer certains workloads sur Internet, vous pouvez utiliser les Load Balancers externes, désormais compatibles avec les nœuds en vRack. Ce n'est pas possible sur un cluster créé avec `disablePublicNetworking` : aucun load balancer public ne peut y être créé.
 - L'OVHcloud Public Cloud ne prend pas en charge les groupes de sécurité sur le vRack.
-- Vous verrez toujours une adresse IPv4 publique sur vos worker nodes. Cette IP ne sera pas accessible depuis Internet et est utilisée exclusivement pour l'administration de vos nœuds et leur lien avec le control plane Kubernetes.
+- Sur les clusters du plan Free, vous verrez toujours une adresse IPv4 publique sur vos worker nodes. Cette IP n'est pas accessible depuis Internet et est utilisée exclusivement pour l'administration de vos nœuds et leur lien avec le control plane Kubernetes. Sur les clusters du plan Standard, les nœuds n'ont pas d'IP publique par défaut (voir ci-dessus).
 - Comme expliqué dans le guide [Limites connues](/guides/public-cloud/containers-orchestration/managed-kubernetes/known-limits), les sous-réseaux suivants ne sont pas compatibles avec la fonctionnalité `vRack` et peuvent générer des comportements incohérents avec nos réseaux overlay :
 
 ```bash

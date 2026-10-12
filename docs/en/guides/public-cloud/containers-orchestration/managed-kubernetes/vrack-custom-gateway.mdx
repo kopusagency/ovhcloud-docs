@@ -1,7 +1,7 @@
 ---
 title: Using a custom gateway on an OVHcloud Managed Kubernetes cluster
 description: Find out how to use a custom gateway on an OVHcloud Managed Kubernetes working with vRack private network.
-lastUpdated: 2026-09-16
+lastUpdated: 2026-10-13
 ---
 
 import Api from '@components/Api';
@@ -36,6 +36,10 @@ At the end of this tutorial you should have the following flow:
 :::info
 In this tutorial we guide you on how to create the private network in two regions but you can use only one region if you want, GRA9 for example.
 
+:::
+
+:::tip
+On the Standard plan, new clusters running Kubernetes 1.35 can also use your own router or firewall as the default gateway of the nodes, without an OVHcloud managed gateway. See [Use your own router or firewall as default gateway](#use-your-own-router-or-firewall-as-default-gateway).
 :::
 
 
@@ -489,6 +493,80 @@ And now click in your `demo` created Kubernetes cluster in order to see its stat
 <img className="thumbnail" alt="Create a cluster" src="/images/public-cloud/containers-orchestration/managed-kubernetes/vrack-k8s-custom-gateway/created-cluster.png" loading="lazy" />
 
 When your cluster's status is `OK`, you can go to the next section.
+
+## Use your own router or firewall as default gateway
+
+On the Standard plan, nodes have no public IP by default: they reach the Internet through an OVHcloud managed gateway, or through Floating IPs set at the node pool level. New clusters running Kubernetes 1.35 can instead use your own router or firewall, deployed in your private network, as the default gateway of the nodes. All outbound traffic of the nodes goes through your equipment, which can inspect, filter and log it (hub-and-spoke design). In this configuration, no OVHcloud managed gateway (OpenStack router) is required.
+
+:::info
+On every new Standard cluster, the traffic between the nodes and the Kubernetes control plane uses a private path operated by OVHcloud. Cluster operations do not depend on your gateway: a change or an outage of your router does not affect the communication between the nodes and the control plane.
+:::
+
+### Requirements
+
+- A Standard plan cluster running Kubernetes 1.35, created with the OVHcloud API.
+- A private network (vRack) with a subnet for the nodes.
+- Your router or firewall deployed in this private network, with an IP address in the nodes subnet.
+- Your router provides the outbound Internet access your workloads need, for example to pull images from public container registries. The system images and packages required by the service itself are served by OVHcloud mirrors.
+
+### Network options
+
+Two attributes control this configuration. Both are optional and set to `false` by default.
+
+| Attribute | Description |
+|---|---|
+| `disablePublicNetworking` | Disables the public exposure of the cluster: Floating IPs cannot be attached to the nodes or to load balancers, so no public Load Balancer can be created, and no OpenStack router is needed for public exposure. Used alone, an OVHcloud managed gateway is still required in the nodes subnet for outbound Internet access. |
+| `useUserGateway` | The nodes use your router as default gateway. Requires `disablePublicNetworking` set to `true`. The IP address of your router is set in `privateNetworkConfiguration.defaultVrackGateway`. |
+
+:::warning
+These attributes can only be set when the cluster is created and cannot be changed afterwards.
+
+When `disablePublicNetworking` is `true`:
+
+- Floating IPs cannot be attached to the nodes or to load balancers;
+- Services of type `LoadBalancer` cannot be exposed through a public load balancer.
+
+If you need to expose applications on the Internet from this cluster, keep the default configuration.
+
+:::
+
+### Create the cluster
+
+Create the cluster with the following API call:
+
+<Api version="v1" section="/cloud" method="POST" route={"/cloud/project/\\{serviceName\\}/kube"} />
+
+Use a request body like this one, replacing the network and subnet IDs with yours and `192.168.0.254` with the IP address of your router:
+
+```json
+{
+  "name": "my-cluster",
+  "region": "GRA9",
+  "version": "1.35",
+  "plan": "standard",
+  "privateNetworkId": "d9775b7c-c267-44b4-b758-6e827b0a69bb",
+  "nodesSubnetId": "aa9cf7c0-2d48-4ac4-a3d8-b6d1b2e5c1f2",
+  "privateNetworkConfiguration": {
+    "defaultVrackGateway": "192.168.0.254",
+    "privateNetworkRoutingAsDefault": true
+  },
+  "disablePublicNetworking": true,
+  "useUserGateway": true,
+  "nodepools": [
+    {
+      "name": "nodepool-1",
+      "flavorName": "b3-8",
+      "desiredNodes": 3
+    }
+  ]
+}
+```
+
+Once the cluster is `READY`, the outbound traffic of your Pods leaves through your router. You can check it with the test described in the [Test](#test) section: the output IP is the public IP address of your router.
+
+:::note
+For an existing cluster that cannot be recreated, our teams can assess a manual migration to this configuration on a case-by-case basis. Contact your account manager.
+:::
 
 ## Get Kubeconfig file
 
