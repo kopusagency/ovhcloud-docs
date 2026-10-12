@@ -227,9 +227,11 @@ Contactez, si nécessaire, le gestionnaire actuel de votre zone DNS pour effectu
 <img className="thumbnail" alt="Exemple d’entrées A, CNAME et TXT ovhcontrol pour domain.tld" src="/images/assets/screens/console/product-selection/web-cloud/domain-dns/dns-zone/records-a-txt-ovhcontrol.png" loading="lazy" />
 </Region>
 
-{/* CP-STEPS-END:exemple-entrees-a-txt */}
+<Region zones={['ca', 'apac']}>
+<img className="thumbnail" alt="Exemple d’entrées A, CNAME et TXT ovhcontrol pour domain.tld" src="/images/assets/screens/console/product-selection/web-cloud/domain-dns/dns-zone/records-a-txt-ovhcontrol-ca.png" loading="lazy" />
+</Region>
 
-{/* TODO zone-adapt (CA/APAC): produce a localized screenshot `dashboard-a-txt-cname-ca.png` showing `.ovh.ca` nameservers, then wrap it in <Region zones={['ca','apac']}>. The EU screenshot above is gated so CA/APAC readers are not shown `.ovh.net`. */}
+{/* CP-STEPS-END:exemple-entrees-a-txt */}
 
 **La modification des entrées DNS « A », « CNAME » et « TXT » doit être effectuée auprès du fournisseur DNS actuel de votre nom de domaine et nécessite un temps de propagation de 4 à 24 heures maximum avant d’être pleinement effectif.**
 
