@@ -1,14 +1,11 @@
 ---
 title: Tout savoir sur les expéditeurs SMS
 description: Découvrez les différents expéditeurs utilisables avec nos solutions SMS
-lastUpdated: 2026-10-06
+lastUpdated: 2026-10-12
 ---
 
 :::info
 Les offres SMS OVHcloud sont commercialisées uniquement dans les pays suivants : France, Royaume-Uni, Irlande, Espagne, Italie et Pologne.
-
-L'Espagne et l'Autriche imposent en plus une déclaration réglementaire de l'expéditeur alphanumérique (*Sender ID*) auprès de leur régulateur avant toute utilisation. Reportez-vous à la section « [Spécificités par pays](#country-specific-requirements) ».
-
 :::
 
 ## Objectif
@@ -47,6 +44,11 @@ Si vous avez besoin d'envoyer des SMS contenant des URLs, vous devez utiliser un
 :::
 
 #### Expéditeur alphanumérique
+
+:::info
+Pour envoyer des SMS vers l'Espagne ou l'Autriche, vous devez au préalable déclarer votre expéditeur alphanumérique (*Sender ID*) auprès du régulateur national. Reportez-vous à la section « [Spécificités par pays](#country-specific-requirements) ».
+
+:::
 
 Vous pouvez personnaliser votre expéditeur. Il n'est alors plus possible de recevoir une réponse de la part du destinataire de votre SMS. Pour accéder à la gestion des expéditeurs SMS, sélectionnez l'onglet <code className="action">Expéditeurs</code> (1) lorsque vous êtes sur le compte SMS concerné.
 
@@ -100,11 +102,9 @@ Toutes les informations du tableau sont obligatoires : une demande incomplète 
 
 **Ouvrir la demande**
 
-Demandez d'abord votre expéditeur alphanumérique dans l'espace client OVHcloud, puis adressez cette déclaration au support OVHcloud :
+Demandez d'abord votre expéditeur alphanumérique dans l'espace client OVHcloud, puis adressez cette déclaration au [support OVHcloud](/links/support-contact) en créant une demande d'assistance.
 
-1. Rendez-vous sur le [centre d'aide OVHcloud](/links/support-contact).
-2. Créez une demande d'assistance en précisant qu'il s'agit d'une **déclaration de Sender ID SMS pour l'Espagne**.
-3. Transmettez les informations listées ci-dessus.
+Dans votre demande, précisez qu'il s'agit d'une **déclaration de Sender ID SMS pour l'Espagne** et indiquez les informations listées ci-dessus.
 
 :::info
 Tant que la CNMC n'a pas validé la déclaration, vos destinataires en Espagne voient un numéro de téléphone à la place de votre expéditeur alphanumérique. La déclaration ne se fait qu'une fois par expéditeur : une fois validée, vous pouvez utiliser l'expéditeur autant de fois que nécessaire.
@@ -116,36 +116,34 @@ Tant que la CNMC n'a pas validé la déclaration, vos destinataires en Espagne v
 <details>
 <summary>Autriche</summary>
 
-L'Autriche impose une déclaration préalable de tout expéditeur alphanumérique auprès de son régulateur, la RTR-GmbH (Rundfunk und Telekom Regulierungs-GmbH). Cette obligation s'applique lorsque vous souhaitez créer ou faire valider un expéditeur alphanumérique pour envoyer des SMS vers l'Autriche.
+L'Autriche impose une déclaration préalable de tout expéditeur alphanumérique auprès de son régulateur, la RTR-GmbH (Rundfunk und Telekom Regulierungs-GmbH). Cette obligation s'applique lorsque vous souhaitez créer ou faire valider un expéditeur alphanumérique pour envoyer des SMS vers l'Autriche, ainsi qu'aux expéditeurs que vous utilisez déjà à cette fin.
 
 **Informations à transmettre**
 
-À la création d'un nouvel expéditeur alphanumérique pour l'Autriche, fournissez les informations suivantes via le fichier joint à signer :
+Pour chaque expéditeur alphanumérique concerné, complétez et signez le <a href="/images/web-cloud/messaging/sms/sms-senders/sms-sender-id-austria-form.pdf" download>formulaire de déclaration du Sender ID (PDF)</a>. Il demande les informations suivantes :
 
-| Information | Description |
-|---|---|
-| Alias (Sender ID) | L'expéditeur alphanumérique à déclarer |
-| Titulaire de l'expéditeur alphanumérique | Personne morale (*Legal*) ou nom de la société |
-| Adresse de la société | Adresse complète de la société |
-| Représentant de l'expéditeur alphanumérique | Adresse e-mail du représentant (personne morale ou physique) |
-| Motif (*Reason*) | Par exemple *Information*, *TAN*, *notification*, accompagné d'une courte description |
-| Signataire autorisé | Nom, fonction et signature du signataire autorisé |
+| Information | Champ du formulaire | Description |
+|---|---|---|
+| Alias (Sender ID) | *Sender ID(s)* | L'expéditeur alphanumérique à déclarer |
+| Titulaire de l'expéditeur alphanumérique | *Inhaber (owner)* | Nom de la société (personne morale) |
+| Adresse de la société | *Adresse (address)* | Adresse complète de la société |
+| Adresse e-mail de contact | *e-mail* | Adresse e-mail à laquelle la RTR-GmbH peut vous contacter |
+| Motif | *Begründung (reason)* | Par exemple *Information*, *TAN*, *notification*, accompagné d'une courte description |
+| Signataire autorisé | *Name; Job Title; Company Signature* | Nom, fonction et signature du signataire autorisé |
 
 :::warning
-Toutes les informations sont obligatoires : une demande incomplète risque d'être refusée.
+Toutes les informations sont obligatoires : une demande incomplète risque d'être refusée.
 
 :::
 
 **Ouvrir la demande**
 
-Demandez d'abord votre expéditeur alphanumérique dans l'espace client OVHcloud, puis adressez cette déclaration au support OVHcloud :
+Demandez d'abord votre expéditeur alphanumérique dans l'espace client OVHcloud, puis adressez cette déclaration au [support OVHcloud](/links/support-contact) en créant une demande d'assistance.
 
-1. Rendez-vous sur le [centre d'aide OVHcloud](/links/support-contact).
-2. Créez une demande d'assistance en précisant qu'il s'agit d'une **déclaration de Sender ID SMS pour l'Autriche**.
-3. Transmettez les informations listées ci-dessus via le fichier joint, signé.
+Dans votre demande, précisez qu'il s'agit d'une **déclaration de Sender ID SMS pour l'Autriche** et joignez-y le formulaire complété et signé.
 
 :::info
-Tant que la RTR-GmbH n'a pas validé la déclaration, vos destinataires en Autriche voient un numéro de téléphone à la place de votre expéditeur alphanumérique. La déclaration ne se fait qu'une fois par expéditeur : une fois validée, vous pouvez utiliser l'expéditeur autant de fois que nécessaire.
+Tant que la RTR-GmbH n'a pas validé la déclaration, vos destinataires en Autriche voient un numéro de téléphone à la place de votre expéditeur alphanumérique. La déclaration ne se fait qu'une fois par expéditeur : une fois validée, vous pouvez utiliser l'expéditeur autant de fois que nécessaire.
 
 :::
 
