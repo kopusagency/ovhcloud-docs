@@ -1,6 +1,6 @@
 ---
 title: "Récupérer la sauvegarde d’une base de données supprimée"
-description: "Découvrez comment retrouver la sauvegarde d’une base de données lorsque celle-ci a été supprimée depuis votre espace client OVHcloud"
+description: "Découvrez comment retrouver la sauvegarde d’une base de données lorsque celle-ci a été supprimée depuis la console OVHcloud"
 lastUpdated: 2026-11-19
 availableIn: [eu, ca, apac]
 ---
@@ -12,7 +12,7 @@ import { Tab, Tabs } from '@rspress/core/theme';
 
 La plupart de nos offres d’[hébergement web](/links/web/hosting) comprennent des bases de données. Si, accidentellement, vous supprimez une base de données associée à votre hébergement web, vous pouvez tenter d’en récupérer la sauvegarde via nos API.
 
-**Découvrez comment retrouver, via les API OVHcloud, la sauvegarde d’une base de données lorsque celle-ci a été supprimée depuis votre espace client OVHcloud.**
+**Découvrez comment retrouver, via les API OVHcloud, la sauvegarde d’une base de données lorsque celle-ci a été supprimée depuis la console OVHcloud.**
 
 [[fragment:support-scope]]
 
@@ -25,7 +25,7 @@ La plupart de nos offres d’[hébergement web](/links/web/hosting) comprennent 
 
 ## En pratique
 
-Les API OVHcloud sont mises à disposition pour permettre aux développeurs ou aux intégrateurs d’associer, par exemple, des fonctionnalités présentes ou non dans l’espace client OVHcloud directement dans leurs applications ou solutions.
+Les API OVHcloud sont mises à disposition pour permettre aux développeurs ou aux intégrateurs d’associer, par exemple, des fonctionnalités présentes ou non dans la console OVHcloud directement dans leurs applications ou solutions.
 
 :::warning
 Les sauvegardes proposées par OVHcloud pour les hébergements mutualisés et leurs bases de données associées sont non-contractuelles. Nous vous les proposons en complément de vos services afin de vous aider dans les situations urgentes. Nous vous recommandons d’effectuer régulièrement vos propres sauvegardes de sécurité pour pallier aux éventuelles pertes de données.
@@ -74,9 +74,9 @@ Pour cela, effectuez les actions suivantes :
 
 - Sur la partie droite de la page s’affiche alors l’API avec ses différents formulaires à remplir.
 - Cliquez sur le bouton situé en haut à droite intitulé <code className="action">Authenticate</code>, puis sur le bouton <code className="action">Login with OVHcloud SSO</code>.
-- L’interface de connexion à votre <ManagerLink to="/">espace client OVHcloud</ManagerLink> s’ouvre.
-- Connectez-vous avec votre identifiant client, puis cliquez sur <code className="action">Authorize</code> pour utiliser les API OVHcloud avec les services présents dans votre espace client.
-- Vous êtes ensuite automatiquement redirigé vers la page précédente de l’API **GET /hosting/web/&#123;serviceName&#125;/dump** tout en étant connecté à votre espace client OVHcloud.
+- L’interface de connexion à votre <ManagerLink to="/">compte OVHcloud</ManagerLink> s’ouvre.
+- Connectez-vous avec votre identifiant client, puis cliquez sur <code className="action">Authorize</code> pour utiliser les API OVHcloud avec les services présents dans votre compte OVHcloud.
+- Vous êtes ensuite automatiquement redirigé vers la page précédente de l’API **GET /hosting/web/&#123;serviceName&#125;/dump** tout en étant connecté à votre compte OVHcloud.
 
 ### 3 - Vérifier la disponibilité des sauvegardes et récupérer l’ID de la dernière sauvegarde
 
