@@ -85,9 +85,9 @@ Si vous maîtrisez la syntaxe des zones DNS, l’onglet <code className="action"
 
 Nous vous invitons à vérifier au préalable si cet enregistrement n’existe pas déjà et ne pointe pas vers une cible différente. Pour cela, utilisez le champ **Rechercher** ou filtrez le tableau par type d’enregistrement avec le bouton <code className="action">Filtrer</code>. Si l’enregistrement existe déjà, modifiez-le à la place (voir ci-dessous).
 
-> Lorsque la cible de votre enregistrement est une URL, pensez à ponctuer celle-ci. En effet, si vous ne le faites pas, votre nom de domaine sera automatiquement ajouté à la fin de votre cible.
-> **Exemple** : vous souhaitez créer un enregistrement CNAME de `test.domain.tld` vers `domain.tld`.
-> Vous devez alors avoir comme cible `domain.tld.` et non pas `domain.tld` sans le **.** à la fin.
+> Lorsque la cible de votre enregistrement est un nom de domaine ou un sous-domaine (types `CNAME`, `MX`, `NS`, `SRV` ou `DNAME`), le formulaire ajoute automatiquement le point final à la cible : l’**Aperçu de l’enregistrement** l’affiche (par exemple : `domain.tld.`).
+> En mode textuel en revanche, pensez à ponctuer la cible. En effet, si vous ne le faites pas, votre nom de domaine sera automatiquement ajouté à la fin de votre cible.
+> **Exemple** : pour un enregistrement CNAME de `test.domain.tld` vers `domain.tld`, la cible doit être `domain.tld.` et non pas `domain.tld` sans le **.** à la fin.
 
 <img className="thumbnail" alt="Formulaire Ajouter une entrée de la zone DNS, type A sélectionné" src="/images/assets/screens/console/product-selection/web-cloud/domain-dns/dns-zone/add-entry.png" loading="lazy" />
 
