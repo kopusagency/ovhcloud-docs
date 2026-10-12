@@ -41,11 +41,11 @@ Cliquez sur les onglets ci-dessous pour afficher successivement chacune des **4*
     <img className="thumbnail" alt="Onglet Cron d’un hébergement web" src="/images/assets/screens/console/product-selection/web-cloud/web-hosting/cron/tab.png" loading="lazy" />
   </Tab>
   <Tab label="Étape 3">
-    Vous aurez un aperçu de vos tâches planifiées et de leurs paramètres : chaque tâche est présentée sous la forme d’une carte indiquant sa commande, son **État**, sa **Fréquence**, son **Langage** et l’**E-mail** de rapport.
+    Vous aurez un aperçu de vos tâches planifiées et de leurs paramètres : chaque tâche est présentée sous la forme d’un encadré indiquant sa commande, son **État**, sa **Fréquence**, son **Langage** et l’**E-mail** de rapport.
 
     Pour créer une tâche CRON, cliquez sur le bouton <code className="action">Créer une tâche</code>.
 
-    <img className="thumbnail" alt="Cartes des tâches planifiées et bouton Créer une tâche" src="/images/assets/screens/console/product-selection/web-cloud/web-hosting/cron/tasks.png" loading="lazy" />
+    <img className="thumbnail" alt="Encadrés des tâches planifiées et bouton Créer une tâche" src="/images/assets/screens/console/product-selection/web-cloud/web-hosting/cron/tasks.png" loading="lazy" />
   </Tab>
   <Tab label="Étape 4">
     Personnalisez les paramètres de la tâche dans le panneau **Créer une tâche cron** qui s’affiche.
@@ -79,7 +79,7 @@ Cliquez sur les onglets ci-dessous pour afficher successivement chacune des **4*
 
     Si tout est correct, cliquez sur <code className="action">Créer</code>.
 
-    La tâche sera prête dans quelques minutes. Vous pouvez alors modifier tous ses paramètres ou supprimer la tâche à l’aide du bouton <code className="action">⋮</code> situé en haut à droite de sa carte.
+    La tâche sera prête dans quelques minutes. Vous pouvez alors modifier tous ses paramètres ou supprimer la tâche à l’aide du bouton <code className="action">⋮</code> situé en haut à droite de son encadré.
   </Tab>
 </Tabs>
 
@@ -103,7 +103,7 @@ Cliquez sur les onglets ci-dessous pour afficher successivement chacune des **3*
     <img className="thumbnail" alt="Onglet Cron d’un hébergement web" src="/images/assets/screens/console/product-selection/web-cloud/web-hosting/cron/tab.png" loading="lazy" />
   </Tab>
   <Tab label="Étape 3">
-    Sur la carte de la tâche planifiée concernée, cliquez sur le bouton <code className="action">⋮</code> situé en haut à droite.
+    Dans l’encadré de la tâche planifiée concernée, cliquez sur le bouton <code className="action">⋮</code> situé en haut à droite.
 
     Choisissez parmi les actions <code className="action">Modifier</code>, <code className="action">Désactiver</code> (ou <code className="action">Activer</code> pour une tâche désactivée) ou <code className="action">Supprimer</code> en fonction de l’action que vous souhaitez réaliser sur la tâche planifiée.
 
@@ -123,7 +123,7 @@ Cliquez sur les onglets ci-dessous pour afficher successivement chacune des **3*
 |Durée|La durée d’exécution d’une tâche est de 60 minutes. Si un script dépasse cette durée d’exécution, il sera automatiquement arrêté par le système.|
 |Variables|Vous ne pouvez définir que des variables dans un script. Les ajouter à l’URL appelant le script ne fonctionnera pas (Exemple : www/jobs/cron.php?variable=value).|
 |Limite de données|Une tâche ne peut générer que 5 Mo de données (*stdin/stderr*). Par exemple, si un script écrit des données dans un fichier .txt, l’exécution s’arrête automatiquement lorsque le fichier atteint 5 Mo.|
-|Scripts produisant des erreurs|Si un script est défectueux, il sera automatiquement désactivé après 10 tentatives d’exécution échouées. Le rapport d’erreur ne sera envoyé que lorsque les 10 tentatives auront échoué.<br/>Corrigez votre script en fonction du rapport d’erreur reçu puis réactivez la « tâche CRON » depuis l’onglet <code className="action">Cron</code> (cliquez sur <code className="action">⋮</code> sur la carte de la tâche, puis sur <code className="action">Activer</code>).|
+|Scripts produisant des erreurs|Si un script est défectueux, il sera automatiquement désactivé après 10 tentatives d’exécution échouées. Le rapport d’erreur ne sera envoyé que lorsque les 10 tentatives auront échoué.<br/>Corrigez votre script en fonction du rapport d’erreur reçu puis réactivez la « tâche CRON » depuis l’onglet <code className="action">Cron</code> (cliquez sur <code className="action">⋮</code> dans l’encadré de la tâche, puis sur <code className="action">Activer</code>).|
 |Rapports d’exécution|Les rapports ne seront envoyés à l’adresse électronique sélectionnée qu’une fois par jour (pendant les heures de nuit).|
 
 {/* CP-STEPS-END:limitations */}
