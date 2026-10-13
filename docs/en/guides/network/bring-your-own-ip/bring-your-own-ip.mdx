@@ -40,9 +40,7 @@ You need to own (see below) a public IPv4 or IPv6 block with one of the followin
 
 The WHOIS record for the provided public IP block **must precisely match the desired range**. Selecting a parent or child IP block will leave you unable to use that range.
 
-It is now possible to use ARIN, RIPE or APNIC IP blocks on any OVHcloud region. This enhanced flexibility enables more efficient management and optimized allocation of IP addresses to meet your company's specific needs.
-
-Unlike the previous policy, where an ARIN block could only be used with OVHcloud services located in Canada or the USA, and a RIPE block could only be used with OVHcloud services located in Europe, this restriction has been lifted.
+You can use ARIN, RIPE or APNIC IP blocks in any OVHcloud region.
 
 To be considered as a valid owned block, an imported **IPv4** block must be one of the following types:
 
@@ -102,11 +100,11 @@ These quotas cannot be increased at the moment.
 
 ### Your IP range is not in use on the Internet <a name="notinuseontheinternet"></a>
 
-The range should not be announced or in use on the Internet (no announcement in terms of Border Gateway Protocol (BGP) on at least one public network). You are free not to meet this prerequisite, in which case OVHcloud will not be able to ensure the proper functioning and support of this service.
+The range should not be announced or in use on the Internet (no announcement in terms of Border Gateway Protocol (BGP) on at least one public network). If the range is announced elsewhere, OVHcloud cannot guarantee that the service works or provide support for it.
 
 ### Your IP/AS have a clean reputation <a name="cleanipreputation"></a>
 
-We may refuse using IPs/AS with a bad reputation, and we reserve the right to stop announcing the IPs/AS if their reputation has a negative impact on OVHcloud's reputation.
+We may refuse IP ranges or AS numbers with a bad reputation, and we reserve the right to stop announcing them if their reputation has a negative impact on OVHcloud's reputation.
 
 ### You need to choose a region <a name="choosearegion"></a>
 
@@ -118,7 +116,7 @@ The list of available regions is displayed on the [Bring Your Own IP product pag
 
 ### You must prove ownership of the IP range <a name="proveownershipip"></a>
 
-To prove that you are the owner of the range, you will be requested to enter a special token which we will provide, into the public whois object corresponding to your range. This will be done via the web portal of the RIR managing your IPs. This token is displayed in the order form.
+To prove that you own the range, add the token displayed in the order form to the public whois object of your range, from your RIR's web portal.
 
 - For RIPE, edit the **descr** field of the **inetnum** object (IPv4) or of the **inet6num** object (IPv6).
 - For ARIN, edit the **Public Comments** field of the **Network** object.
@@ -134,13 +132,13 @@ To prove that you are the owner of the AS number, you will be required to reuse 
 - For ARIN, edit the **Public Comments** field of the **ASN** object.
 - For APNIC, edit the **remarks** field of **aut-num** object.
 
-The token needs to appear in the description field (see above) of the whois object, in a dedicated line. Other lines may be present, as long as the token is present in its own dedicated line in the description. The token must be added before placing the order, and must not be removed until the end of the delivery process.
+Follow the same rules as for the IP range: the token must be on its own line, and must stay in place until delivery is complete.
 
 ### You have to allow OVHcloud to announce the IP range <a name="announceip"></a>
 
 On the RIR where the IP range is registered, you will need to create a **route object** (IPv4) or a **route6 object** (IPv6) for it (matching exactly the IP range), with the OVHcloud **AS number** ("AS16276") or your own AS number in the **origin** field of the object.
 
-For more information on route objects, please refer to your RIR’s documentation page:
+For more information on route objects, refer to your RIR's documentation:
 
 - RIPE - [Managing Route Objects](https://docs.db.ripe.net/Authorisation/Protection-of-Route-Object-Space/)
 - ARIN - [Submitting Routing Information](https://www.arin.net/resources/manage/irr/#submitting-routing-information)
@@ -179,9 +177,10 @@ Copy the **token** displayed on the page and add it to the whois objects of your
 
 Enter the IP range you wish to import, in CIDR notation (from /24 to /19 for IPv4, from /48 to /32 for IPv6).
 
-You can then choose whether to use the OVHcloud AS (recommended) or your own AS to advertise your IP block.
+Then choose the AS that will announce your IP block:
 
-If you choose to use your own AS, you must select the RIR that manages your ASN, then enter your AS number. If you choose the OVHcloud AS, no additional information is required.
+- **OVHcloud AS** (recommended): OVHcloud announces your prefix from AS16276. No additional information is required.
+- **Own AS**: your prefix is announced from your own AS number (BYOAS). Select the RIR that manages your ASN, then enter your AS number.
 
 <img className="thumbnail" alt="BYOIP AS - OVHcloud" src="/images/network/bring-your-own-ip/bring-your-own-IP/byoip_as_ovhcloud.png" loading="lazy" />
 
@@ -224,7 +223,7 @@ Some operations available on the Additional IP product will not be available on 
 
 For example, you will not be able to customize your blocks' WHOIS via the OVHcloud Control Panel/API, because OVHcloud does not own them.
 
-For the same reason, you will not be able to edit your IP's reverses out of the box via the OVHcloud Control Panel/API.
+You can only edit the reverse DNS of an IPv4 range in the OVHcloud Control Panel or API once your RIR has delegated its ARPA zone to our DNS servers.
 
 :::
 
@@ -299,17 +298,17 @@ To be able to slice/merge an existing IP block, it must be unused (i.e. in the p
 
 :::
 
-{/* DRAFT: To verify — where Segment/Combine live in the new Control Panel: they do not appear in the BYOIP Ranges tab menu of the sandbox (SME checking, 2026-10-12). */}
+The slice and aggregate actions apply to the IP blocks of an imported IPv4 range, not to the imported range itself.
 
-To segment your BYOIP block, follow these steps:
+To slice your BYOIP block, follow these steps:
 
 <Tabs>
   <Tab label="Via the OVHcloud Control Panel">
-    1. Navigate to the <code className="action">Public IP Addresses</code> page and locate your BYOIP block.
-    2. Click the <code className="action">⋮</code> button on the right side of the table.
-    3. Select <code className="action">Segment</code>.
-    4. Choose your desired **CIDR subnet mask** to define the size of the child blocks.
-    5. Review the preview of the generated blocks, then click <code className="action">Confirm</code> to finalize the segmentation.
+    1. Open the <code className="action">BYOIP Ranges</code> tab of the IP addresses page.
+    2. Click the <code className="action">⋮</code> button to the right of your IPv4 range, then select <code className="action">View IP blocks</code>.
+    3. Click the <code className="action">⋮</code> button to the right of the block you want to slice, then select <code className="action">Slice into blocks</code>.
+    4. In the **Split size** list, select the size of the child blocks.
+    5. Review the resulting blocks, then click <code className="action">Slice IP block</code>.
   </Tab>
   <Tab label="Via the OVHcloud API">
     <Api version="v1" section="/ip" method="POST" route={"/ip/\{ip\}/bringYourOwnIp/slice"} />
@@ -333,13 +332,15 @@ To segment your BYOIP block, follow these steps:
   </Tab>
 </Tabs>
 
-To combine several child blocks into a parent block, follow these steps:
+To aggregate several child blocks into a parent block, follow these steps:
+
+{/* DRAFT: To verify — in the sandbox, Aggregate blocks runs immediately with no dialog (no parent block choice, no preview, no confirmation). Check steps 4-5 against the released Control Panel. */}
 
 <Tabs>
   <Tab label="Via the OVHcloud Control Panel">
-    1. Navigate to the <code className="action">Public IP Addresses</code> page and locate one of the BYOIP block segments you want to combine.
-    2. Click the <code className="action">⋮</code> button on the right side of the table.
-    3. Select <code className="action">Combine</code>.
+    1. Open the <code className="action">BYOIP Ranges</code> tab of the IP addresses page.
+    2. Click the <code className="action">⋮</code> button to the right of your IPv4 range, then select <code className="action">View IP blocks</code>.
+    3. Click the <code className="action">⋮</code> button to the right of one of the blocks you want to aggregate, then select <code className="action">Aggregate blocks</code>.
     4. Choose the desired parent block.
     5. Review the preview of the generated blocks, then click <code className="action">Confirm</code> to finalize the aggregation.
   </Tab>
@@ -397,7 +398,7 @@ Choose whether to cancel the service immediately or on the expiry date, then cli
 
 ## FAQ
 
-### Is it possible to import an IPv6?
+### Is it possible to import an IPv6 range?
 
 Yes. You can import IPv6 ranges from /48 to /32, with a prefix length that is a multiple of 4. See [Your IP range must have a supported size](#supportedsize).
 
@@ -411,7 +412,7 @@ Not at the moment, but feel free to contact us to discuss this.
 
 ### Is splitting the imported /24 into smaller block size (/25, /26, /27, /28, /29, /30) or into /32 supported?
 
-Yes, please see the [Range slicing](#range-slicing) section for more details.
+Yes, see the [Range slicing](#range-slicing) section for more details.
 
 ### Can I create IPv6 blocks of another size than /56?
 
@@ -435,7 +436,7 @@ It is not possible to change the region of an imported IP range. To achieve this
 
 However, if you have chosen the Gravelines, Roubaix or Strasbourg region at the time of the order and if you ordered the service after January 1st, 2023, you will be able to move your **/24** IPv4 blocks across those 3 regions (and only those 3 regions). This exception does not apply to IPv6 ranges.
 
-Please note that, as mentioned in the range slicing limitations, this is only available if the block you want to move was **not reaggregated** following a previous slicing.
+As mentioned in the range slicing limitations, this is only available if the block you want to move was **not reaggregated** following a previous slicing.
 
 ### How will I know which OVHcloud DNS servers will handle the ARPA zone for my imported IP?
 
