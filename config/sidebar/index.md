@@ -592,7 +592,6 @@
             + [Using Terraform with SNC Cloud Platform](hosted-private-cloud/cloud-platform/snc-cloud-platform-terraform)
             + [Managing Glance images](hosted-private-cloud/cloud-platform/snc-cloud-platform-glance-image-management)
             + [Managing public IPs](hosted-private-cloud/cloud-platform/snc-cloud-platform-public-ip-management)
-            + [Creating a Windows Server VM](hosted-private-cloud/cloud-platform/snc-cloud-platform-create-windows-server-vm)
     + [Bare Metal Pod](hosted-private-cloud-baremetal-pod)
         + [Getting started](hosted-private-cloud-baremetal-pod-getting-started)
             + [Mise en route de votre Bare Metal POD SecNumCloud](hosted-private-cloud/baremetal-pod/snc-getting-started)
@@ -1353,7 +1352,6 @@
                 + [Connect using the CLI for Public Cloud Databases for Valkey](public-cloud/databases/valkey-connect-cli)
                 + [Connect using PHP for Public Cloud Databases for Valkey](public-cloud/databases/valkey-connect-php)
                 + [Connect using Python for Public Cloud Databases for Valkey](public-cloud/databases/valkey-connect-python)
-                + [Connect using RedisInsight for Public Cloud Databases for Valkey](public-cloud/databases/valkey-connect-redisinsight)
             + [Configuration](public-cloud-databases-valkey-configuration)
                 + [Maintenance operations for Public Cloud Databases](public-cloud/databases/maintenance)
                 + [Configure the private network for Public Cloud Databases](public-cloud/databases/configure-vrack)
@@ -1363,7 +1361,7 @@
                 + [Update the flavor of Public Cloud Databases](public-cloud/databases/update-cluster-flavor)
                 + [Update the plan of Public Cloud Databases](public-cloud/databases/update-cluster-plan)
                 + [Update the network configuration of Public Cloud Databases](public-cloud/databases/update-cluster-network)
-                + [Manage ACLs via API for Public Cloud Databases for Valkey](public-cloud/databases/valkey-update-acls)
+                + [Manage users and ACLs for Public Cloud Databases for Valkey](public-cloud/databases/valkey-update-acls)
                 + [Set up logs forwarding for Public Cloud Databases](public-cloud/databases/logs-to-customers)
                 + [Set up the Kubernetes operator for Public Cloud Databases](public-cloud/databases/database-operator)
                 + [Set up service integration for Public Cloud Databases](public-cloud/databases/databases-cross-service-integration)
@@ -1431,6 +1429,9 @@
             + [Tutorials](public-cloud-data-analytics-clickhouse-tutorials)
                 + [ClickHouse - Connect with Tabix](public-cloud/data-analytics/analytics/clickhouse-connect-tabix)
                 + [ClickHouse – Real-time Analytics with Kafka integration](public-cloud/data-analytics/analytics/clickhouse-integration-with-kafka)
+                + [ClickHouse - Query files stored in OVHcloud Object Storage](public-cloud/data-analytics/analytics/clickhouse-query-object-storage)
+                + [ClickHouse - Query PostgreSQL and MySQL databases](public-cloud/data-analytics/analytics/clickhouse-query-postgresql-mysql)
+                + [ClickHouse - Query Iceberg and Delta Lake tables and ingest files continuously](public-cloud/data-analytics/analytics/clickhouse-iceberg-delta-s3queue)
         + [Kafka](products/public-cloud-data-analytics-kafka)
             + [Overview](public-cloud/data-analytics/kafka/overview)
             + [Key concepts](public-cloud-data-analytics-kafka-key-concepts)
@@ -1790,6 +1791,8 @@
                 + [OVHcloud Billing Data Analysis](public-cloud/data-platform/tutorials-billing-analysis){label=OVHcloud Billing Data Analysis}
                 + [Deploy Apache Superset](public-cloud/data-platform/tutorials-install-apache-superset){label=Deploy Apache Superset}
                 + [FOCUS & Apache Superset Use Case](public-cloud/data-platform/tutorials-finops-focus-superset){label=FOCUS & Apache Superset Use Case}
+                + [Analyse online store sales with Apache Superset](public-cloud-data-platform-analyze-online-store-sales){landing=public-cloud/data-platform/tutorials-ecommerce-sales}
+                    + [Build the sales dashboard in Superset](public-cloud/data-platform/tutorials-ecommerce-sales-superset-dashboard){label=Build a sales dashboard for an online store in Superset}
             + [Data export & management](public-cloud-data-platform-data-export-and-management){landing=public-cloud/data-platform/landing-page-tutorials-data-export}
                 + [Export folders with a custom date](public-cloud/data-platform/tutorials-dated-export-folders)
                 + [Set role conditions on one bucket](public-cloud/data-platform/tutorials-bucket-role-conditions){label=Set role conditions on one bucket}
