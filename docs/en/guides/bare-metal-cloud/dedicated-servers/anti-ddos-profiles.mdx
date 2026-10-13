@@ -1,12 +1,14 @@
 ---
 title: Fine-tune attack detection with Anti-DDoS Profiles
-description: Request an Anti-DDoS profile tuned to your VPN, streaming or blockchain workload to stop legitimate traffic being mitigated as an attack.
-lastUpdated: 2026-08-24
+description: Apply an Anti-DDoS profile to your VPN, streaming or blockchain IP addresses so that legitimate traffic peaks are no longer mitigated as attacks.
+lastUpdated: 2026-10-13
 ---
 
 :::warning
-Anti-DDoS Profiles are in **Alpha**. During this phase there is no Control Panel screen and no API: you request a profile through a form, and OVHcloud applies it for you. Self-service management arrives with the Beta phase.
+Anti-DDoS Profiles are in **Beta**. Screens, profile names and limits may still change before general availability.
 :::
+
+{/* DRAFT: To verify — Profiling screen labels taken from the v8 sandbox mockup (2026-10-13). They are not yet in the manager-network anti-ddos app code (MANAGER-22397): run /verify-buttons once it is merged. Dashboard and side menu labels are confirmed in the v8 code. */}
 
 ## Objective
 
@@ -14,23 +16,36 @@ The Anti-DDoS Infrastructure protects every OVHcloud service by default, with no
 
 That approach suits most workloads. For a VPN concentrator, a blockchain node or a live video stream, legitimate traffic has the same signature as an attack, and gets mitigated as one.
 
-Anti-DDoS Profiles let you describe what your traffic normally looks like, so that detection can tell a legitimate peak from an attack before mitigation starts.
+Anti-DDoS Profiles let you declare what your traffic normally looks like, so that detection can tell a legitimate peak from an attack before mitigation starts.
 
 **In this guide, you will learn how to:**
 
 - Recognise when your workload needs a profile.
-- Understand what a profile changes and what it does not.
-- Join the Alpha programme and request a profile for your IP addresses.
+- Activate profiling on your account and create a policy.
+- Apply a policy to your IP addresses and read its status.
+- Adjust, disable or delete a policy, and judge its effect.
 
 ## Requirements
 
-- At least one OVHcloud service protected by the Anti-DDoS Infrastructure.
-- Your OVHcloud NIC handle and a contact email address.
-- The public IPv4 addresses or IPv4 blocks carrying the workload, held on the same account.
+- At least one OVHcloud service with a public IPv4 address protected by the Anti-DDoS Infrastructure.
+- Access to the <ManagerLink to="/">OVHcloud Control Panel</ManagerLink>.
 
 ## Instructions
 
-### Why protection sometimes needs fine-tuning
+**Contents:**
+
+- [Why protection sometimes needs fine-tuning](#why)
+- [How profiling works](#concepts)
+- [Step 1 — Activate profiling](#activate)
+- [Step 2 — Create a policy](#create)
+- [Step 3 — Add your IP addresses](#targets)
+- [Reading the statuses](#statuses)
+- [Managing your policies](#manage)
+- [Monitoring the effect of a policy](#monitoring)
+- [Limitations](#limitations)
+- [Troubleshooting](#troubleshooting)
+
+### Why protection sometimes needs fine-tuning <a name="why"></a>
 
 Generic detection can fail in two opposite ways, and each one calls for the opposite correction.
 
@@ -39,75 +54,147 @@ Generic detection can fail in two opposite ways, and each one calls for the oppo
 | **False positive** | Legitimate traffic is read as an attack and gets mitigated. | Dropped sessions, broken tunnels, users cut off during a traffic peak, with no attack actually taking place. |
 | **False negative** | Attack traffic is not aggressive enough to trip generic thresholds. | Degraded service during an attack that was never fully mitigated. |
 
-False positives are the more common case, and a few workloads account for most of them: VPN tunnels, whose UDP packet rates run high; blockchain nodes, which use wide port ranges with constant peer turnover; live streaming and voice, which face sudden legitimate audience surges; and backups or large model downloads, which sustain bulk transfers for hours.
+False positives are the more common case, and a few workloads account for most of them: VPN tunnels, whose UDP packet rates run high; blockchain nodes, which use wide port ranges with constant peer turnover; live streaming and voice, which face sudden legitimate audience surges; and web services during a launch or a sale.
 
-### When you would need a profile
-
-Request a profile if any of these situations applies:
+Create a policy if any of these situations applies:
 
 - Legitimate traffic is being mitigated and you have been working around it — forcing TCP mode on a VPN, lowering the MTU, or opening a support ticket after each incident.
 - You are preparing for a known traffic spike, such as a live event or a product launch.
 - You are running an application whose traffic is structurally unusual, and you prefer to declare it in advance rather than wait for the first false positive.
 - An attack was mitigated, but not thoroughly enough, and you want detection to react sooner.
 
-If none of these applies, no change is needed.
+If none of these applies, no change is needed: your services stay protected by default.
 
-### What a profile changes
+### How profiling works <a name="concepts"></a>
 
-A profile combines two settings, applied together to the public IP addresses you specify.
+You create **policies**. A policy pairs an application profile with a sensitivity level, and applies to the public IPv4 addresses or blocks you add to it.
 
-**The application profile** describes the traffic your application legitimately produces. OVHcloud maintains the catalogue, so you select the entry matching your workload instead of defining thresholds yourself. The catalogue evolves as profiles are tuned against real traffic, so treat the list in the form as a snapshot rather than a fixed set.
+#### Application profiles
 
-**The sensitivity** sets how aggressive detection is for the IP addresses covered by the profile:
+OVHcloud maintains the profiles: you select the one matching your workload instead of defining thresholds yourself. The list shown in the Control Panel is filtered to your account, and currently covers:
 
-| Sensitivity | Effect |
+| Application profile | Workload it describes |
 |---|---|
-| `low` | Fewer false-positive alerts. Select it when availability during peaks matters more than filtering depth. |
-| `medium` | The usual choice, and the recommended starting point. |
-| `high` | Even smaller attacks are detected. Select it when attacks have been getting through. |
+| VPN / UDP | VPN servers (WireGuard, OpenVPN, IPsec) with high UDP packet rates. |
+| Blockchain / Solana | Solana nodes, with their protocol ports and connection patterns. |
+| Media / Streaming | VoIP, RTC and HLS streaming with legitimate spikes of concurrent viewers. |
+| Web / API | Web and API workloads with request bursts, such as flash sales or campaigns. |
+| VoIP / RTC | Real-time voice and WebRTC media flows. |
+| Custom UDP | High-flow UDP workloads not covered by a specific profile. |
 
-Nothing else about your service changes: your Edge Network Firewall rules are untouched, your existing protection remains in place, and the price of your services does not change.
+#### Sensitivity
 
-### What profiling gives you
+Sensitivity sets where the policy sits on the trade-off between mitigating too much and mitigating too little.
 
-- **Protection that fits the application.** Detection tuned to a workload catches more real attacks and mitigates less legitimate traffic.
-- **Tuning you can request directly.** Describing your traffic becomes a setting rather than a support request.
-- **Less operational overhead.** Fewer unwarranted mitigations mean fewer incidents to investigate and fewer workarounds to maintain.
-- **Management above the IP address.** Applying a single decision to a group of services rather than to individual addresses is planned for a later phase.
+| Sensitivity | Effect | Choose it when |
+|---|---|---|
+| `Low` | Fewer false positives: the most tolerant of legitimate bursts. | Availability during peaks matters more than filtering depth. |
+| `Medium` | Balanced detection. The recommended starting point. | You are applying a profile for the first time. |
+| `High` | Fewer false negatives: the most aggressive filtering. | Attacks have been getting through. |
 
-### Joining the Alpha
+#### One policy per IP address
 
-During the Alpha, requests are submitted through the recruitment form. OVHcloud reviews each one, contacts the selected testers, and applies the profiling to your account.
+An IP address is covered by exactly one policy. If a block is attached to one policy and an address inside it to another, the most specific entry wins. For example, if `203.0.113.0/24` is attached to a Media / Streaming policy and `203.0.113.10` to a VPN / UDP policy, then `203.0.113.10` uses the VPN / UDP policy and the rest of the block uses the Media / Streaming policy.
 
-Complete the [Anti-DDoS Profiles Alpha recruitment form](https://survey.ovh.com/index.php/143343?newtest=Y&lang=en). It contains nine questions and asks for:
+Nothing else about your service changes: your Edge Network Firewall rules are untouched, and the price of your services does not change.
 
-1. **Your identity** — your OVHcloud NIC handle and an email address, so that the request can be matched to your account.
-2. **The application type** — one profile from the catalogue. The current list covers AI and HuggingFace downloads, Blockchain (Solana), file transfer protocols, Media Streaming HLS, Media Streaming RTC, and VPN in IPsec, OpenVPN and WireGuard variants. Select `Other` and use the comment field if none of them fits.
-3. **The sensitivity** — `low`, `medium` or `high`, as described above.
-4. **Your reason** — whether attacks are going undetected, legitimate traffic is being misclassified, you are preparing for unusual spikes, or you want the best protection available. This tells OVHcloud which way to tune the profile.
-5. **Where the application runs** — Bare Metal servers, Public Cloud instances, k8s/mk8s, VPS, VMware, Nutanix, or something else. Select every option that applies.
-6. **The IP addresses** — a comma-separated list of single IPv4 addresses or IPv4 blocks to which the profiling should apply.
+### Step 1 — Activate profiling <a name="activate"></a>
 
-> [!TIP]
-> Check the IP address list before submitting. Only valid IPv4 addresses belonging to the NIC handle you provided are added to the profiling, so a typo or an address held on another account is omitted without warning.
+Activation is needed only once per account.
 
-Once profiling is active, observe its effect in the [Network Security Dashboard](/guides/bare-metal-cloud/dedicated-servers/network-security-dashboard). Report any profile that does not behave as expected: that is how the catalogue improves.
+1. Log in to the <ManagerLink to="/">OVHcloud Control Panel</ManagerLink>.
+2. In the side menu, go to **Security** > **Anti-DDoS**, then open the `Profiling` tab.
+3. Click <code className="action">Activate Anti-DDoS Profiling</code>.
 
-### What comes after the Alpha
+Follow the instructions displayed, if any, to complete the activation. No amount is charged.
 
-| Phase | What changes |
+Once activation is complete, the `Profiling` tab lists your policies. Activating profiling does not change the protection of any IP address until you add it to a policy.
+
+### Step 2 — Create a policy <a name="create"></a>
+
+1. In the `Profiling` tab, click <code className="action">Create a policy</code>.
+2. In the `Name` field, enter a name that identifies the workload, for example `vpn-concentrators`.
+3. In the `Application profile` list, select the profile that matches your workload. Its description and an example are displayed below the list.
+4. Set the `Sensitivity`. Start with `Medium` unless you already know which way the protection needs to move.
+5. Click <code className="action">Create policy</code>.
+
+IP addresses are added once the policy exists. Until then, the policy has the status **Not configured**: it does not protect anything yet.
+
+### Step 3 — Add your IP addresses <a name="targets"></a>
+
+1. In the policy list, click the policy name, or click the `...` button at the end of its row, then <code className="action">Edit</code>.
+2. In the `Targets` section of the `Edit policy` panel, click the `Add an IP…` field. The list shows the IP blocks and individual IP addresses of your account. Type the beginning of an address to filter it.
+3. Select an address, or a whole block. If your servers sit in a contiguous block, add the block rather than each address. Addresses marked **Unsupported** cannot be added.
+4. Repeat for each address or block, then click <code className="action">Save changes</code>. A confirmation message is displayed.
+
+From then on, attack detection for that address follows the policy's profile and sensitivity instead of the generic settings. The change is applied in the background: the address is marked **Pending** for a few minutes, then the badge disappears once the address is protected.
+
+:::warning
+If OVHcloud support had previously applied custom Anti-DDoS settings to an address, adding it to a policy replaces them with the policy's profile and sensitivity. Keep a note of the addresses concerned, and contact support if you need the previous settings back.
+:::
+
+{/* DRAFT: To verify — the backend blocks this replacement by default and the Control Panel forces it (Beta weekly 2026-10-08). Not visible in the sandbox: check whether the Control Panel shows a confirmation or a warning before replacing custom settings, and describe it here. */}
+
+### Reading the statuses <a name="statuses"></a>
+
+The policy list shows, for each policy, its application profile, sensitivity, number of IP addresses, last attack detected and status. You can filter it by application profile, sensitivity and status.
+
+| Where | Status | Meaning |
+|---|---|---|
+| Policy list | **Active** | Enabled, with at least one IP address. The protection is tuned. |
+| Policy list | **Not configured** | Enabled, but with no IP address yet. Add a target. |
+| Policy list | **Disabled** | Turned off. The default Anti-DDoS protection applies to its addresses, which stay attached. |
+| Policy list | Warning icon next to `Number of IPs` | Some addresses of the policy are **Inactive**. Open the policy to see which ones. |
+| `Targets` section | No badge | The address is protected by the policy. |
+| `Targets` section | **Pending** | The address is being synchronised with the profiling system. This can take a few minutes. |
+| `Targets` section | **Inactive** | The address now points to infrastructure that is not compatible with profiling. It is re-enabled automatically once it points to a compatible service again. |
+| `Add an IP…` list | **Unsupported** | The address cannot be profiled — see [Limitations](#limitations). |
+
+### Managing your policies <a name="manage"></a>
+
+Each policy has an actions button (`...`) at the end of its row in the policy list, with the following options:
+
+| Action | How | Effect |
+|---|---|---|
+| Change the profile or the sensitivity | <code className="action">Edit</code>, then change `Application profile` or `Sensitivity` and click <code className="action">Save changes</code>. | Applies to every address of the policy at once. Move the sensitivity one level at a time and observe before moving again. |
+| Disable the policy | <code className="action">Disable</code>, then confirm. | The addresses fall back to the default Anti-DDoS protection. They stay attached, and the policy can be enabled again at any time. Use this to rule the profile in or out while troubleshooting, rather than deleting the policy. |
+| Enable the policy | <code className="action">Enable</code> on a disabled policy. | The profile is applied again to the attached addresses. |
+| Move an address | <code className="action">Edit</code>, remove the address from the `Targets` section of one policy and save, then add it to another. | An address belongs to exactly one policy. |
+| Delete the policy | <code className="action">Delete</code>, then confirm. | Removes the policy and all its targets. Its addresses return to the default protection. This cannot be undone. |
+
+For a scheduled event, such as a live broadcast or a product launch, create the policy and add the addresses in advance: changes are applied in the background, so a policy created while traffic is already building may not take effect in time. You can also lower the sensitivity one level before the event, then restore it afterwards.
+
+### Monitoring the effect of a policy <a name="monitoring"></a>
+
+A policy changes which traffic gets mitigated, so the way to judge it is to compare mitigation activity before and after applying it.
+
+In the Control Panel, open the `Dashboard` tab of **Security** > **Anti-DDoS**. The `Overview` tab lists the attacks detected on your addresses over the last 60 days, and the `Traffic` tab shows the legitimate and filtered traffic for an address. A policy that does its job filters less traffic during legitimate peaks, and no less during genuine attacks. See [Monitoring DDoS attacks with the Network Security Dashboard](/guides/bare-metal-cloud/dedicated-servers/network-security-dashboard) for a description of these screens.
+
+If a profile does not behave as expected, tell us with the <code className="action">Do you like it?</code> link at the top of the Profiling page. During the Beta, that feedback is how the catalogue improves.
+
+### Limitations <a name="limitations"></a>
+
+| Limitation | Details |
 |---|---|
-| **Alpha** (current) | Profiles requested through the form and applied by OVHcloud. Limited number of participants. IPv4 addresses and blocks. |
-| **Beta** | Self-service management in the OVHcloud Control Panel and the OVHcloud API. A wider catalogue of profiles. |
-| **General availability** | A stable Control Panel and API, availability in all Anti-DDoS-enabled regions for eligible IP addresses, and a defined migration path from any custom tuning already applied to your account. |
+| Policies | 20 per account. |
+| Target types | IPv4 addresses and IPv4 blocks only. IPv6 is not supported. |
+| GAME servers | Addresses pointing to GAME bare metal servers cannot be added. They keep their own protection — see [How to protect a Game server with the application firewall](/guides/bare-metal-cloud/dedicated-servers/firewall-game-ddos). |
+| Public Cloud | Floating IP addresses, including those used by Managed Kubernetes Service, are added one by one. A policy cannot target a whole Public Cloud project, and it does not follow an address that is released and reallocated. |
 
-Later phases should also let a profile follow a group of services instead of a list of addresses.
+### Troubleshooting <a name="troubleshooting"></a>
+
+| Issue | Possible cause | Solution |
+|---|---|---|
+| Legitimate traffic is still dropped | The sensitivity is too high, or the profile does not match the workload. | Lower the sensitivity one level and observe. If the problem persists at `Low`, the profile is probably the wrong match: try another one and report it with the feedback link. |
+| An attack was not fully mitigated | The sensitivity is too low. | Raise the sensitivity one level, and compare filtered traffic before and after. |
+| An address stays **Pending** | The change has not finished applying. | Wait a few minutes and refresh. If the status does not change, [contact support](/links/support) with the policy name and the address. |
+| Traffic is dropped and no policy explains it | Another protection layer, such as the Edge Network Firewall or Anti-Hack, may be filtering it. A policy does not override them. | Check your [Edge Network Firewall](/guides/bare-metal-cloud/dedicated-servers/firewall-network) rules and your [Anti-Hack](/guides/bare-metal-cloud/dedicated-servers/anti-hack-dedicated-vps) status. |
+
+If a profile is applied and the problem persists, a traffic capture (pcap) of the affected flows will help support analyse it.
 
 ## Go further
 
 [Monitoring DDoS attacks with the Network Security Dashboard](/guides/bare-metal-cloud/dedicated-servers/network-security-dashboard)
-
-[Configure Anti-DDoS for Solana on Dedicated Servers](/guides/bare-metal-cloud/dedicated-servers/blockchain-anti-ddos)
 
 [Enabling and configuring the Edge Network Firewall](/guides/bare-metal-cloud/dedicated-servers/firewall-network)
 
