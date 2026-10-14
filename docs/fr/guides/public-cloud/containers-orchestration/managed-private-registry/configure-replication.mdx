@@ -31,7 +31,7 @@ Harbor ne prend pas en charge la réplication entre des versions de Harbor diff�
 
 Ce guide utilise la réplication **push-based** : la règle de réplication est créée sur le registry source, qui pousse les artefacts vers le registry de destination. Le mode push-based est le seul à prendre en charge le déclencheur <code className="action">Event Based</code>, qui réplique chaque nouvel artefact dès qu'il est poussé.
 
-Si vous préférez créer la règle sur le registry de destination et récupérer les artefacts depuis le registry source (réplication **pull-based**), consultez la documentation Harbor : [Creating a Replication Rule](https://goharbor.io/docs/2.15.0/administration/configuring-replication/create-replication-rules/).
+Si vous préférez créer la règle sur le registry de destination, par exemple pour déplacer vos artefacts vers un nouveau registry dans une autre région, consultez la section [Utiliser la réplication pull-based](#utiliser-la-réplication-pull-based).
 
 ### Étape 1 : préparer le registry de destination
 
@@ -124,6 +124,60 @@ docker pull <destination-registry-url>/<project>/<image>:<tag>
 ```
 
 Pour utiliser le registry de destination depuis un cluster Managed Kubernetes, consultez le guide [Utiliser Private Registry avec OVHcloud Managed Kubernetes](/guides/public-cloud/containers-orchestration/managed-private-registry/kubernetes).
+
+## Utiliser la réplication pull-based
+
+Avec la réplication **pull-based**, la règle est créée sur le registry de destination, qui récupère les artefacts depuis le registry source. Le registry source n'a besoin que d'un robot account disposant d'un accès en lecture.
+
+Ce mode est adapté au déplacement de vos artefacts vers un nouveau registry dans une autre région : tout est configuré sur le nouveau registry, et rien ne doit être modifié sur le registry que vous quittez, à part le robot account.
+
+La réplication pull-based ne prend pas en charge le déclencheur <code className="action">Event Based</code> : utilisez <code className="action">Manual</code> ou <code className="action">Scheduled</code>.
+
+### Étape 1 : créer un robot account en lecture seule sur le registry source
+
+1. Connectez-vous à l'interface utilisateur Harbor du **registry source**.
+2. Créez un robot account disposant de la permission <code className="action">Pull</code> sur **Repository** :
+    - pour un seul projet : ouvrez le projet, rendez-vous dans l'onglet <code className="action">Robot Accounts</code> et cliquez sur <code className="action">+ New Robot Account</code>.
+    - pour plusieurs projets : rendez-vous dans `Administration`, puis <code className="action">Robot Accounts</code>, cliquez sur <code className="action">+ New Robot Account</code> et sélectionnez les projets concernés, ou cochez <code className="action">Cover all projects</code>.
+3. Cliquez sur <code className="action">Finish</code>, puis copiez le nom du robot account et son secret.
+
+### Étape 2 : créer un endpoint de réplication sur le registry de destination
+
+1. Connectez-vous à l'interface utilisateur Harbor du **registry de destination**.
+2. Rendez-vous dans `Administration`, puis <code className="action">Registries</code>, et cliquez sur <code className="action">+ New Endpoint</code>.
+3. Renseignez les informations comme décrit à l'[étape 2](#étape-2--créer-un-endpoint-de-réplication-sur-le-registry-source) ci-dessus, avec l'URL du **registry source** dans **Endpoint URL** et le robot account créé à l'étape 1 dans **Access ID** et **Access Secret**.
+4. Cliquez sur <code className="action">Test Connection</code>. Une fois le test réussi, cliquez sur <code className="action">OK</code>.
+
+:::info
+Si vous avez configuré des [restrictions d'IP](/guides/public-cloud/containers-orchestration/managed-private-registry/add-ip-restrictions) sur l'endpoint `registry` du registry source, le trafic de réplication provenant du registry de destination doit être autorisé.
+:::
+
+### Étape 3 : créer la règle de réplication sur le registry de destination
+
+1. Sur le registry de destination, rendez-vous dans `Administration`, puis <code className="action">Replications</code>, et cliquez sur <code className="action">+ New Replication Rule</code>.
+2. Renseignez les informations suivantes :
+    - **Replication mode** : <code className="action">Pull-based</code>.
+    - **Source registry** : l'endpoint créé à l'étape 2.
+    - **Source resource filter** : les artefacts à répliquer, avec les mêmes filtres et motifs que pour la réplication push-based. Laissez les champs vides pour répliquer tous les artefacts accessibles au robot account.
+    - **Destination namespace** : laissez ce champ vide pour répliquer chaque projet dans un projet portant le même nom, créé automatiquement si nécessaire.
+    - **Destination Flattening** : sélectionnez `No Flattening` pour conserver les mêmes chemins de dépôt que sur le registry source.
+    - **Trigger Mode** : <code className="action">Manual</code> ou <code className="action">Scheduled</code>.
+    - Les autres options (**Bandwidth**, **Override**, **Copy by chunk**, **Single active replication**) fonctionnent comme décrit à l'[étape 3](#étape-3--créer-une-règle-de-réplication) ci-dessus.
+3. Cliquez sur <code className="action">Save</code>.
+
+### Étape 4 : lancer la réplication et vérifier le résultat
+
+Lancez et suivez la règle depuis le registry de destination, comme décrit à l'[étape 4](#étape-4--lancer-et-suivre-la-réplication), puis vérifiez le résultat comme décrit à l'[étape 5](#étape-5--vérifier-le-résultat-sur-le-registry-de-destination).
+
+:::info
+**Déplacer vos artefacts vers une autre région**
+
+1. Créez la règle avec un déclencheur <code className="action">Scheduled</code> (par exemple, toutes les heures), puis cliquez sur <code className="action">Replicate</code> pour lancer la copie initiale sans attendre la planification.
+2. Tant que vos pipelines CI et vos clusters utilisent encore le registry source, les exécutions planifiées répliquent les nouveaux artefacts.
+3. Une fois que tous vos clients utilisent le registry de destination, cliquez une dernière fois sur <code className="action">Replicate</code>, vérifiez le résultat, puis supprimez la règle.
+
+Les éléments listés dans la section [Éléments non répliqués](#éléments-non-répliqués) doivent être configurés sur le registry de destination avant de basculer vos clients.
+:::
 
 ## Éléments non répliqués
 

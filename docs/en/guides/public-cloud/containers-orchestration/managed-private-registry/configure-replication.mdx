@@ -31,7 +31,7 @@ Harbor does not support replication between different Harbor versions. Make sure
 
 This guide uses **push-based** replication: the replication rule is created on the source registry, which pushes artifacts to the destination registry. Push-based replication is the only mode that supports the <code className="action">Event Based</code> trigger, which replicates each new artifact as soon as it is pushed.
 
-If you prefer to create the rule on the destination registry and pull artifacts from the source registry (**pull-based** replication), see the Harbor documentation: [Creating a Replication Rule](https://goharbor.io/docs/2.15.0/administration/configuring-replication/create-replication-rules/).
+If you prefer to create the rule on the destination registry, for example to move your artifacts to a new registry in another region, see [Using pull-based replication](#using-pull-based-replication).
 
 ### Step 1: Prepare the destination registry
 
@@ -124,6 +124,60 @@ docker pull <destination-registry-url>/<project>/<image>:<tag>
 ```
 
 To use the destination registry from a Managed Kubernetes cluster, see [Using Private Registry with OVHcloud Managed Kubernetes](/guides/public-cloud/containers-orchestration/managed-private-registry/kubernetes).
+
+## Using pull-based replication
+
+With **pull-based** replication, the rule is created on the destination registry, which pulls artifacts from the source registry. The source registry only needs a robot account with read access.
+
+This mode is well suited to moving your artifacts to a new registry in another region: everything is configured on the new registry, and nothing needs to be changed on the registry you are leaving, apart from the robot account.
+
+Pull-based replication does not support the <code className="action">Event Based</code> trigger: use <code className="action">Manual</code> or <code className="action">Scheduled</code> instead.
+
+### Step 1: Create a read-only robot account on the source registry
+
+1. Log in to the Harbor user interface of the **source registry**.
+2. Create a robot account with the <code className="action">Pull</code> permission on **Repository**:
+    - for a single project: open the project, go to the <code className="action">Robot Accounts</code> tab and click <code className="action">+ New Robot Account</code>.
+    - for several projects: go to `Administration`, then <code className="action">Robot Accounts</code>, click <code className="action">+ New Robot Account</code> and select the projects to cover, or check <code className="action">Cover all projects</code>.
+3. Click <code className="action">Finish</code>, then copy the robot account name and its secret.
+
+### Step 2: Create a replication endpoint on the destination registry
+
+1. Log in to the Harbor user interface of the **destination registry**.
+2. Go to `Administration`, then <code className="action">Registries</code>, and click <code className="action">+ New Endpoint</code>.
+3. Fill in the details as described in [step 2](#step-2-create-a-replication-endpoint-on-the-source-registry) above, with the URL of the **source registry** in **Endpoint URL** and the robot account created in step 1 in **Access ID** and **Access Secret**.
+4. Click <code className="action">Test Connection</code>. Once the test succeeds, click <code className="action">OK</code>.
+
+:::info
+If you have configured [IP restrictions](/guides/public-cloud/containers-orchestration/managed-private-registry/add-ip-restrictions) on the `registry` endpoint of the source registry, the replication traffic coming from the destination registry must be allowed.
+:::
+
+### Step 3: Create the replication rule on the destination registry
+
+1. On the destination registry, go to `Administration`, then <code className="action">Replications</code>, and click <code className="action">+ New Replication Rule</code>.
+2. Fill in the details:
+    - **Replication mode**: <code className="action">Pull-based</code>.
+    - **Source registry**: the endpoint created in step 2.
+    - **Source resource filter**: the artifacts to replicate, with the same filters and patterns as for push-based replication. Leave the fields empty to replicate all the artifacts the robot account can read.
+    - **Destination namespace**: leave it empty to replicate each project into a project with the same name, which is created automatically if needed.
+    - **Destination Flattening**: select `No Flattening` to keep the same repository paths as on the source registry.
+    - **Trigger Mode**: <code className="action">Manual</code> or <code className="action">Scheduled</code>.
+    - The other options (**Bandwidth**, **Override**, **Copy by chunk**, **Single active replication**) work as described in [step 3](#step-3-create-a-replication-rule) above.
+3. Click <code className="action">Save</code>.
+
+### Step 4: Run the replication and check the result
+
+Run and monitor the rule from the destination registry, as described in [step 4](#step-4-run-and-monitor-the-replication), then check the result as described in [step 5](#step-5-check-the-result-on-the-destination-registry).
+
+:::info
+**Moving your artifacts to another region**
+
+1. Create the rule with a <code className="action">Scheduled</code> trigger (for example, every hour), then click <code className="action">Replicate</code> to start the initial copy without waiting for the schedule.
+2. While your CI pipelines and clusters still use the source registry, the scheduled runs replicate the new artifacts.
+3. Once all your clients use the destination registry, click <code className="action">Replicate</code> one last time, check the result, then delete the rule.
+
+The elements listed in [What is not replicated](#what-is-not-replicated) must be configured on the destination registry before you switch your clients.
+:::
 
 ## What is not replicated
 
