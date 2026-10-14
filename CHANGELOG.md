@@ -1,5 +1,37 @@
 # Changelog
 
+## 2026.10.14
+
+### Fixes
+
+#### EU
+- sk-2845 zimbra automatic replies need the keep in inbox action on a forwarding filter (#1000)
+
+### Documentation
+- EU: 32 guides across de, en, es, fr, it, pl, pt
+
+## 2026.10.13
+
+### Fixes
+
+#### EU
+- warn that a redirection forwards spam and document the exchange redirection (#986)
+- document the zimbra service tab and how to choose a service (#984)
+- explain how to get an email out of the Zimbra Spam folder (#980)
+
+### Documentation
+- EU: 494 guides across de, en, es, fr, it, pl, pt
+
+## 2026.10.12
+
+### Fixes
+
+#### All regions
+- **theme:** make file download links visible (#975)
+
+### Documentation
+- EU: 24 guides across de, en, es, fr, it, pl, pt
+
 ## 2026.10.09
 
 ### Features

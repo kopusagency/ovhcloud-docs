@@ -6782,15 +6782,6 @@
     "pl": "Tworzenie i zarządzanie użytkownikami",
     "pt": "Criação e gestão de utilizadores"
   },
-  "sidebar.gen.accountAndServiceManagementFinops": {
-    "fr": "FinOps",
-    "en": "FinOps",
-    "de": "FinOps",
-    "es": "FinOps",
-    "it": "FinOps",
-    "pl": "FinOps",
-    "pt": "FinOps"
-  },
   "sidebar.gen.accountAndServiceManagementManagingBillingPaymentsAndServices": {
     "fr": "Gérer la facturation, les paiements et les services",
     "en": "Managing billing, payments and services",
@@ -8128,6 +8119,15 @@
     "it": "CLI",
     "pl": "CLI",
     "pt": "CLI"
+  },
+  "sidebar.gen.manageOperateCostCenter": {
+    "fr": "Centre de coûts",
+    "en": "Cost Center",
+    "de": "Kostenstelle",
+    "es": "Centro de costes",
+    "it": "Centro di costo",
+    "pl": "Centrum kosztów",
+    "pt": "Centro de custos"
   },
   "sidebar.gen.manageOperateIam": {
     "fr": "IAM",
@@ -10169,6 +10169,15 @@
     "pl": "Settings",
     "pt": "Settings"
   },
+  "sidebar.gen.publicCloudDataPlatformAnalyzeOnlineStoreSales": {
+    "fr": "Analyser les ventes d'une boutique en ligne avec Apache Superset",
+    "en": "Analyse online store sales with Apache Superset",
+    "de": "Analyse online store sales with Apache Superset",
+    "es": "Analyse online store sales with Apache Superset",
+    "it": "Analyse online store sales with Apache Superset",
+    "pl": "Analyse online store sales with Apache Superset",
+    "pt": "Analyse online store sales with Apache Superset"
+  },
   "sidebar.gen.publicCloudDataPlatformAnalyzer": {
     "fr": "Analyzer",
     "en": "Analyzer",
@@ -11689,6 +11698,15 @@
     "it": "Customize your first app",
     "pl": "Customize your first app",
     "pt": "Customize your first app"
+  },
+  "sidebar.gen.publicCloudDataPlatformTutorialsEcommerceSalesSupersetDashboard": {
+    "fr": "Construire un dashboard des ventes d'une boutique en ligne dans Superset",
+    "en": "Build a sales dashboard for an online store in Superset",
+    "de": "Build a sales dashboard for an online store in Superset",
+    "es": "Build a sales dashboard for an online store in Superset",
+    "it": "Build a sales dashboard for an online store in Superset",
+    "pl": "Build a sales dashboard for an online store in Superset",
+    "pt": "Build a sales dashboard for an online store in Superset"
   },
   "sidebar.gen.publicCloudDataPlatformTutorialsExportImportConfig": {
     "fr": "Exporter / importer une configuration",
