@@ -174,7 +174,7 @@ Run and monitor the rule from the destination registry, as described in [step 4]
 
 1. Create the rule with a <code className="action">Scheduled</code> trigger (for example, every hour), then click <code className="action">Replicate</code> to start the initial copy without waiting for the schedule.
 2. While your CI pipelines and clusters still use the source registry, the scheduled runs replicate the new artifacts.
-3. Once all your clients use the destination registry, click <code className="action">Replicate</code> one last time, check the result, then delete the rule.
+3. Pause writes to the source registry, click <code className="action">Replicate</code> one last time, and verify the result. Then switch all clients to the destination registry, delete the rule and its endpoint, and remove the temporary robot account from the source registry.
 
 The elements listed in [What is not replicated](#what-is-not-replicated) must be configured on the destination registry before you switch your clients.
 :::
