@@ -31,6 +31,8 @@ Harbor does not support replication between different Harbor versions. Make sure
 
 This guide uses **push-based** replication: the replication rule is created on the source registry, which pushes artifacts to the destination registry. Push-based replication is the only mode that supports the <code className="action">Event Based</code> trigger, which replicates each new artifact as soon as it is pushed.
 
+If you prefer to create the rule on the destination registry and pull artifacts from the source registry (**pull-based** replication), see the Harbor documentation: [Creating a Replication Rule](https://goharbor.io/docs/2.15.0/administration/configuring-replication/create-replication-rules/).
+
 ### Step 1: Prepare the destination registry
 
 1. Log in to the Harbor user interface of the **destination registry**.

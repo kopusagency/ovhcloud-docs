@@ -31,6 +31,8 @@ Harbor ne prend pas en charge la réplication entre des versions de Harbor diff�
 
 Ce guide utilise la réplication **push-based** : la règle de réplication est créée sur le registry source, qui pousse les artefacts vers le registry de destination. Le mode push-based est le seul à prendre en charge le déclencheur <code className="action">Event Based</code>, qui réplique chaque nouvel artefact dès qu'il est poussé.
 
+Si vous préférez créer la règle sur le registry de destination et récupérer les artefacts depuis le registry source (réplication **pull-based**), consultez la documentation Harbor : [Creating a Replication Rule](https://goharbor.io/docs/2.15.0/administration/configuring-replication/create-replication-rules/).
+
 ### Étape 1 : préparer le registry de destination
 
 1. Connectez-vous à l'interface utilisateur Harbor du **registry de destination**.
