@@ -174,7 +174,7 @@ Lancez et suivez la règle depuis le registry de destination, comme décrit à l
 
 1. Créez la règle avec un déclencheur <code className="action">Scheduled</code> (par exemple, toutes les heures), puis cliquez sur <code className="action">Replicate</code> pour lancer la copie initiale sans attendre la planification.
 2. Tant que vos pipelines CI et vos clusters utilisent encore le registry source, les exécutions planifiées répliquent les nouveaux artefacts.
-3. Une fois que tous vos clients utilisent le registry de destination, cliquez une dernière fois sur <code className="action">Replicate</code>, vérifiez le résultat, puis supprimez la règle.
+3. Suspendez les écritures sur le registry source, cliquez une dernière fois sur <code className="action">Replicate</code> et vérifiez le résultat. Basculez ensuite tous vos clients vers le registry de destination, supprimez la règle et son endpoint, puis supprimez le robot account temporaire du registry source.
 
 Les éléments listés dans la section [Éléments non répliqués](#éléments-non-répliqués) doivent être configurés sur le registry de destination avant de basculer vos clients.
 :::
