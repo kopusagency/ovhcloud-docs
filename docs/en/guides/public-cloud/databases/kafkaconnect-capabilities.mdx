@@ -31,25 +31,17 @@ Please refer to the [Analytics lifecycle policy guide](/guides/public-cloud/data
 
 Three plans are available:
 
-- *Essential/Discovery*
-- *Business/Production*
-- *Enterprise/Advanced*
+| Plan           | Number of nodes |
+| -------------- | --------------- |
+| *Discovery*    | 1               |
+| *Production*   | 3               |
+| *Advanced*     | 6               |
 
-Here is an overview of the various plans' capabilities:
+Your choice of plan affects the number of nodes your service runs and the SLA.
 
-| Plan                  | Number of nodes | Additional nodes |
-| --------------------- | --------------- | ---------------- |
-| *Essential/Discovery* | 1               | No               |
-| *Business/Production* | 3               | No               |
-| *Enterprise/Advanced* | 6               | No               |
+#### Node types
 
-Your choice of plan affects the number of nodes your cluster run or the SLA.
-
-#### Nodes
-
-- **Essential/Discovery**: the cluster consists of one node.
-- **Business/Production**: the cluster is delivered with 3 nodes.
-- **Enterprise/Advanced**: the cluster is delivered with 6 nodes.
+The nodes are available in the b3-8, b3-16 and b3-32 node types.
 
 ### Hardware resources
 
@@ -78,6 +70,12 @@ Here are some considerations to take into account when using private network:
 ##### Authorised IPs
 
 Once your service is up and running, you will be able to specify IP addresses (or CIDR blocks) to authorise incoming traffic. Until then, your service will be unreachable.
+
+#### Kafka source and connectors
+
+A Kafka Connect service reads from and writes to a Kafka service of the same Public Cloud project, linked to it with an integration. See the [Kafka Connect guide](/guides/public-cloud/data-analytics/analytics/kafkaconnect-create-connector) to link your services and create a connector, and the [list of available connectors](/guides/public-cloud/databases/kafkaconnect-available-connectors).
+
+When a connector reaches an external system (database, storage, API), the IP address of your Kafka Connect node must be allowed by this system.
 
 #### Advanced parameters
 

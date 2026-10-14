@@ -121,6 +121,14 @@ Schema registry is supported and can be activated on a running Kafka service. Us
 A REST API can be activated on a running Kafka service, to produce and consume messages over HTTPS. See the [REST API guide](/guides/public-cloud/data-analytics/analytics/kafka-enable-rest-api) for more information.
 
 
+#### Deletion protection
+
+You can protect a Kafka service from deletion by setting `deletionProtection` to `true` on the service:
+
+<Api version="v1" section="/cloud" method="PUT" route={"/cloud/project/\{serviceName\}/database/kafka/\{clusterId\}"} />
+
+While the protection is enabled, a deletion request is refused with an error `422` (`The service ... has been protected from deletion`). Set `deletionProtection` to `false` before deleting the service.
+
 #### Advanced parameters
 
 You can further customize your Kafka by using advanced parameters. See the [Advanced parameters references documentation](/guides/public-cloud/databases/kafka-advanced-parameters-references) for more information on the supported parameters.

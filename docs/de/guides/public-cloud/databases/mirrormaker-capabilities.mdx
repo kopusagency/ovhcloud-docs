@@ -37,11 +37,11 @@ Additionally, Kafka Connect is available at OVHcloud.
 
 Three plans are available:
 
-- **Essential/Discovery**: 1 node
-- **Business/Production**: 3 nodes
-- **Enterprise/Advanced**: 6 nodes
+- **Discovery**: 1 node
+- **Production**: 3 nodes
+- **Advanced**: 6 nodes
 
-Your choice of plan affects the number of nodes your cluster can run as well as the SLA.
+The nodes are available in the b3-8, b3-16 and b3-32 node types. Your choice of plan affects the number of nodes your service runs and the SLA.
 
 #### License type
 
@@ -76,22 +76,25 @@ Once your service is up and running, you will be able to specify IP addresses (o
 
 #### Kafka replication and data retention
 
-You can select a Kafka source cluster and a Kafka destination cluster from the same Public Cloud project.
+You can select a Kafka source cluster and a Kafka destination cluster from the same Public Cloud project, each linked to the MirrorMaker service with an integration.
 External Kafka clusters are not supported so far.
 
 You need at least 2 Kafka clusters to create replication flows.
 
 Replication flows allowed parameters are:
 
-- Source
-- Target
-- Topics
-- Topics exclusion
-- Sync group offset
+- Source and target integrations
+- Topics to replicate, and topics to exclude
+- Sync group offsets (true/false)
 - Sync interval in seconds (s)
 - Heartbeats (true/false)
+- Replication policy: `DefaultReplicationPolicy` (default) or `IdentityReplicationPolicy`
+
+With the default replication policy, a replicated topic is created on the target cluster with the alias of the source cluster as prefix, for example `xxxxxxxxx.kafka-xxxxxxxx.inventory` for the `inventory` topic.
 
 Data retention is only limited by your cluster storage space.
+
+See the [MirrorMaker guide](/guides/public-cloud/data-analytics/analytics/mirrormaker-replicate-topics) to create a replication flow.
 
 #### Advanced parameters
 
@@ -109,12 +112,6 @@ Logs and metrics are available through the Control Panel, API and can be forward
 - **Metrics retention**: 1 calendar month
 
 Please note that if the analytics instance is deleted, logs and metrics are also automatically deleted.
-
-#### Users and roles
-
-Creation of users is allowed via the Control Panel and API.
-
-You can specify a username for each user. By default, the role is **admin**.
 
 ## We want your feedback!
 
