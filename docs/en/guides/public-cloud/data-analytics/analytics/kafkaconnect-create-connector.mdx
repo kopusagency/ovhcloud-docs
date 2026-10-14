@@ -48,6 +48,8 @@ The integration is ready immediately:
 }
 ```
 
+Kafka Connect then creates three topics on your Kafka service to store its configuration, offsets and status: `__connect_configs-<integration ID>`, `__connect_offsets-<integration ID>` and `__connect_status-<integration ID>`. These topics remain on your Kafka service after you delete the Kafka Connect service.
+
 ### Step 2 - Allow Kafka Connect to reach the target system
 
 A connector connects to the external system from your Kafka Connect node. For a public Kafka Connect service, find the IP address of the node by resolving its host name, shown in the `nodes` of the service details:

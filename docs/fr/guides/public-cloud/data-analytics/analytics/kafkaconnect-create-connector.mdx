@@ -48,6 +48,8 @@ L'intégration est prête immédiatement :
 }
 ```
 
+Kafka Connect crée ensuite trois topics sur votre service Kafka pour stocker sa configuration, ses offsets et son état : `__connect_configs-<ID de l'intégration>`, `__connect_offsets-<ID de l'intégration>` et `__connect_status-<ID de l'intégration>`. Ces topics restent sur votre service Kafka après la suppression du service Kafka Connect.
+
 ### Étape 2 - Autoriser Kafka Connect à joindre le système cible
 
 Un connecteur se connecte au système externe depuis votre nœud Kafka Connect. Pour un service Kafka Connect public, trouvez l'adresse IP du nœud en résolvant son nom d'hôte, affiché dans les `nodes` du détail du service :
