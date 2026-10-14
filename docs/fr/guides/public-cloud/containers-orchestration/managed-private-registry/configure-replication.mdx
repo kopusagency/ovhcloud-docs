@@ -1,0 +1,142 @@
+---
+title: Répliquer un OVHcloud Managed Private Registry dans une autre région
+description: Découvrez comment répliquer des images et des artefacts entre deux OVHcloud Managed Private Registry situés dans des régions différentes
+lastUpdated: 2026-10-14
+---
+
+## Objectif
+
+Un OVHcloud Managed Private Registry (MPR) est hébergé dans une seule région. Dans une région 3-AZ, le service est réparti sur plusieurs zones de disponibilité, mais vos données ne quittent jamais cette région.
+
+Si vous avez besoin d'une copie de vos artefacts dans une autre région, vous pouvez utiliser la fonctionnalité de **réplication** intégrée à Harbor entre deux MPR. Cas d'usage courants :
+
+- disposer d'un registry secondaire prêt à l'emploi dans une autre région, dans le cadre d'un plan de reprise d'activité.
+- récupérer les images depuis un registry situé au plus près de vos clusters Managed Kubernetes dans chaque région.
+- promouvoir des artefacts d'un environnement à un autre (par exemple, d'un registry de préproduction vers un registry de production).
+
+La réplication copie les images de conteneurs, les artefacts OCI (y compris les charts Helm stockés au format OCI) et les signatures Cosign associées. Sa configuration et son exploitation relèvent de votre responsabilité (consultez le [modèle de responsabilité](/guides/public-cloud/containers-orchestration/managed-private-registry/responsibility-model)).
+
+**Ce guide explique comment configurer une règle de réplication entre deux OVHcloud Managed Private Registry situés dans des régions différentes.**
+
+## Prérequis
+
+- Disposer de deux [OVHcloud Managed Private Registry](/guides/public-cloud/containers-orchestration/managed-private-registry/creation) situés dans deux régions différentes. Dans ce guide, ils sont appelés **registry source** et **registry de destination**.
+- Disposer d'un compte avec les droits d'administrateur système sur l'[interface utilisateur Harbor](/guides/public-cloud/containers-orchestration/managed-private-registry/connect-to-ui) des deux registries.
+
+:::warning
+Harbor ne prend pas en charge la réplication entre des versions de Harbor différentes. Assurez-vous que les deux registries utilisent la même version de Harbor, et vérifiez-le à nouveau après chaque mise à jour. La version est affichée dans l'interface utilisateur Harbor, dans votre menu utilisateur > <code className="action">About</code>.
+:::
+
+## En pratique
+
+Ce guide utilise la réplication **push-based** : la règle de réplication est créée sur le registry source, qui pousse les artefacts vers le registry de destination. Le mode push-based est le seul à prendre en charge le déclencheur <code className="action">Event Based</code>, qui réplique chaque nouvel artefact dès qu'il est poussé.
+
+### Étape 1 : préparer le registry de destination
+
+1. Connectez-vous à l'interface utilisateur Harbor du **registry de destination**.
+2. Créez le projet qui recevra les artefacts répliqués. Consultez le guide [Gérer les utilisateurs et les projets](/guides/public-cloud/containers-orchestration/managed-private-registry/managing-users-projects) pour plus de détails.
+3. Créez un robot account que le registry source utilisera pour pousser les artefacts :
+    - Ouvrez le projet, rendez-vous dans l'onglet <code className="action">Robot Accounts</code> et cliquez sur <code className="action">+ New Robot Account</code>.
+    - Saisissez un nom et une durée d'expiration.
+    - Accordez au minimum les permissions <code className="action">Push</code> et <code className="action">Pull</code> sur **Repository**.
+    - Cliquez sur <code className="action">Finish</code>, puis copiez le nom du robot account (par exemple `robot$my-project+replication`) et son secret.
+
+:::info
+Si le projet de destination n'existe pas, Harbor le crée automatiquement lors de la réplication, à condition que le compte utilisé par l'endpoint soit autorisé à créer des projets. Créer le projet et un robot account limité à ce projet au préalable vous permet de maîtriser les paramètres du projet et de limiter les droits accordés au registry source.
+:::
+
+### Étape 2 : créer un endpoint de réplication sur le registry source
+
+1. Connectez-vous à l'interface utilisateur Harbor du **registry source**.
+2. Rendez-vous dans `Administration`, puis <code className="action">Registries</code>.
+3. Cliquez sur <code className="action">+ New Endpoint</code> et renseignez les informations suivantes :
+    - **Provider** : Harbor
+    - **Name** : un nom pour l'endpoint (par exemple `mpr-destination`)
+    - **Description** : facultatif
+    - **Endpoint URL** : l'URL du registry de destination (par exemple `https://xxxxxxxx.c1.de1.container-registry.ovh.net`)
+    - **Access ID** : le nom complet du robot account créé à l'étape 1 (par exemple `robot$my-project+replication`)
+    - **Access Secret** : le secret du robot account
+    - **Verify Remote Cert** : laissez cette case cochée
+4. Cliquez sur <code className="action">Test Connection</code>. Une fois le test réussi, cliquez sur <code className="action">OK</code>.
+
+:::info
+Si vous avez configuré des [restrictions d'IP](/guides/public-cloud/containers-orchestration/managed-private-registry/add-ip-restrictions) sur l'endpoint `registry` du registry de destination, le trafic de réplication provenant du registry source doit être autorisé. Dans le cas contraire, le test de connexion et les tâches de réplication échoueront.
+:::
+
+### Étape 3 : créer une règle de réplication
+
+1. Sur le registry source, rendez-vous dans `Administration`, puis <code className="action">Replications</code>.
+2. Cliquez sur <code className="action">+ New Replication Rule</code> et renseignez les informations suivantes :
+    - **Name** et **Description** : un nom pour la règle et une description facultative.
+    - **Replication mode** : <code className="action">Push-based</code>.
+    - **Source resource filter** : les artefacts à répliquer. Laissez les champs vides pour tout répliquer.
+        - **Name** : un nom de dépôt ou un motif (par exemple `my-project/**`).
+        - **Tag** : un tag ou un motif, à inclure ou à exclure (par exemple `v*` pour ne répliquer que les tags de version).
+        - **Label** : un ou plusieurs labels existants, à inclure ou à exclure.
+        - **Resource** : images uniquement, artefacts uniquement, ou tous.
+    - **Destination registry** : l'endpoint créé à l'étape 2.
+    - **Destination namespace** : le projet de destination (par exemple `my-project`). Si vous laissez ce champ vide, les artefacts sont répliqués dans un projet portant le même nom que sur le registry source.
+    - **Destination Flattening** : le nombre de niveaux du chemin du dépôt qui sont supprimés. La valeur par défaut, `Flattening 1 level`, transforme `a/b/c/img` en `namespace/b/c/img`. Sélectionnez `No Flattening` pour conserver les mêmes chemins de dépôt que sur le registry source.
+    - **Trigger Mode** :
+        - <code className="action">Manual</code> : la règle ne s'exécute que lorsque vous la lancez.
+        - <code className="action">Scheduled</code> : la règle s'exécute périodiquement, selon une expression cron.
+        - <code className="action">Event Based</code> : la règle s'exécute à chaque fois qu'un artefact est poussé ou retagué sur le registry source. Cochez **Delete remote resources when locally deleted** pour répliquer également les suppressions.
+    - **Bandwidth** : la bande passante maximale par tâche de réplication, en Ko/s. `-1` signifie illimitée.
+    - **Override** : cochez cette case pour écraser les artefacts qui existent déjà sous le même nom sur le registry de destination.
+    - **Copy by chunk** : cochez cette case pour copier les couches par blocs de 10 Mo, ce qui peut aider pour les images volumineuses.
+    - **Single active replication** : cochez cette case pour ne pas lancer une nouvelle exécution tant qu'une exécution précédente de la même règle est en cours.
+3. Cliquez sur <code className="action">Save</code>.
+
+Les filtres **Name** et **Tag** acceptent les motifs suivants :
+
+| Motif | Correspondance |
+|---|---|
+| `*` | N'importe quelle suite de caractères, sauf `/` |
+| `**` | N'importe quelle suite de caractères, y compris `/`. Il doit constituer un segment de chemin complet (`my-project/**`) |
+| `?` | Un seul caractère, sauf `/` |
+| `{alt1,alt2}` | L'une des alternatives indiquées |
+
+Par exemple, `library/*` correspond à `library/nginx` mais pas à `library/tools/nginx`, alors que `library/**` correspond aux deux.
+
+:::info
+Les déclencheurs <code className="action">Manual</code> et <code className="action">Scheduled</code> ne répliquent pas les suppressions. Avec <code className="action">Event Based</code>, seules les actions de push, de retag et de suppression déclenchent une réplication : l'ajout ou le retrait d'un label n'en déclenche pas.
+:::
+
+### Étape 4 : lancer et suivre la réplication
+
+1. Sur le registry source, rendez-vous dans `Administration`, puis <code className="action">Replications</code>.
+2. Sélectionnez la règle et cliquez sur <code className="action">Replicate</code> pour lancer une réplication initiale. Cette étape est recommandée même avec le déclencheur <code className="action">Event Based</code>, qui ne s'applique qu'aux artefacts poussés après la création de la règle.
+3. Cliquez sur la règle pour afficher ses exécutions, puis sur l'**ID** d'une exécution pour voir ses tâches. Chaque artefact répliqué correspond à une tâche distincte.
+4. Cliquez sur l'icône de log d'une tâche pour en voir le détail. Vous pouvez également cliquer sur <code className="action">STOP</code> pour arrêter une exécution.
+
+Les tâches en échec sont automatiquement relancées plusieurs fois. Vous ne pouvez pas modifier ni supprimer une règle tant que l'une de ses exécutions est en cours.
+
+### Étape 5 : vérifier le résultat sur le registry de destination
+
+1. Connectez-vous à l'interface utilisateur Harbor du **registry de destination** et ouvrez le projet de destination. Les dépôts et tags répliqués y sont listés.
+2. Récupérez une image depuis le registry de destination pour vérifier qu'elle est utilisable :
+
+```bash
+docker login <destination-registry-url>
+docker pull <destination-registry-url>/<project>/<image>:<tag>
+```
+
+Pour utiliser le registry de destination depuis un cluster Managed Kubernetes, consultez le guide [Utiliser Private Registry avec OVHcloud Managed Kubernetes](/guides/public-cloud/containers-orchestration/managed-private-registry/kubernetes).
+
+## Éléments non répliqués
+
+La réplication copie uniquement les artefacts et leurs signatures. Les éléments suivants sont propres à chaque registry et doivent être configurés séparément sur le registry de destination :
+
+- les membres des projets et leurs rôles.
+- les utilisateurs, les robot accounts et leurs secrets.
+- les paramètres d'authentification ([OVHcloud IAM](/guides/public-cloud/containers-orchestration/managed-private-registry/managed-private-registry-iam-authentication) ou [fournisseur OIDC](/guides/public-cloud/containers-orchestration/managed-private-registry/configure-oidc-provider-authentication)) et les [restrictions d'IP](/guides/public-cloud/containers-orchestration/managed-private-registry/add-ip-restrictions).
+- les paramètres des projets, tels que les quotas, les règles de rétention et d'immutabilité, les politiques d'analyse de vulnérabilités et les webhooks.
+
+Les artefacts répliqués consomment de l'espace de stockage sur les deux registries : vérifiez que l'offre du registry de destination dispose d'une capacité suffisante.
+
+## Aller plus loin
+
+- Documentation Harbor : [Configuring Replication](https://goharbor.io/docs/2.15.0/administration/configuring-replication/)
+- [Signer des artefacts OCI avec Cosign](/guides/public-cloud/containers-orchestration/managed-private-registry/sign-artifacts-with-cosign)
+- [Configurer le Proxy Cache sur un OVHcloud Managed Private Registry](/guides/public-cloud/containers-orchestration/managed-private-registry/configure-proxy-cache)
+- Échangez avec notre [communauté d'utilisateurs](/links/community).
