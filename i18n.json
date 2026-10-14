@@ -7304,7 +7304,7 @@
     "pl": "Dodatkowe zasoby",
     "pt": "Recursos adicionais"
   },
-  "sidebar.gen.hostedPrivateCloudHostedPrivateCloudOpcpCloudstore": {
+  "sidebar.gen.hostedPrivateCloudHostedPrivateCloudOpcpCloudStore": {
     "fr": "Cloud Store",
     "en": "Cloud Store",
     "de": "Cloud Store",
@@ -7321,15 +7321,6 @@
     "it": "Per iniziare",
     "pl": "Pierwsze kroki",
     "pt": "Primeiros passos"
-  },
-  "sidebar.gen.hostedPrivateCloudHostedPrivateCloudOpcpLandingZoneManager": {
-    "fr": "OPCP Cloud Console",
-    "en": "OPCP Cloud Console",
-    "de": "OPCP Cloud Console",
-    "es": "OPCP Cloud Console",
-    "it": "OPCP Cloud Console",
-    "pl": "OPCP Cloud Console",
-    "pt": "OPCP Cloud Console"
   },
   "sidebar.gen.hostedPrivateCloudHostedPrivateCloudOpcpSecurity": {
     "fr": "Sécurité",
@@ -10016,14 +10007,14 @@
     "pl": "OpenSearch",
     "pt": "OpenSearch"
   },
-  "sidebar.gen.publicCloudDataAnalyticsOpensearchKeyConcepts": {
-    "fr": "Concepts clés",
-    "en": "Key concepts",
-    "de": "Schlüsselkonzepte",
-    "es": "Conceptos clave",
-    "it": "Concetti chiave",
-    "pl": "Kluczowe pojęcia",
-    "pt": "Conceitos-chave"
+  "sidebar.gen.publicCloudDataAnalyticsOpensearchConfiguration": {
+    "fr": "Configuration",
+    "en": "Configuration",
+    "de": "Konfiguration",
+    "es": "Configuración",
+    "it": "Configurazione",
+    "pl": "Konfiguracja",
+    "pt": "Configuração"
   },
   "sidebar.gen.publicCloudDataAnalyticsOpensearchGettingStarted": {
     "fr": "Premiers pas",
@@ -10034,14 +10025,14 @@
     "pl": "Pierwsze kroki",
     "pt": "Introdução"
   },
-  "sidebar.gen.publicCloudDataAnalyticsOpensearchConfiguration": {
-    "fr": "Configuration",
-    "en": "Configuration",
-    "de": "Konfiguration",
-    "es": "Configuración",
-    "it": "Configurazione",
-    "pl": "Konfiguracja",
-    "pt": "Configuração"
+  "sidebar.gen.publicCloudDataAnalyticsOpensearchKeyConcepts": {
+    "fr": "Concepts clés",
+    "en": "Key concepts",
+    "de": "Schlüsselkonzepte",
+    "es": "Conceptos clave",
+    "it": "Concetti chiave",
+    "pl": "Kluczowe pojęcia",
+    "pt": "Conceitos-chave"
   },
   "sidebar.gen.publicCloudDataAnalyticsOpensearchMigration": {
     "fr": "Migration",
@@ -10051,15 +10042,6 @@
     "it": "Migrazione",
     "pl": "Migracja",
     "pt": "Migração"
-  },
-  "sidebar.gen.publicCloudDataAnalyticsOpensearchTutorials": {
-    "fr": "Tutoriels",
-    "en": "Tutorials",
-    "de": "Tutorials",
-    "es": "Tutoriales",
-    "it": "Tutorials",
-    "pl": "Tutorials",
-    "pt": "Tutoriais"
   },
   "sidebar.gen.publicCloudDataAnalyticsOpensearchSecurity": {
     "fr": "Sécurité",
@@ -10078,6 +10060,15 @@
     "it": "Diagnosi",
     "pl": "Diagnostyka",
     "pt": "Diagnóstico"
+  },
+  "sidebar.gen.publicCloudDataAnalyticsOpensearchTutorials": {
+    "fr": "Tutoriels",
+    "en": "Tutorials",
+    "de": "Tutorials",
+    "es": "Tutoriales",
+    "it": "Tutorials",
+    "pl": "Tutorials",
+    "pt": "Tutoriais"
   },
   "sidebar.gen.publicCloudDataPlatform": {
     "fr": "Data Platform",
