@@ -745,7 +745,7 @@ Une clé de transport `HSM` peut aussi désencapsuler une clé `SOFTWARE` : dan
 
 Seules les clés symétriques (`oct`) peuvent être exportées depuis le HSM : le HSM ne libère jamais les clés privées RSA ou EC. Comme pour une clé `SOFTWARE`, la clé doit avoir été créée ou importée avec `extractable` défini à `true`, ce qui ne peut pas être activé ensuite (reportez-vous à la section « [Activer l'extraction](#activer-lextraction) »).
 
-La clé de transport doit être stockée dans le HSM. Importez la clé de transport publique de destination avec le niveau de protection `HSM` :
+La clé de transport doit être stockée dans le HSM. Importez la clé de transport publique de destination avec le niveau de protection `HSM` :
 
 ```bash
 curl -X POST "https://<region>.okms.ovh.net/api/<okmsId>/v1/servicekey" \
