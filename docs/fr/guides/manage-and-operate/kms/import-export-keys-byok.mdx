@@ -655,6 +655,8 @@ La clé de transport doit être stockée dans le HSM dès que la clé importée 
 | Export depuis le HSM | Clé RSA `HSM` avec `wrapKey` | Clé symétrique (`oct`) uniquement |
 | Import ou export d'une clé `SOFTWARE` | Clé RSA `SOFTWARE` ou `HSM` | Tout type de clé, comme décrit dans les sections précédentes |
 
+Les imports dans le HSM décrits ci-dessous ne sont présentés qu'avec l'API REST : la commande `okms keys import` de la CLI OKMS ne propose pas d'option `protectionLevel`.
+
 #### Créer une clé de transport HSM
 
 Pour importer une clé dans le HSM, créez la clé de transport avec le niveau de protection `HSM` :
@@ -765,13 +767,13 @@ curl -X POST "https://<region>.okms.ovh.net/api/<okmsId>/v1/servicekey" \
   }'
 ```
 
-Exportez ensuite la clé. Omettez `wrappedKeyFormat` ou définissez-le à `RAW` : le HSM encapsule toujours les octets bruts de la clé, donc la charge utile du JWE déchiffré est la clé AES elle-même (32 octets pour une clé de 256 bits).
+Exportez ensuite la clé en définissant `wrappedKeyFormat` à `RAW` : le HSM encapsule toujours les octets bruts de la clé, donc la charge utile du JWE déchiffré est la clé AES elle-même (32 octets pour une clé de 256 bits).
 
 <Tabs>
 <Tab label="API REST">
 
 ```bash
-curl -X GET "https://<region>.okms.ovh.net/api/<okmsId>/v1/servicekey/<hsm-key-id>?wrappingKeyId=<hsm-wrapping-key-id>&wrappingAlgorithm=RSA-OAEP-256" \
+curl -X GET "https://<region>.okms.ovh.net/api/<okmsId>/v1/servicekey/<hsm-key-id>?wrappingKeyId=<hsm-wrapping-key-id>&wrappedKeyFormat=RAW&wrappingAlgorithm=RSA-OAEP-256" \
   -H "Authorization: Bearer <token>"
 ```
 

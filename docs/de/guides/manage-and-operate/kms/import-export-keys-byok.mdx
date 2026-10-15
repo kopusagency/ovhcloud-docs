@@ -655,6 +655,8 @@ Der Transportschlüssel muss im HSM gespeichert sein, sobald der importierte ode
 | Export aus dem HSM | `HSM`-RSA-Schlüssel mit `wrapKey` | Nur symmetrischer (`oct`) Schlüssel |
 | Import oder Export eines `SOFTWARE`-Schlüssels | `SOFTWARE`- oder `HSM`-RSA-Schlüssel | Jeder Schlüsseltyp, wie in den vorherigen Abschnitten beschrieben |
 
+Die nachfolgend beschriebenen Importe in das HSM werden nur für die REST-API gezeigt: Der Befehl `okms keys import` der OKMS CLI bietet keine Option `protectionLevel`.
+
 #### Einen HSM-Transportschlüssel erstellen
 
 Um einen Schlüssel in das HSM zu importieren, erstellen Sie den Transportschlüssel mit der Schutzstufe `HSM`:
@@ -765,13 +767,13 @@ curl -X POST "https://<region>.okms.ovh.net/api/<okmsId>/v1/servicekey" \
   }'
 ```
 
-Exportieren Sie anschließend den Schlüssel. Lassen Sie `wrappedKeyFormat` weg oder setzen Sie es auf `RAW`: Das HSM umschließt immer die Rohbytes des Schlüssels, daher ist die entschlüsselte JWE-Nutzlast der AES-Schlüssel selbst (32 Bytes für einen 256-Bit-Schlüssel).
+Exportieren Sie anschließend den Schlüssel und setzen Sie dabei `wrappedKeyFormat` auf `RAW`: Das HSM umschließt immer die Rohbytes des Schlüssels, daher ist die entschlüsselte JWE-Nutzlast der AES-Schlüssel selbst (32 Bytes für einen 256-Bit-Schlüssel).
 
 <Tabs>
 <Tab label="REST-API">
 
 ```bash
-curl -X GET "https://<region>.okms.ovh.net/api/<okmsId>/v1/servicekey/<hsm-key-id>?wrappingKeyId=<hsm-wrapping-key-id>&wrappingAlgorithm=RSA-OAEP-256" \
+curl -X GET "https://<region>.okms.ovh.net/api/<okmsId>/v1/servicekey/<hsm-key-id>?wrappingKeyId=<hsm-wrapping-key-id>&wrappedKeyFormat=RAW&wrappingAlgorithm=RSA-OAEP-256" \
   -H "Authorization: Bearer <token>"
 ```
 
