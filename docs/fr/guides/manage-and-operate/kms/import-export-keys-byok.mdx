@@ -1,7 +1,7 @@
 ---
 title: Importer et exporter des clés sur OVHcloud KMS avec BYOK
 description: Découvrez comment importer et exporter en toute sécurité du matériel de clé chiffré avec OVHcloud KMS grâce à l'encapsulation RSA asymétrique (BYOK)
-lastUpdated: 2026-10-12
+lastUpdated: 2026-10-15
 ---
 
 import { Tab, Tabs } from '@rspress/core/theme';
@@ -16,7 +16,7 @@ Bring Your Own Key (BYOK) vous permet d'importer et d'exporter du matériel cryp
 :::info
 Le BYOK via KMIP n'est pas encore disponible. Ce guide couvre uniquement l'API REST régionale, la [CLI OKMS](https://github.com/ovh/okms-cli) et le [SDK Go](https://pkg.go.dev/github.com/ovh/okms-sdk-go).
 
-Les clés avec le niveau de protection `HSM` suivent des règles supplémentaires, que ce soit comme clés de transport ou comme clés importées ou exportées. Consultez la section « [Utiliser le BYOK avec des clés HSM](#utiliser-le-byok-avec-des-clés-hsm) ».
+Les clés avec le niveau de protection `HSM` suivent des règles supplémentaires, que ce soit comme clés de transport ou comme clés importées ou exportées. Reportez-vous à la section « [Utiliser le BYOK avec des clés HSM](#utiliser-le-byok-avec-des-clés-hsm) ».
 :::
 
 ## Prérequis
@@ -222,7 +222,7 @@ Algorithmes d'encapsulation pris en charge ([RFC 7518](https://datatracker.ietf.
 
 | `keyFormatType` | Usage typique |
 | --- | --- |
-| `RAW` | Format de clé interne d'OVHcloud KMS, ou format d'export du HSM lorsque la clé est exportée depuis le HSM |
+| `RAW` | Format de clé interne d'OVHcloud KMS, ou format d'export des clés stockées dans le HSM |
 | `JWK` | Document JSON Web Key ([RFC 7517](https://datatracker.ietf.org/doc/html/rfc7517)) |
 | `PKCS1` | Matériel de clé RSA en encodage PKCS#1 |
 | `PKCS8` | Matériel de clé privée en encodage PKCS#8 |
@@ -243,7 +243,8 @@ Appelez `POST /api/{okmsId}/v1/servicekey` avec un tableau `wrappedKeys` au lieu
 | `wrappedKeys` | **Oui** (pour le BYOK) | Tableau de blocs de clés encapsulées |
 | `operations` | **Oui** | Usages prévus de la clé importée |
 | `extractable` | Non | Indique si la clé peut être exportée ultérieurement (`false` par défaut ; les clés uniquement publiques passent à `true` par défaut) |
-| `type` / `size` / `curve` | Non | Déduits du matériel déchiffré lorsque `wrappedKeys` est présent. Pour un import dans le HSM, `type` est obligatoire (consultez la section « [Importer une clé dans le HSM](#importer-une-clé-dans-le-hsm) ») |
+| `protectionLevel` | Non | Niveau de protection de la clé : `SOFTWARE` (par défaut) ou `HSM`. Pour un import dans le HSM, reportez-vous à la section « [Importer une clé dans le HSM](#importer-une-clé-dans-le-hsm) ». |
+| `type` / `size` / `curve` | Non (sauf `type` pour un import dans le HSM) | Déduits du matériel déchiffré lorsque `wrappedKeys` est présent. Pour un import dans le HSM, `type` est obligatoire (reportez-vous à la section « [Importer une clé dans le HSM](#importer-une-clé-dans-le-hsm) »). |
 
 Chaque entrée de `wrappedKeys` :
 
@@ -366,14 +367,14 @@ L'export sécurisé est l'inverse de l'import : OVHcloud KMS chiffre le matéri
 
 1. Générez une paire de clés RSA de transport sur l'environnement de **destination** (un autre KMS ou un outil qui recevra la clé).
 2. Importez la clé de transport **publique** de destination dans OVHcloud KMS avec l'opération `wrapKey`. Cette clé est le `wrappingKeyId` utilisé au moment de l'export.
-3. Sur OVHcloud KMS, exportez la clé de service encapsulée par cette clé de transport. La clé doit avoir été créée ou importée avec `extractable` défini à `true`. Remettez ensuite `extractable` à `false` lorsque c'est possible.
+3. Sur OVHcloud KMS, exportez la clé de service encapsulée par cette clé de transport. La clé doit avoir été créée ou importée avec `extractable` défini à `true`. Définissez ensuite `extractable` à `false` lorsque c'est possible.
 4. Transférez le ciphertext vers la destination et désencapsulez-le avec la clé de transport **privée** de destination.
 
 :::info
 Ne générez pas la paire de clés de transport d'export sur OVHcloud KMS. Si la clé de transport privée restait dans OVHcloud KMS, la destination ne pourrait pas désencapsuler le ciphertext. Seule la partie publique est importée dans OVHcloud KMS pour l'encapsulation.
 :::
 
-La clé de transport référencée par `wrappingKeyId` doit être une clé RSA dans le même domaine OKMS, avec l'usage `wrapKey`. Pour exporter une clé stockée dans le HSM, consultez la section « [Utiliser le BYOK avec des clés HSM](#utiliser-le-byok-avec-des-clés-hsm) ». Les clés sensibles (matériel AES/`oct` et RSA/EC privé) ne peuvent être extraites **qu'après encapsulation** — l'extraction en clair n'est pas prise en charge pour ces clés.
+La clé de transport référencée par `wrappingKeyId` doit être une clé RSA dans le même domaine OKMS, avec l'usage `wrapKey`. Pour exporter une clé stockée dans le HSM, reportez-vous à la section « [Utiliser le BYOK avec des clés HSM](#utiliser-le-byok-avec-des-clés-hsm) ». Les clés sensibles (matériel AES/`oct` et RSA/EC privé) ne peuvent être extraites **qu'après encapsulation** — l'extraction en clair n'est pas prise en charge pour ces clés.
 
 #### Importer la clé de transport publique de destination dans OVHcloud KMS
 
@@ -459,13 +460,13 @@ Conservez l'`id` de la clé renvoyée comme `wrappingKeyId`.
 
 #### Activer l'extraction
 
-La clé que vous exportez doit être extractible, et cela se décide à la création ou à l'import de la clé. Ensuite, `extractable` peut uniquement passer de `true` à `false` : une fois défini à `false`, il ne peut plus jamais être remis à `true`. Une clé créée ou importée sans `extractable` défini à `true` ne pourra donc jamais être exportée. Cette règle s'applique aussi bien aux clés `SOFTWARE` qu'aux clés `HSM`.
+La clé que vous exportez doit être extractible, et cela se décide à la création ou à l'import de la clé. Ensuite, `extractable` peut uniquement passer de `true` à `false` : une fois défini à `false`, il ne peut plus jamais être remis à `true`. Une clé créée ou importée sans `extractable` défini à `true` ne pourra donc jamais être exportée. Cette règle s'applique aussi bien aux clés `SOFTWARE` qu'aux clés `HSM`.
 
 :::warning
 Activer l'extraction réduit le périmètre de protection de la clé, et une clé créée avec `extractable` défini à `true` a définitivement `never_extractable` défini à `false`. Ne créez une clé extractible que si vous prévoyez de la migrer.
 :::
 
-Définissez `extractable` à `true` lors de la création de la clé :
+Définissez `extractable` à `true` lors de la création de la clé :
 
 <Tabs>
 <Tab label="API REST">
@@ -519,7 +520,7 @@ keyID := resp.Id
 
 Pour un import, définissez `"extractable": true` dans le corps de la requête (API REST), ajoutez `--extractable` (CLI OKMS) ou passez `okms.WithExtractable(true)` (SDK Go).
 
-Lorsque la clé n'a plus besoin d'être exportée, par exemple après un export encapsulé réussi (consultez la section « [Exporter la clé encapsulée par la clé de transport](#exporter-la-clé-encapsulée-par-la-clé-de-transport) »), désactivez l'extraction. Cette opération est irréversible. Action IAM : `okms:apikms:serviceKey/update`.
+Lorsque la clé n'a plus besoin d'être exportée, par exemple après un export encapsulé réussi (reportez-vous à la section « [Exporter la clé encapsulée par la clé de transport](#exporter-la-clé-encapsulée-par-la-clé-de-transport) »), désactivez l'extraction. Cette opération est irréversible. Action IAM : `okms:apikms:serviceKey/update`.
 
 <Tabs>
 <Tab label="API REST">
@@ -644,9 +645,9 @@ Transférez le `ciphertext` vers l'environnement de destination. Désencapsulez-
 
 ### Utiliser le BYOK avec des clés HSM
 
-Avec le niveau de protection `HSM`, le matériel de clé est encapsulé et désencapsulé à l'intérieur du HSM : il n'apparaît jamais en clair dans OVHcloud KMS. Le format JWE est le même que pour les clés `SOFTWARE` (`RSA-OAEP` ou `RSA-OAEP-256` avec `A256GCM`).
+Avec le niveau de protection `HSM`, le matériel de clé est encapsulé et désencapsulé à l'intérieur du HSM : il n'apparaît jamais en clair dans OVHcloud KMS. Le format JWE est le même que pour les clés `SOFTWARE` (`RSA-OAEP` ou `RSA-OAEP-256` avec `A256GCM`).
 
-La clé de transport doit être stockée dans le HSM dès que la clé importée ou exportée l'est :
+La clé de transport doit être stockée dans le HSM dès que la clé importée ou exportée y est stockée, comme le résume le tableau ci-dessous :
 
 | Opération | Clé de transport | Clé importée ou exportée |
 | --- | --- | --- |
@@ -656,7 +657,7 @@ La clé de transport doit être stockée dans le HSM dès que la clé importée 
 
 #### Créer une clé de transport HSM
 
-Pour importer une clé dans le HSM, créez la clé de transport avec le niveau de protection `HSM` :
+Pour importer une clé dans le HSM, créez la clé de transport avec le niveau de protection `HSM` :
 
 <Tabs>
 <Tab label="API REST">
@@ -707,16 +708,16 @@ transportKeyID := resp.Id
 </Tab>
 </Tabs>
 
-Exportez ensuite sa clé publique et encapsulez le matériel de clé sur la source, comme décrit dans les sections « [Obtenir la clé de transport publique](#obtenir-la-clé-de-transport-publique) » et « [Encapsuler le matériel de clé source](#encapsuler-le-matériel-de-clé-source) ».
+Exportez ensuite sa clé publique et encapsulez le matériel de clé sur la source, comme décrit dans les sections « [Obtenir la clé de transport publique](#obtenir-la-clé-de-transport-publique) » et « [Encapsuler le matériel de clé source](#encapsuler-le-matériel-de-clé-source) ».
 
 #### Importer une clé dans le HSM
 
-Comme le HSM n'expose jamais le matériel désencapsulé, OVHcloud KMS ne peut pas déduire le type de clé. La requête d'import diffère d'un import `SOFTWARE` :
+Comme le HSM n'expose jamais le matériel désencapsulé, OVHcloud KMS ne peut pas déduire le type de clé. La requête d'import diffère de celle d'un import `SOFTWARE` :
 
 - Définissez `protectionLevel` à `HSM`. La clé de transport doit elle aussi être une clé `HSM`.
-- Déclarez `type` : `oct`, `RSA` ou `EC`. Ne définissez pas `size` ni `curve` pour `RSA` et `EC` : le HSM les lit à partir de la clé. Pour `oct`, `size` est facultatif (`128`, `192` ou `256`).
-- Ne définissez pas `keyFormatType` dans `wrappedKeys`. Le texte en clair encapsulé dans le JWE doit être les octets bruts de la clé pour une clé `oct`, et la clé privée en PKCS#8 (DER) pour une clé `RSA` ou `EC`.
-- Clés prises en charge : AES 128, 192 ou 256 bits, RSA 2048, 3072 ou 4096 bits, EC `P-256`, `P-384` ou `P-521`. Une clé publique seule ne peut pas être importée encapsulée dans le HSM : seul l'import en clair est possible.
+- Déclarez `type` : `oct`, `RSA` ou `EC`. Ne définissez pas `size` ni `curve` pour `RSA` et `EC` : le HSM les lit à partir de la clé. Pour `oct`, `size` est facultatif (`128`, `192` ou `256`).
+- Ne définissez pas `keyFormatType` dans `wrappedKeys`. Le texte en clair encapsulé dans le JWE doit correspondre aux octets bruts de la clé pour une clé `oct`, et à la clé privée en PKCS#8 (DER) pour une clé `RSA` ou `EC`.
+- Clés prises en charge : AES `128`, `192` ou `256` bits, RSA `2048`, `3072` ou `4096` bits, EC `P-256`, `P-384` ou `P-521`. Une clé publique seule ne peut pas être importée encapsulée dans le HSM : seul l'import en clair est possible.
 
 ```bash
 curl -X POST "https://<region>.okms.ovh.net/api/<okmsId>/v1/servicekey" \
@@ -736,11 +737,11 @@ curl -X POST "https://<region>.okms.ovh.net/api/<okmsId>/v1/servicekey" \
   }'
 ```
 
-Une clé de transport `HSM` peut aussi désencapsuler une clé `SOFTWARE` : dans ce cas, suivez la section « [Importer la clé encapsulée](#importer-la-clé-encapsulée) » avec `keyFormatType`.
+Une clé de transport `HSM` peut aussi désencapsuler une clé `SOFTWARE` : dans ce cas, suivez la section « [Importer la clé encapsulée](#importer-la-clé-encapsulée) » avec `keyFormatType`.
 
 #### Exporter une clé depuis le HSM
 
-Seules les clés symétriques (`oct`) peuvent être exportées depuis le HSM : le HSM ne libère jamais les clés privées RSA ou EC. Comme pour une clé `SOFTWARE`, la clé doit avoir été créée ou importée avec `extractable` défini à `true`, ce qui ne peut pas être activé ensuite (consultez la section « [Activer l'extraction](#activer-lextraction) »).
+Seules les clés symétriques (`oct`) peuvent être exportées depuis le HSM : le HSM ne libère jamais les clés privées RSA ou EC. Comme pour une clé `SOFTWARE`, la clé doit avoir été créée ou importée avec `extractable` défini à `true`, ce qui ne peut pas être activé ensuite (reportez-vous à la section « [Activer l'extraction](#activer-lextraction) »).
 
 La clé de transport doit être stockée dans le HSM. Importez la clé de transport publique de destination avec le niveau de protection `HSM` :
 
@@ -764,7 +765,7 @@ curl -X POST "https://<region>.okms.ovh.net/api/<okmsId>/v1/servicekey" \
   }'
 ```
 
-Exportez ensuite la clé. Omettez `wrappedKeyFormat` ou définissez-le à `RAW` : le HSM encapsule toujours les octets bruts de la clé, donc la charge utile du JWE déchiffré est la clé AES elle-même (32 octets pour une clé de 256 bits).
+Exportez ensuite la clé. Omettez `wrappedKeyFormat` ou définissez-le à `RAW` : le HSM encapsule toujours les octets bruts de la clé, donc la charge utile du JWE déchiffré est la clé AES elle-même (32 octets pour une clé de 256 bits).
 
 <Tabs>
 <Tab label="API REST">
@@ -805,7 +806,7 @@ ciphertext := wrapped[0].Ciphertext
 </Tab>
 </Tabs>
 
-Sur la destination, déchiffrez le JWE avec la clé de transport privée, comme décrit dans la section « [Désencapsuler le ciphertext sur la destination](#désencapsuler-le-ciphertext-sur-la-destination) ».
+Sur la destination, déchiffrez le JWE avec la clé de transport privée, comme décrit dans la section « [Désencapsuler le ciphertext sur la destination](#désencapsuler-le-ciphertext-sur-la-destination) ».
 
 ### Exemple de bout en bout en Go
 

@@ -1,7 +1,7 @@
 ---
 title: Importar e exportar chaves no OVHcloud KMS com BYOK
 description: Saiba como importar e exportar em segurança material de chave encriptado com o OVHcloud KMS através de encapsulamento RSA assimétrico (BYOK)
-lastUpdated: 2026-10-12
+lastUpdated: 2026-10-15
 ---
 
 import { Tab, Tabs } from '@rspress/core/theme';
@@ -222,7 +222,7 @@ Algoritmos de encapsulamento suportados ([RFC 7518](https://datatracker.ietf.org
 
 | `keyFormatType` | Utilização típica |
 | --- | --- |
-| `RAW` | Formato de chave interno do OVHcloud KMS, ou formato de exportação do HSM quando a chave é exportada a partir do HSM |
+| `RAW` | Formato de chave interno do OVHcloud KMS, ou formato de exportação das chaves armazenadas no HSM |
 | `JWK` | Documento JSON Web Key ([RFC 7517](https://datatracker.ietf.org/doc/html/rfc7517)) |
 | `PKCS1` | Material de chave RSA em codificação PKCS#1 |
 | `PKCS8` | Material de chave privada em codificação PKCS#8 |
@@ -243,7 +243,8 @@ Invoque `POST /api/{okmsId}/v1/servicekey` com um array `wrappedKeys` em vez de 
 | `wrappedKeys` | **Sim** (para BYOK) | Array de blocos de chaves encapsuladas |
 | `operations` | **Sim** | Utilizações previstas da chave importada |
 | `extractable` | Não | Indica se a chave pode ser exportada posteriormente (`false` por defeito; as chaves apenas públicas passam a `true` por defeito) |
-| `type` / `size` / `curve` | Não | Deduzidos do material desencriptado quando `wrappedKeys` está presente. Para uma importação no HSM, `type` é obrigatório (consulte [Importar uma chave no HSM](#importar-uma-chave-no-hsm)) |
+| `protectionLevel` | Não | Nível de proteção da chave: `SOFTWARE` (por defeito) ou `HSM`. Para uma importação no HSM, consulte [Importar uma chave no HSM](#importar-uma-chave-no-hsm). |
+| `type` / `size` / `curve` | Não (exceto `type` para uma importação no HSM) | Deduzidos do material desencriptado quando `wrappedKeys` está presente. Para uma importação no HSM, `type` é obrigatório (consulte [Importar uma chave no HSM](#importar-uma-chave-no-hsm)). |
 
 Cada entrada de `wrappedKeys`:
 
@@ -366,7 +367,7 @@ A exportação segura é o inverso da importação: o OVHcloud KMS encripta o ma
 
 1. Gere um par de chaves RSA de transporte no ambiente de **destino** (outro KMS ou uma ferramenta que receberá a chave).
 2. Importe a chave de transporte **pública** de destino no OVHcloud KMS com a operação `wrapKey`. Esta chave é o `wrappingKeyId` utilizado no momento da exportação.
-3. No OVHcloud KMS, exporte a chave de serviço encapsulada por essa chave de transporte. A chave deve ter sido criada ou importada com `extractable` definido como `true`. Volte a definir `extractable` como `false` quando possível.
+3. No OVHcloud KMS, exporte a chave de serviço encapsulada por essa chave de transporte. A chave deve ter sido criada ou importada com `extractable` definido como `true`. Defina depois `extractable` como `false` quando possível.
 4. Transfira o ciphertext para o destino e desencapsule-o com a chave de transporte **privada** de destino.
 
 :::info
@@ -646,7 +647,7 @@ Transfira o `ciphertext` para o ambiente de destino. Desencapsule-o com a chave 
 
 Com o nível de proteção `HSM`, o material de chave é encapsulado e desencapsulado dentro do HSM: nunca aparece em texto claro no OVHcloud KMS. O formato JWE é o mesmo que para as chaves `SOFTWARE` (`RSA-OAEP` ou `RSA-OAEP-256` com `A256GCM`).
 
-A chave de transporte deve estar armazenada no HSM sempre que a chave importada ou exportada o estiver:
+A chave de transporte deve estar armazenada no HSM sempre que a chave importada ou exportada estiver armazenada nele, como resume a tabela seguinte:
 
 | Operação | Chave de transporte | Chave importada ou exportada |
 | --- | --- | --- |
@@ -711,12 +712,12 @@ Em seguida, exporte a respetiva chave pública e encapsule o material de chave n
 
 #### Importar uma chave no HSM
 
-Como o HSM nunca expõe o material desencapsulado, o OVHcloud KMS não pode deduzir o tipo de chave. O pedido de importação difere de uma importação `SOFTWARE`:
+Como o HSM nunca expõe o material desencapsulado, o OVHcloud KMS não pode deduzir o tipo de chave. O pedido de importação difere do pedido de uma importação `SOFTWARE`:
 
 - Defina `protectionLevel` como `HSM`. A chave de transporte também deve ser uma chave `HSM`.
 - Declare `type`: `oct`, `RSA` ou `EC`. Não defina `size` nem `curve` para `RSA` e `EC`: o HSM lê-os a partir da chave. Para `oct`, `size` é opcional (`128`, `192` ou `256`).
-- Não defina `keyFormatType` em `wrappedKeys`. O texto claro encapsulado no JWE deve ser os bytes brutos da chave para uma chave `oct`, e a chave privada em PKCS#8 (DER) para uma chave `RSA` ou `EC`.
-- Chaves suportadas: AES de 128, 192 ou 256 bits, RSA de 2048, 3072 ou 4096 bits, EC `P-256`, `P-384` ou `P-521`. Uma chave pública isolada não pode ser importada encapsulada no HSM: apenas a importação em texto claro é possível.
+- Não defina `keyFormatType` em `wrappedKeys`. O texto claro encapsulado no JWE deve corresponder aos bytes brutos da chave para uma chave `oct`, e à chave privada em PKCS#8 (DER) para uma chave `RSA` ou `EC`.
+- Chaves suportadas: AES de `128`, `192` ou `256` bits, RSA de `2048`, `3072` ou `4096` bits, EC `P-256`, `P-384` ou `P-521`. Uma chave pública isolada não pode ser importada encapsulada no HSM: apenas a importação em texto claro é possível.
 
 ```bash
 curl -X POST "https://<region>.okms.ovh.net/api/<okmsId>/v1/servicekey" \
@@ -764,7 +765,7 @@ curl -X POST "https://<region>.okms.ovh.net/api/<okmsId>/v1/servicekey" \
   }'
 ```
 
-Em seguida, exporte a chave. Omita `wrappedKeyFormat` ou defina-o como `RAW`: o HSM encapsula sempre os bytes brutos da chave, pelo que a carga útil do JWE desencriptado é a própria chave AES (32 bytes para uma chave de 256 bits).
+Em seguida, exporte a chave. Omita `wrappedKeyFormat` ou defina-o como `RAW`: o HSM encapsula sempre os bytes brutos da chave, pelo que a carga útil do JWE desencriptado é a própria chave AES (32 bytes para uma chave de 256 bits).
 
 <Tabs>
 <Tab label="API REST">

@@ -1,7 +1,7 @@
 ---
 title: Schlüssel auf OVHcloud KMS mit BYOK importieren und exportieren
 description: Erfahren Sie, wie Sie verschlüsseltes Schlüsselmaterial sicher mit OVHcloud KMS mittels asymmetrischer RSA-Umschließung (BYOK) importieren und exportieren
-lastUpdated: 2026-10-12
+lastUpdated: 2026-10-15
 ---
 
 import { Tab, Tabs } from '@rspress/core/theme';
@@ -222,7 +222,7 @@ Unterstützte Algorithmen für die Umschließung ([RFC 7518](https://datatracker
 
 | `keyFormatType` | Typische Verwendung |
 | --- | --- |
-| `RAW` | Internes Schlüsselformat von OVHcloud KMS oder Exportformat des HSM, wenn der Schlüssel aus dem HSM exportiert wird |
+| `RAW` | Internes Schlüsselformat von OVHcloud KMS oder Exportformat des HSM |
 | `JWK` | JSON-Web-Key-Dokument ([RFC 7517](https://datatracker.ietf.org/doc/html/rfc7517)) |
 | `PKCS1` | RSA-Schlüsselmaterial in PKCS#1-Kodierung |
 | `PKCS8` | Privates Schlüsselmaterial in PKCS#8-Kodierung |
@@ -243,7 +243,8 @@ Rufen Sie `POST /api/{okmsId}/v1/servicekey` mit einem `wrappedKeys`-Array anste
 | `wrappedKeys` | **Ja** (für BYOK) | Array umschlossener Schlüsselblöcke |
 | `operations` | **Ja** | Vorgesehene Verwendungen des importierten Schlüssels |
 | `extractable` | Nein | Ob der Schlüssel später exportiert werden kann (standardmäßig `false`; rein öffentliche Schlüssel standardmäßig `true`) |
-| `type` / `size` / `curve` | Nein | Werden aus dem entschlüsselten Material abgeleitet, wenn `wrappedKeys` vorhanden ist. Bei einem Import in das HSM ist `type` erforderlich (siehe [Einen Schlüssel in das HSM importieren](#einen-schlüssel-in-das-hsm-importieren)) |
+| `protectionLevel` | Nein | Schutzstufe des Schlüssels: `SOFTWARE` (Standard) oder `HSM`. Bei einem Import in das HSM siehe [Einen Schlüssel in das HSM importieren](#einen-schlüssel-in-das-hsm-importieren). |
+| `type` / `size` / `curve` | Nein (außer `type` bei einem Import in das HSM) | Werden aus dem entschlüsselten Material abgeleitet, wenn `wrappedKeys` vorhanden ist. Bei einem Import in das HSM ist `type` erforderlich (siehe [Einen Schlüssel in das HSM importieren](#einen-schlüssel-in-das-hsm-importieren)). |
 
 Jeder `wrappedKeys`-Eintrag:
 
@@ -646,7 +647,7 @@ Unterstützte Algorithmen für die Umschließung: `types.RSAOAEP`, `types.RSAOAE
 
 Mit der Schutzstufe `HSM` wird das Schlüsselmaterial innerhalb des HSM umschlossen und ausgepackt: Es erscheint in OVHcloud KMS nie im Klartext. Das JWE-Format ist dasselbe wie für `SOFTWARE`-Schlüssel (`RSA-OAEP` oder `RSA-OAEP-256` mit `A256GCM`).
 
-Der Transportschlüssel muss im HSM gespeichert sein, sobald es der importierte oder exportierte Schlüssel ist:
+Der Transportschlüssel muss im HSM gespeichert sein, sobald der importierte oder exportierte Schlüssel dort gespeichert ist, wie in der folgenden Tabelle zusammengefasst:
 
 | Vorgang | Transportschlüssel | Importierter oder exportierter Schlüssel |
 | --- | --- | --- |
@@ -716,7 +717,7 @@ Da das HSM das ausgepackte Material nie preisgibt, kann OVHcloud KMS den Schlüs
 - Setzen Sie `protectionLevel` auf `HSM`. Der Transportschlüssel muss ebenfalls ein `HSM`-Schlüssel sein.
 - Geben Sie `type` an: `oct`, `RSA` oder `EC`. Setzen Sie für `RSA` und `EC` weder `size` noch `curve`: Das HSM liest sie aus dem Schlüssel. Für `oct` ist `size` optional (`128`, `192` oder `256`).
 - Setzen Sie in `wrappedKeys` kein `keyFormatType`. Der im JWE umschlossene Klartext muss für einen `oct`-Schlüssel aus den Rohbytes des Schlüssels bestehen und für einen `RSA`- oder `EC`-Schlüssel aus dem privaten Schlüssel in PKCS#8 (DER).
-- Unterstützte Schlüssel: AES mit 128, 192 oder 256 Bit, RSA mit 2048, 3072 oder 4096 Bit, EC `P-256`, `P-384` oder `P-521`. Ein öffentlicher Schlüssel allein kann nicht umschlossen in das HSM importiert werden, nur ein Klartext-Import ist möglich.
+- Unterstützte Schlüssel: AES mit `128`, `192` oder `256` Bit, RSA mit `2048`, `3072` oder `4096` Bit, EC `P-256`, `P-384` oder `P-521`. Ein öffentlicher Schlüssel allein kann nicht umschlossen in das HSM importiert werden; nur ein Klartext-Import ist möglich.
 
 ```bash
 curl -X POST "https://<region>.okms.ovh.net/api/<okmsId>/v1/servicekey" \
@@ -764,7 +765,7 @@ curl -X POST "https://<region>.okms.ovh.net/api/<okmsId>/v1/servicekey" \
   }'
 ```
 
-Exportieren Sie anschließend den Schlüssel. Lassen Sie `wrappedKeyFormat` weg oder setzen Sie es auf `RAW`: Das HSM umschließt immer die Rohbytes des Schlüssels, daher ist die entschlüsselte JWE-Nutzlast der AES-Schlüssel selbst (32 Bytes für einen 256-Bit-Schlüssel).
+Exportieren Sie anschließend den Schlüssel. Lassen Sie `wrappedKeyFormat` weg oder setzen Sie es auf `RAW`: Das HSM umschließt immer die Rohbytes des Schlüssels, daher ist die entschlüsselte JWE-Nutzlast der AES-Schlüssel selbst (32 Bytes für einen 256-Bit-Schlüssel).
 
 <Tabs>
 <Tab label="REST-API">

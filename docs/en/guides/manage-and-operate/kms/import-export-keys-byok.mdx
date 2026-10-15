@@ -1,7 +1,7 @@
 ---
 title: Import and export keys on OVHcloud KMS using BYOK
 description: Find out how to securely import and export encrypted key material with OVHcloud KMS using asymmetric RSA key wrapping (BYOK)
-lastUpdated: 2026-10-12
+lastUpdated: 2026-10-15
 ---
 
 import { Tab, Tabs } from '@rspress/core/theme';
@@ -222,7 +222,7 @@ Supported wrapping algorithms ([RFC 7518](https://datatracker.ietf.org/doc/html/
 
 | `keyFormatType` | Typical use |
 | --- | --- |
-| `RAW` | OVHcloud KMS internal key format or HSM export format when the key is exported from HSM |
+| `RAW` | OVHcloud KMS internal key format, or HSM export format |
 | `JWK` | JSON Web Key document ([RFC 7517](https://datatracker.ietf.org/doc/html/rfc7517)) |
 | `PKCS1` | RSA key material in PKCS#1 encoding |
 | `PKCS8` | Private key material in PKCS#8 encoding |
@@ -243,7 +243,8 @@ Call `POST /api/{okmsId}/v1/servicekey` with a `wrappedKeys` array instead of pl
 | `wrappedKeys` | **Yes** (for BYOK) | Array of wrapped key blocks |
 | `operations` | **Yes** | Intended usages of the imported key |
 | `extractable` | No | Whether the key can later be exported (`false` by default; public-only keys default to `true`) |
-| `type` / `size` / `curve` | No | Inferred from the decrypted material when `wrappedKeys` is present. For an import into the HSM, `type` is required (see [Import a key into the HSM](#import-a-key-into-the-hsm)) |
+| `protectionLevel` | No | Protection level of the key: `SOFTWARE` (default) or `HSM`. For an import into the HSM, see [Import a key into the HSM](#import-a-key-into-the-hsm). |
+| `type` / `size` / `curve` | No (except `type` for an import into the HSM) | Inferred from the decrypted material when `wrappedKeys` is present. For an import into the HSM, `type` is required (see [Import a key into the HSM](#import-a-key-into-the-hsm)). |
 
 Each `wrappedKeys` entry:
 
@@ -459,7 +460,7 @@ Save the returned key `id` as `wrappingKeyId`.
 
 #### Enable extraction
 
-The key you export must be extractable, and this is decided when the key is created or imported. Afterwards, `extractable` can only be changed from `true` to `false`: once set to `false`, it can never be set back to `true`. A key created or imported without `extractable` set to `true` can therefore never be exported. This rule applies to `SOFTWARE` and `HSM` keys alike.
+The key you export must be extractable, and you decide this when you create or import the key. Afterwards, `extractable` can only be changed from `true` to `false`: once set to `false`, it can never be set back to `true`. A key created or imported without `extractable` set to `true` can therefore never be exported. This rule applies to `SOFTWARE` and `HSM` keys alike.
 
 :::warning
 Enabling extraction reduces the key's protection boundary, and a key created with `extractable` set to `true` has `never_extractable` set to `false` permanently. Only create an extractable key if you plan to migrate it.
@@ -646,7 +647,7 @@ Transfer the `ciphertext` to the destination environment. Unwrap it with the des
 
 With the `HSM` protection level, the key material is wrapped and unwrapped inside the HSM: it never appears in plaintext in OVHcloud KMS. The JWE format is the same as for `SOFTWARE` keys (`RSA-OAEP` or `RSA-OAEP-256` with `A256GCM`).
 
-The transport key must be stored in the HSM whenever the imported or exported key is:
+The transport key must be stored in the HSM whenever the imported or exported key is stored there, as summarised below:
 
 | Operation | Transport key | Key being imported or exported |
 | --- | --- | --- |
@@ -716,7 +717,7 @@ Because the HSM never exposes the unwrapped material, OVHcloud KMS cannot infer 
 - Set `protectionLevel` to `HSM`. The transport key must also be an `HSM` key.
 - Declare `type`: `oct`, `RSA` or `EC`. Do not set `size` or `curve` for `RSA` and `EC`: the HSM reads them from the key. For `oct`, `size` is optional (`128`, `192` or `256`).
 - Do not set `keyFormatType` in `wrappedKeys`. The plaintext wrapped in the JWE must be the raw key bytes for an `oct` key, and the private key in PKCS#8 (DER) for an `RSA` or `EC` key.
-- Supported keys: AES 128, 192 or 256 bits, RSA 2048, 3072 or 4096 bits, EC `P-256`, `P-384` or `P-521`. A public key alone cannot be imported wrapped into the HSM, only plain import is possible.
+- Supported keys: AES `128`, `192` or `256` bits, RSA `2048`, `3072` or `4096` bits, EC `P-256`, `P-384` or `P-521`. A public key alone cannot be imported wrapped into the HSM; only plain import is possible.
 
 ```bash
 curl -X POST "https://<region>.okms.ovh.net/api/<okmsId>/v1/servicekey" \
@@ -764,7 +765,7 @@ curl -X POST "https://<region>.okms.ovh.net/api/<okmsId>/v1/servicekey" \
   }'
 ```
 
-Then export the key. Omit `wrappedKeyFormat` or set it to `RAW`: the HSM always wraps the raw key bytes, so the decrypted JWE payload is the AES key itself (32 bytes for a 256-bit key).
+Then export the key. Omit `wrappedKeyFormat` or set it to `RAW`: the HSM always wraps the raw key bytes, so the decrypted JWE payload is the AES key itself (32 bytes for a 256-bit key).
 
 <Tabs>
 <Tab label="REST API">

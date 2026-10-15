@@ -1,7 +1,7 @@
 ---
 title: Importar y exportar claves en OVHcloud KMS con BYOK
 description: Descubra cómo importar y exportar de forma segura material de clave cifrado con OVHcloud KMS mediante el encapsulado de clave RSA asimétrico (BYOK)
-lastUpdated: 2026-10-12
+lastUpdated: 2026-10-15
 ---
 
 import { Tab, Tabs } from '@rspress/core/theme';
@@ -222,7 +222,7 @@ Algoritmos de encapsulado admitidos ([RFC 7518](https://datatracker.ietf.org/doc
 
 | `keyFormatType` | Uso típico |
 | --- | --- |
-| `RAW` | Formato de clave interno de OVHcloud KMS, o formato de exportación del HSM cuando la clave se exporta desde el HSM |
+| `RAW` | Formato de clave interno de OVHcloud KMS, o formato de exportación de las claves almacenadas en el HSM |
 | `JWK` | Documento JSON Web Key ([RFC 7517](https://datatracker.ietf.org/doc/html/rfc7517)) |
 | `PKCS1` | Material de clave RSA en codificación PKCS#1 |
 | `PKCS8` | Material de clave privada en codificación PKCS#8 |
@@ -243,7 +243,8 @@ Llame a `POST /api/{okmsId}/v1/servicekey` con un array `wrappedKeys` en lugar d
 | `wrappedKeys` | **Sí** (para el BYOK) | Array de bloques de claves encapsuladas |
 | `operations` | **Sí** | Usos previstos de la clave importada |
 | `extractable` | No | Indica si la clave puede exportarse posteriormente (`false` por defecto; las claves solo públicas pasan a `true` por defecto) |
-| `type` / `size` / `curve` | No | Se deducen del material descifrado cuando `wrappedKeys` está presente. Para una importación en el HSM, `type` es obligatorio (consulte [Importar una clave en el HSM](#importar-una-clave-en-el-hsm)) |
+| `protectionLevel` | No | Nivel de protección de la clave: `SOFTWARE` (por defecto) o `HSM`. Para una importación en el HSM, consulte [Importar una clave en el HSM](#importar-una-clave-en-el-hsm). |
+| `type` / `size` / `curve` | No (excepto `type` para una importación en el HSM) | Se deducen del material descifrado cuando `wrappedKeys` está presente. Para una importación en el HSM, `type` es obligatorio (consulte [Importar una clave en el HSM](#importar-una-clave-en-el-hsm)). |
 
 Cada entrada de `wrappedKeys`:
 
@@ -366,7 +367,7 @@ La exportación segura es la inversa de la importación: OVHcloud KMS cifra el m
 
 1. Genere un par de claves RSA de transporte en el entorno de **destino** (otro KMS o una herramienta que recibirá la clave).
 2. Importe la clave de transporte **pública** de destino en OVHcloud KMS con la operación `wrapKey`. Esta clave es el `wrappingKeyId` utilizado en el momento de la exportación.
-3. En OVHcloud KMS, exporte la clave de servicio encapsulada por esta clave de transporte. La clave debe haberse creado o importado con `extractable` en `true`. Vuelva a poner después `extractable` en `false` cuando sea posible.
+3. En OVHcloud KMS, exporte la clave de servicio encapsulada por esta clave de transporte. La clave debe haberse creado o importado con `extractable` en `true`. Defina después `extractable` en `false` cuando sea posible.
 4. Transfiera el ciphertext al destino y desencapsúlelo con la clave de transporte **privada** de destino.
 
 :::info
@@ -646,7 +647,7 @@ Transfiera el `ciphertext` al entorno de destino. Desencapsúlelo con la clave d
 
 Con el nivel de protección `HSM`, el material de clave se encapsula y desencapsula dentro del HSM: nunca aparece en claro en OVHcloud KMS. El formato JWE es el mismo que para las claves `SOFTWARE` (`RSA-OAEP` o `RSA-OAEP-256` con `A256GCM`).
 
-La clave de transporte debe estar almacenada en el HSM siempre que lo esté la clave importada o exportada:
+La clave de transporte debe estar almacenada en el HSM siempre que la clave importada o exportada esté almacenada en él, como resume la tabla siguiente:
 
 | Operación | Clave de transporte | Clave importada o exportada |
 | --- | --- | --- |
@@ -711,12 +712,12 @@ A continuación, exporte su clave pública y encapsule el material de clave en e
 
 #### Importar una clave en el HSM
 
-Como el HSM nunca expone el material desencapsulado, OVHcloud KMS no puede deducir el tipo de clave. La solicitud de importación difiere de una importación `SOFTWARE`:
+Como el HSM nunca expone el material desencapsulado, OVHcloud KMS no puede deducir el tipo de clave. La solicitud de importación difiere de la de una importación `SOFTWARE`:
 
 - Defina `protectionLevel` en `HSM`. La clave de transporte también debe ser una clave `HSM`.
 - Declare `type`: `oct`, `RSA` o `EC`. No defina `size` ni `curve` para `RSA` y `EC`: el HSM los lee a partir de la clave. Para `oct`, `size` es opcional (`128`, `192` o `256`).
-- No defina `keyFormatType` en `wrappedKeys`. El texto en claro encapsulado en el JWE debe ser los bytes en bruto de la clave para una clave `oct`, y la clave privada en PKCS#8 (DER) para una clave `RSA` o `EC`.
-- Claves admitidas: AES de 128, 192 o 256 bits, RSA de 2048, 3072 o 4096 bits, EC `P-256`, `P-384` o `P-521`. Una clave pública sola no puede importarse encapsulada en el HSM: solo es posible la importación en claro.
+- No defina `keyFormatType` en `wrappedKeys`. El texto en claro encapsulado en el JWE debe corresponder a los bytes en bruto de la clave para una clave `oct`, y a la clave privada en PKCS#8 (DER) para una clave `RSA` o `EC`.
+- Claves admitidas: AES de `128`, `192` o `256` bits, RSA de `2048`, `3072` o `4096` bits, EC `P-256`, `P-384` o `P-521`. Una clave pública sola no puede importarse encapsulada en el HSM: solo es posible la importación en claro.
 
 ```bash
 curl -X POST "https://<region>.okms.ovh.net/api/<okmsId>/v1/servicekey" \
@@ -764,7 +765,7 @@ curl -X POST "https://<region>.okms.ovh.net/api/<okmsId>/v1/servicekey" \
   }'
 ```
 
-A continuación, exporte la clave. Omita `wrappedKeyFormat` o defínalo en `RAW`: el HSM siempre encapsula los bytes en bruto de la clave, por lo que la carga útil del JWE descifrado es la propia clave AES (32 bytes para una clave de 256 bits).
+A continuación, exporte la clave. Omita `wrappedKeyFormat` o defínalo en `RAW`: el HSM siempre encapsula los bytes en bruto de la clave, por lo que la carga útil del JWE descifrado es la propia clave AES (32 bytes para una clave de 256 bits).
 
 <Tabs>
 <Tab label="API REST">
