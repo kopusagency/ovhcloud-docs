@@ -14,7 +14,7 @@ Si vous avez besoin d'une copie de vos artefacts dans une autre région, vous po
 - récupérer les images depuis un registry situé au plus près de vos clusters Managed Kubernetes dans chaque région.
 - promouvoir des artefacts d'un environnement à un autre (par exemple, d'un registry de préproduction vers un registry de production).
 
-La réplication copie les images de conteneurs, les artefacts OCI (y compris les charts Helm stockés au format OCI) et les signatures Cosign associées. Sa configuration et son exploitation relèvent de votre responsabilité (consultez le [modèle de responsabilité](/guides/public-cloud/containers-orchestration/managed-private-registry/responsibility-model)).
+La réplication copie les images de conteneurs, les artefacts OCI (y compris les charts Helm stockés au format OCI) et les artefacts qui leur sont rattachés, tels que les signatures, les SBOM et les attestations (consultez la section [Signatures, SBOM et autres artefacts rattachés](#signatures-sbom-et-autres-artefacts-rattachés)). Sa configuration et son exploitation relèvent de votre responsabilité (consultez le [modèle de responsabilité](/guides/public-cloud/containers-orchestration/managed-private-registry/responsibility-model)).
 
 **Ce guide explique comment configurer une règle de réplication entre deux OVHcloud Managed Private Registry situés dans des régions différentes.**
 
@@ -30,6 +30,19 @@ Harbor ne prend pas en charge la réplication entre des versions de Harbor diff�
 ## En pratique
 
 Ce guide utilise la réplication **push-based** : la règle de réplication est créée sur le registry source, qui pousse les artefacts vers le registry de destination. Le mode push-based est le seul à prendre en charge le déclencheur <code className="action">Event Based</code>, qui réplique chaque nouvel artefact dès qu'il est poussé.
+
+```mermaid
+flowchart LR
+    CI["Pipeline CI<br/>docker push"] --> SRC
+    subgraph A["Région A"]
+        SRC["MPR source<br/>endpoint + règle de réplication"]
+    end
+    subgraph B["Région B"]
+        DST["MPR de destination<br/>projet + robot account (Push)"]
+    end
+    SRC -- "pousse les artefacts" --> DST
+    DST --> K8S["Cluster MKS<br/>docker pull"]
+```
 
 Si vous préférez créer la règle sur le registry de destination, par exemple pour déplacer vos artefacts vers un nouveau registry dans une autre région, consultez la section [Utiliser la réplication pull-based](#utiliser-la-réplication-pull-based).
 
@@ -129,6 +142,17 @@ Pour utiliser le registry de destination depuis un cluster Managed Kubernetes, c
 
 Avec la réplication **pull-based**, la règle est créée sur le registry de destination, qui récupère les artefacts depuis le registry source. Le registry source n'a besoin que d'un robot account disposant d'un accès en lecture.
 
+```mermaid
+flowchart LR
+    subgraph A["Région A"]
+        SRC["MPR source<br/>robot account (Pull)"]
+    end
+    subgraph B["Région B"]
+        DST["MPR de destination<br/>endpoint + règle de réplication"]
+    end
+    DST -- "récupère les artefacts (manuel ou planifié)" --> SRC
+```
+
 Ce mode est adapté au déplacement de vos artefacts vers un nouveau registry dans une autre région : tout est configuré sur le nouveau registry, et rien ne doit être modifié sur le registry que vous quittez, à part le robot account.
 
 La réplication pull-based ne prend pas en charge le déclencheur <code className="action">Event Based</code> : utilisez <code className="action">Manual</code> ou <code className="action">Scheduled</code>.
@@ -179,11 +203,33 @@ Lancez et suivez la règle depuis le registry de destination, comme décrit à l
 Les éléments listés dans la section [Éléments non répliqués](#éléments-non-répliqués) doivent être configurés sur le registry de destination avant de basculer vos clients.
 :::
 
+## Signatures, SBOM et autres artefacts rattachés
+
+Harbor réplique chaque artefact avec les artefacts qui lui sont rattachés, appelés **accessoires** (*accessories*). Ils sont répliqués dès que leur artefact parent l'est, même s'ils n'ont pas de tag propre :
+
+- les signatures Cosign, dans les deux formats : le format à base de tag de Cosign v2 (`sha256-<digest>.sig`) et le format OCI 1.1 utilisé par défaut par Cosign v3.
+- les signatures Notation.
+- tout artefact rattaché via le champ `subject` d'OCI 1.1, comme les SBOM, les attestations de provenance ou les documents VEX (par exemple, poussés avec `oras attach` ou `cosign attest`).
+- les SBOM générés par Harbor.
+
+Les attestations ajoutées par BuildKit (`docker buildx build --sbom --provenance`) sont stockées dans l'index de l'image : elles sont copiées avec l'image.
+
+:::warning
+Les attestations et pièces jointes de Cosign v2 (`cosign attest`, `cosign attach sbom`) ne sont pas des accessoires : elles sont stockées sous forme de tags classiques, comme `sha256-<digest>.att` ou `sha256-<digest>.sbom`. Elles ne sont répliquées que si elles correspondent au filtre **Tag** de la règle. Si vous filtrez sur les tags (par exemple `v*`), ajoutez ces tags au motif, par exemple `{v*,sha256-*}`.
+:::
+
+### Résultats d'analyse de vulnérabilités
+
+Les résultats d'analyse sont stockés dans la base de données de chaque registry et ne sont pas répliqués. Pour les obtenir sur le registry de destination, activez l'option <code className="action">Automatically scan images on push</code> dans l'onglet <code className="action">Configuration</code> du projet de destination **avant** de lancer la réplication : les artefacts répliqués sont alors analysés dès leur arrivée. Vous pouvez également lancer une analyse manuellement par la suite. Consultez le guide [Analyser les vulnérabilités des images Docker](/guides/public-cloud/containers-orchestration/managed-private-registry/scan-docker-images-vulnerabilities).
+
+Les projets créés automatiquement par la réplication utilisent les paramètres par défaut, dans lesquels l'analyse automatique est désactivée : créez les projets de destination au préalable pour la configurer.
+
 ## Éléments non répliqués
 
 La réplication copie uniquement les artefacts et leurs signatures. Les éléments suivants sont propres à chaque registry et doivent être configurés séparément sur le registry de destination :
 
 - les membres des projets et leurs rôles.
+- les résultats d'analyse de vulnérabilités (consultez la section [Résultats d'analyse de vulnérabilités](#résultats-danalyse-de-vulnérabilités)).
 - les utilisateurs, les robot accounts et leurs secrets.
 - les paramètres d'authentification ([OVHcloud IAM](/guides/public-cloud/containers-orchestration/managed-private-registry/managed-private-registry-iam-authentication) ou [fournisseur OIDC](/guides/public-cloud/containers-orchestration/managed-private-registry/configure-oidc-provider-authentication)) et les [restrictions d'IP](/guides/public-cloud/containers-orchestration/managed-private-registry/add-ip-restrictions).
 - les paramètres des projets, tels que les quotas, les règles de rétention et d'immutabilité, les politiques d'analyse de vulnérabilités et les webhooks.
