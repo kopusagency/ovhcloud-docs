@@ -41,8 +41,9 @@ The backup server is deployed **in your infrastructure**, in the datacenter you 
 | Backup proxy (VBR proxy) | 2 | 3 GB | 30 GB |
 | **Minimum required in the datacenter** | **10** | **19 GB** | **530 GB** |
 
-> [!INFO]
-> These values correspond to the backup server and one proxy. If your fleet needs more proxies, contact support and OVHcloud deploys more. Each additional proxy uses 2 vCPU, 3 GB of memory and 30 GB of disk.
+:::info
+These values correspond to the backup server and one proxy. If your fleet needs more proxies, contact support and OVHcloud deploys more. Each additional proxy uses 2 vCPU, 3 GB of memory and 30 GB of disk.
+:::
 
 ## Instructions
 
@@ -114,10 +115,11 @@ A message on your dashboard tells you when you can tag your machines in vSphere.
 
 *The **You can tag your machines in vSphere** banner appears on the dashboard when the VBR is ready.*
 
-> [!INFO]
-> **When can you tag your machines?**
->
-> You can tag your machines about 30 minutes after you order. After that, the tag in vSphere is what counts, and it is taken into account within the hour. The full process is explained in the [Protecting your virtual machines](/guides/storage-and-backup/manage-backup/tag-vm) guide.
+:::info
+**When can you tag your machines?**
+
+You can tag your machines about 30 minutes after you order. After that, the tag in vSphere is what counts, and it is taken into account within the hour. The full process is explained in the [Protecting your virtual machines](/guides/storage-and-backup/manage-backup/tag-vm) guide.
+:::
 
 :::warning
 **If the delivery fails**
@@ -137,10 +139,11 @@ The service shows the **Error** badge on your dashboard, instead of **Deploying*
 
    *The **Change password** screen at first sign-in. Fill in the fields then click **Confirm**.*
 
-> [!INFO]
-> **What your account allows**
->
-> Your VBR account lets you start an on-demand backup, restore a full virtual machine or files, and check the status of your backups. OVHcloud still manages the creation and editing of backup jobs: the vSphere tag decides what is protected.
+:::info
+**What your account allows**
+
+Your VBR account lets you start an on-demand backup, restore a full virtual machine or files, and check the status of your backups. OVHcloud still manages the creation and editing of backup jobs: the vSphere tag decides what is protected.
+:::
 
 ### Step 6: protect your virtual machines
 
@@ -148,10 +151,11 @@ A machine is backed up only if it has a tag. In vSphere, add the tag of its Back
 
 The procedure is detailed in the [Protecting your virtual machines](/guides/storage-and-backup/manage-backup/tag-vm) guide.
 
-> [!INFO]
-> **If no machine is protected**
->
-> Three days after delivery, then ten days after, you receive a reminder e-mail. The reminder at ten days announces the termination date of your service. Thirty days after delivery, if no machine is protected, the service is terminated automatically: access to the VBR is closed and nothing is billed. To protect your infrastructure, you then need to order again (see [Terminating and reactivating a service](/guides/storage-and-backup/manage-backup/terminate#automatic-termination-of-a-service-that-was-never-used)).
+:::info
+**If no machine is protected**
+
+Three days after delivery, then ten days after, you receive a reminder e-mail. The reminder at ten days announces the termination date of your service. Thirty days after delivery, if no machine is protected, the service is terminated automatically: access to the VBR is closed and nothing is billed. To protect your infrastructure, you then need to order again (see [Terminating and reactivating a service](/guides/storage-and-backup/manage-backup/terminate#automatic-termination-of-a-service-that-was-never-used)).
+:::
 
 ### Protect another infrastructure
 

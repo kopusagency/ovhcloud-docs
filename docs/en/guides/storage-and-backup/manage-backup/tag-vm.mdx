@@ -17,13 +17,15 @@ With Managed Backup for VMware, a vSphere tag decides whether a virtual machine 
 
 ## Instructions
 
-> [!INFO]
-> **When are tags added, and which one counts?**
->
-> - **At the start of the delivery,** OVHcloud creates the `OvhManagedBackup` category and its three tags (`standard`, `advanced` and `premium`) in your vCenter. It then adds the tag of their Backup plan to the machines chosen at order time, even before deploying the VBR. This is why you can tag your machines about 30 minutes after you order.
-> - **OVHcloud then deploys the VBR** and creates the three backup jobs. Any machine you tagged in the meantime is backed up from the first run.
-> - **After that, the tag in vSphere is what counts.** You add, change or remove a tag in vSphere: the OVHcloud Control Panel no longer adds any tag after the order.
-> - **A tag is taken into account within the hour,** and the OVHcloud Control Panel refreshes every hour. The machine is backed up at the next run of the jobs (every evening at 10 pm), or right away if you start an on-demand backup from your VBR.
+:::info
+**When are tags added, and which one counts?**
+
+- **At the start of the delivery,** OVHcloud creates the `OvhManagedBackup` category and its three tags (`standard`, `advanced` and `premium`) in your vCenter. It then adds the tag of their Backup plan to the machines chosen at order time, even before deploying the VBR. This is why you can tag your machines about 30 minutes after you order.
+- **OVHcloud then deploys the VBR** and creates the three backup jobs. Any machine you tagged in the meantime is backed up from the first run.
+- **After that, the tag in vSphere is what counts.** You add, change or remove a tag in vSphere: the OVHcloud Control Panel no longer adds any tag after the order.
+- **A tag is taken into account within the hour,** and the OVHcloud Control Panel refreshes every hour. The machine is backed up at the next run of the jobs (every evening at 10 pm), or right away if you start an on-demand backup from your VBR.
+
+:::
 
 ### Tag rules
 

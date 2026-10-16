@@ -34,10 +34,11 @@ This also applies to OVHcloud, and to an attacker who has obtained your credenti
 - It relies on object storage locking, not on a VBR setting.
 - Any attempt to delete a restore point under immutability fails.
 
-> [!INFO]
-> **Immutability and retention are two different durations**
->
-> On Advanced and Premium, a restore point is kept for 35 days, and the first 14 of them are under immutability. Between day 15 and day 35, it still exists but is no longer locked. The Standard plan has no immutability.
+:::info
+**Immutability and retention are two different durations**
+
+On Advanced and Premium, a restore point is kept for 35 days, and the first 14 of them are under immutability. Between day 15 and day 35, it still exists but is no longer locked. The Standard plan has no immutability.
+:::
 
 ### Copy to a secondary site
 

@@ -34,10 +34,11 @@ Cela vaut aussi pour OVHcloud, et pour un attaquant qui aurait obtenu vos identi
 - Elle est portée par le verrouillage du stockage objet, et non par une configuration du VBR.
 - Toute tentative de suppression d'un point sous immutabilité échoue.
 
-> [!INFO]
-> **Immutabilité et rétention sont deux durées différentes**
->
-> Sur Advanced et Premium, un point de restauration est conservé 35 jours, dont les 14 premiers sous immutabilité. Entre le 15<sup>e</sup> et le 35<sup>e</sup> jour, il existe toujours mais n'est plus verrouillé. Le plan Standard n'a pas d'immutabilité.
+:::info
+**Immutabilité et rétention sont deux durées différentes**
+
+Sur Advanced et Premium, un point de restauration est conservé 35 jours, dont les 14 premiers sous immutabilité. Entre le 15<sup>e</sup> et le 35<sup>e</sup> jour, il existe toujours mais n'est plus verrouillé. Le plan Standard n'a pas d'immutabilité.
+:::
 ### Copie dans un site secondaire
 
 Les sauvegardes Advanced et Premium sont répliquées dans le **site secondaire** que vous choisissez à la commande, dans une région OVHcloud distincte de celle de votre infrastructure.

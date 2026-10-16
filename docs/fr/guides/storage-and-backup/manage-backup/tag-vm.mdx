@@ -17,13 +17,15 @@ Avec Managed Backup for VMware, c'est un tag vSphere qui décide si une machine 
 
 ## En pratique
 
-> [!INFO]
-> **Quand les tags sont-ils posés, et lequel fait foi ?**
->
-> - **Au début de la livraison,** OVHcloud crée dans votre vCenter la catégorie `OvhManagedBackup` et ses trois tags (`standard`, `advanced` et `premium`). Il pose ensuite sur les machines choisies à la commande le tag de leur Backup plan, avant même de déployer le VBR. C'est pourquoi vous pouvez taguer vos machines environ 30 minutes après la commande.
-> - **OVHcloud déploie ensuite le VBR** et crée les trois jobs de sauvegarde. Toute machine que vous avez taguée entre-temps est sauvegardée dès le premier passage.
-> - **Ensuite, c'est le tag dans vSphere qui fait foi.** Poser, changer ou retirer un tag se fait dans vSphere : le Manager ne pose plus aucun tag après la commande.
-> - **Un tag est pris en compte dans l'heure,** et l'espace client se met à jour toutes les heures. La machine est sauvegardée au prochain passage des jobs (chaque soir à 22 h), ou tout de suite si vous lancez une sauvegarde à la demande depuis votre VBR.
+:::info
+**Quand les tags sont-ils posés, et lequel fait foi ?**
+
+- **Au début de la livraison,** OVHcloud crée dans votre vCenter la catégorie `OvhManagedBackup` et ses trois tags (`standard`, `advanced` et `premium`). Il pose ensuite sur les machines choisies à la commande le tag de leur Backup plan, avant même de déployer le VBR. C'est pourquoi vous pouvez taguer vos machines environ 30 minutes après la commande.
+- **OVHcloud déploie ensuite le VBR** et crée les trois jobs de sauvegarde. Toute machine que vous avez taguée entre-temps est sauvegardée dès le premier passage.
+- **Ensuite, c'est le tag dans vSphere qui fait foi.** Poser, changer ou retirer un tag se fait dans vSphere : le Manager ne pose plus aucun tag après la commande.
+- **Un tag est pris en compte dans l'heure,** et l'espace client se met à jour toutes les heures. La machine est sauvegardée au prochain passage des jobs (chaque soir à 22 h), ou tout de suite si vous lancez une sauvegarde à la demande depuis votre VBR.
+
+:::
 ### Les règles du tag
 
 | Élément | Valeur |

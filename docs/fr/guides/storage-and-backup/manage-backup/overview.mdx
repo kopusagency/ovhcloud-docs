@@ -41,8 +41,9 @@ Le serveur de sauvegarde est déployé **dans votre infrastructure**, dans le da
 | Proxy de sauvegarde (VBR proxy) | 2 | 3 Go | 30 Go |
 | **Minimum requis dans le datacenter** | **10** | **19 Go** | **530 Go** |
 
-> [!INFO]
-> Ces valeurs correspondent au serveur de sauvegarde et à un proxy. Si votre parc a besoin de davantage de proxies, contactez le support : OVHcloud en déploie d'autres. Chaque proxy supplémentaire utilise 2 vCPU, 3 Go de mémoire et 30 Go de disque.
+:::info
+Ces valeurs correspondent au serveur de sauvegarde et à un proxy. Si votre parc a besoin de davantage de proxies, contactez le support : OVHcloud en déploie d'autres. Chaque proxy supplémentaire utilise 2 vCPU, 3 Go de mémoire et 30 Go de disque.
+:::
 
 ## En pratique
 
@@ -113,10 +114,11 @@ Un message sur votre tableau de bord vous signale quand vous pouvez taguer vos m
 
 Le bandeau **Vous pouvez taguer vos machines dans vSphere** (**You can tag your machines in vSphere**) apparaît sur le tableau de bord quand le VBR est prêt.
 
-> [!INFO]
-> **Quand taguer vos machines ?**
->
-> Vous pouvez taguer vos machines environ 30 minutes après la commande. Ensuite, c'est le tag dans vSphere qui fait foi, pris en compte dans l'heure. Le déroulé complet est expliqué dans le guide [Protéger vos machines virtuelles](/guides/storage-and-backup/manage-backup/tag-vm).
+:::info
+**Quand taguer vos machines ?**
+
+Vous pouvez taguer vos machines environ 30 minutes après la commande. Ensuite, c'est le tag dans vSphere qui fait foi, pris en compte dans l'heure. Le déroulé complet est expliqué dans le guide [Protéger vos machines virtuelles](/guides/storage-and-backup/manage-backup/tag-vm).
+:::
 :::warning
 **Si la livraison échoue**
 
@@ -134,20 +136,22 @@ Le service affiche le badge **Erreur** sur votre tableau de bord, à la place de
 
    L'écran de changement de mot de passe (**Change password**) de la première connexion. Renseignez les champs puis cliquez sur Confirmer (<code className="action">Confirm</code>).
 
-> [!INFO]
-> **Ce que votre compte permet**
->
-> Votre compte VBR vous permet de lancer une sauvegarde à la demande, de restaurer une machine virtuelle complète ou des fichiers, et de consulter l'état de vos sauvegardes. La création et la modification des jobs de sauvegarde restent gérées par OVHcloud : c'est le tag vSphere qui décide de ce qui est protégé.
+:::info
+**Ce que votre compte permet**
+
+Votre compte VBR vous permet de lancer une sauvegarde à la demande, de restaurer une machine virtuelle complète ou des fichiers, et de consulter l'état de vos sauvegardes. La création et la modification des jobs de sauvegarde restent gérées par OVHcloud : c'est le tag vSphere qui décide de ce qui est protégé.
+:::
 ### Étape 6 : protéger vos machines virtuelles
 
 Une machine n'est sauvegardée que si elle porte un tag. Dans vSphere, posez sur la machine le tag de son Backup plan : `standard`, `advanced` ou `premium`. Un seul tag par machine, pris en compte dans l'heure.
 
 La marche à suivre est détaillée dans le guide [Protéger vos machines virtuelles](/guides/storage-and-backup/manage-backup/tag-vm).
 
-> [!INFO]
-> **Si aucune machine n'est protégée**
->
-> Trois jours après la livraison, puis dix jours après, vous recevez un e-mail de rappel. Le rappel à dix jours annonce la date de résiliation de votre service. Trente jours après la livraison, si aucune machine n'est protégée, le service est résilié automatiquement : l'accès au VBR est fermé et rien n'est facturé. Pour protéger votre infrastructure, il faut alors commander à nouveau (voir [Résilier et réactiver un service](/guides/storage-and-backup/manage-backup/terminate#résiliation-automatique-dun-service-jamais-utilisé)).
+:::info
+**Si aucune machine n'est protégée**
+
+Trois jours après la livraison, puis dix jours après, vous recevez un e-mail de rappel. Le rappel à dix jours annonce la date de résiliation de votre service. Trente jours après la livraison, si aucune machine n'est protégée, le service est résilié automatiquement : l'accès au VBR est fermé et rien n'est facturé. Pour protéger votre infrastructure, il faut alors commander à nouveau (voir [Résilier et réactiver un service](/guides/storage-and-backup/manage-backup/terminate#résiliation-automatique-dun-service-jamais-utilisé)).
+:::
 ### Protéger une autre infrastructure
 
 Chaque infrastructure est un service distinct, avec son propre VBR, ses propres identifiants et sa propre facturation. Pour en protéger une autre, cliquez sur <code className="action">Ajouter une infrastructure</code> sur le tableau de bord. Vous relancez une commande complète : les conditions sont acceptées à nouveau, et le site secondaire est choisi à nouveau pour cette infrastructure. Vos services existants continuent de fonctionner pendant le déploiement du nouveau.
