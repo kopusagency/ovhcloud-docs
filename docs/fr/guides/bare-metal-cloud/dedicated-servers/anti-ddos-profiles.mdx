@@ -71,20 +71,33 @@ Vous créez des **politiques**. Une politique associe un profil de trafic résea
 
 #### Les profils de trafic réseau
 
-Les profils sont maintenus par OVHcloud : vous choisissez celui qui correspond à votre usage au lieu de définir vous-même des seuils. La liste affichée dans l'espace client est filtrée selon votre compte et couvre actuellement :
+Les profils sont maintenus par OVHcloud : vous choisissez celui qui correspond à votre usage au lieu de définir vous-même des seuils. La liste affichée dans l'espace client est filtrée selon votre compte. Au lancement de la bêta, elle comprend :
 
-| Profil de trafic réseau | Usage décrit |
+| Profil de trafic réseau | À utiliser pour |
 |---|---|
-| VPN / UDP | Serveurs VPN (WireGuard, OpenVPN, IPsec) au débit de paquets UDP élevé. |
-| Blockchain / Solana | Nœuds Solana, avec les ports et les schémas de connexion propres à leur protocole. |
-| Media / Streaming | Streaming VoIP, RTC et HLS, avec des montées légitimes du nombre de spectateurs simultanés. |
-| Web / API | Applications web et API soumises à des rafales de requêtes, lors de ventes flash ou de campagnes. |
-| VoIP / RTC | Flux de voix en temps réel et flux média WebRTC. |
-| Custom UDP | Applications UDP à fort débit, non couvertes par un profil spécifique. |
+| VPN - Wireguard | Les serveurs VPN WireGuard. |
+| VPN - OpenVPN | Les serveurs OpenVPN fonctionnant en UDP, avec TCP en solution de repli. |
+| Game Server - Generic | Les serveurs de jeu utilisant à la fois TCP et UDP. Plus permissif que les profils de jeu UDP seul et TCP seul, il préserve toutes les fonctionnalités du jeu pendant une attaque, comme les téléchargements en TCP depuis un serveur dont le trafic de jeu passe par ailleurs en UDP. |
+| Game Server - Generic UDP | Les services de jeu reposant sur UDP. Il convient aussi au trafic TeamSpeak. |
+| Name Server - Generic TCP | Les protocoles de jeu reposant sur TCP. |
+| VoIP - TeamSpeak | Les serveurs TeamSpeak. Il protège aussi la plupart des services de jeu reposant sur UDP. |
+| WebServer - Generic | Les serveurs web recevant uniquement du trafic HTTP et HTTPS sur les ports TCP 80 et 443. |
+| Generic - Proxied TCP | Les serveurs back-end dont le front-end est hébergé hors d'OVHcloud, par exemple chez un fournisseur de CDN externe. Les hôtes qui ouvrent légitimement de nombreuses connexions vers le back-end risquent beaucoup moins d'être identifiés comme attaquants. |
+| Blockchain - Solana | Les nœuds Solana, dont le trafic légitime peut être très volumineux. |
+| Default | Un profil générique proposant plusieurs niveaux de sensibilité. Utilisez-le lorsqu'aucun autre profil ne correspond à votre usage. |
+
+{/* DRAFT: To verify — « Name Server - Generic TCP » : la liste source (beta-profiles.md, 2026-10-16) le décrit comme « TCP-based gaming protocols », ce qui ne correspond pas au nom. Faire confirmer le nom et la description par le Produit. */}
+
+#### Tirer le meilleur parti d'un profil
+
+- **VPN - Wireguard :** utilisez le port par défaut de WireGuard, UDP 51820. Vous évitez ainsi de perdre du trafic légitime pendant une attaque.
+- **VPN - OpenVPN :** utilisez les ports par défaut d'OpenVPN, UDP 1194 et TCP 443. Si vous n'avez pas besoin du repli en TCP, bloquez ce trafic avec l'[Edge Network Firewall](/guides/bare-metal-cloud/dedicated-servers/firewall-network).
+- **WebServer - Generic :** ne l'utilisez pas si le serveur reçoit aussi du trafic UDP. QUIC (HTTP/3) n'est pas encore pris en charge : le trafic QUIC est rejeté pendant une attaque.
+- **Blockchain - Solana :** pendant une attaque, la mitigation évite d'affecter le trafic Solana légitime. En contrepartie, des attaques très ciblées peuvent laisser passer davantage de trafic malveillant vers le serveur.
 
 #### La sensibilité
 
-La sensibilité place la politique entre deux risques : mitiger trop, ou pas assez.
+La sensibilité place la politique entre deux risques : mitiger trop, ou pas assez. Les niveaux disponibles dépendent du profil.
 
 | Sensibilité | Effet | À choisir lorsque |
 |---|---|---|
@@ -94,7 +107,7 @@ La sensibilité place la politique entre deux risques : mitiger trop, ou pas ass
 
 #### Une seule politique par adresse IP
 
-Une adresse IP relève d'une seule politique. Si un bloc est associé à une politique et une adresse de ce bloc à une autre, c'est l'entrée la plus spécifique qui l'emporte. Par exemple, si `203.0.113.0/24` est associé à une politique Media / Streaming et `203.0.113.10` à une politique VPN / UDP, alors `203.0.113.10` utilise la politique VPN / UDP et le reste du bloc la politique Media / Streaming.
+Une adresse IP relève d'une seule politique. Si un bloc est associé à une politique et une adresse de ce bloc à une autre, c'est l'entrée la plus spécifique qui l'emporte. Par exemple, si `203.0.113.0/24` est associé à une politique WebServer - Generic et `203.0.113.10` à une politique VPN - Wireguard, alors `203.0.113.10` utilise la politique VPN - Wireguard et le reste du bloc la politique WebServer - Generic.
 
 Rien d'autre ne change pour votre service : vos règles Edge Network Firewall restent intactes et le tarif de vos services n'évolue pas.
 
@@ -114,7 +127,7 @@ Une fois l'activation terminée, l'onglet `Profiling` affiche vos politiques. L'
 
 1. Dans l'onglet `Profiling`, cliquez sur <code className="action">Create a policy</code>.
 2. Dans le champ `Name`, saisissez un nom qui identifie l'usage, par exemple `vpn-concentrators`.
-3. Dans la liste `Application profile`, sélectionnez le profil correspondant à votre usage. Sa description et un exemple s'affichent sous la liste.
+3. Dans la liste `Application profile`, sélectionnez le profil correspondant à votre usage. Sa description s'affiche sous la liste.
 4. Réglez la `Sensitivity`. Commencez par `Medium`, sauf si vous savez déjà dans quel sens la protection doit évoluer.
 5. Cliquez sur <code className="action">Create policy</code>.
 
