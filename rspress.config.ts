@@ -154,6 +154,31 @@ export default defineConfig({
             '}})();',
           ].join(''),
         },
+        // Cookie policy for a region the CMP does not cover yet (see
+        // config/regions.ts `cookieScript`).
+        ...(regionConfig.cookieScript
+          ? [
+              // The container calls jQuery as soon as it runs. It is async, so
+              // it may run before any deferred script: jQuery must be
+              // parser-blocking and placed before it to be there in time.
+              {
+                tag: 'script',
+                head: true,
+                append: true,
+                attrs: { src: '/vendor/jquery-3.7.1.min.js' },
+              },
+              {
+                tag: 'script',
+                head: true,
+                append: true,
+                attrs: {
+                  src: regionConfig.cookieScript,
+                  async: true,
+                  'data-analytics': '',
+                },
+              },
+            ]
+          : []),
         // Consent manager + analytics, only where the region runs them.
         ...(regionConfig.consentManager
           ? [
@@ -196,6 +221,8 @@ export default defineConfig({
         __AI_ASSISTANT__: JSON.stringify(regionConfig.aiAssistant),
         // Whether the CMP and its analytics run (see config/regions.ts).
         __CONSENT_MANAGER__: JSON.stringify(regionConfig.consentManager),
+        // Whether guides end with the page feedback form (see config/regions.ts).
+        __PAGE_FEEDBACK__: JSON.stringify(regionConfig.pageFeedback),
         // Legal footer values, consumed by theme/components/SiteFooter. It
         // renders in the browser and cannot import config/regions.
         __FOOTER_COPYRIGHT__: JSON.stringify(regionConfig.copyright),

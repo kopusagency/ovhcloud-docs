@@ -85,6 +85,13 @@ export interface RegionConfig {
    * for the EU; a region without it loads none of these.
    */
   consentManager: boolean;
+  /**
+   * Standalone cookie-policy script for a region the CMP does not cover yet,
+   * loaded in <head> on every page (async, `data-analytics` attribute), right
+   * after a parser-blocking jQuery that the container needs. Unset where the
+   * CMP runs: the two must never load together.
+   */
+  cookieScript?: string;
   /** Canonical site origin, used for sitemaps and canonical URLs. */
   siteUrl: string;
   /** OVHcloud API console URL used by the "API Reference" sidebar header item. */
@@ -115,6 +122,12 @@ export interface RegionConfig {
    * site leaves the link out rather than send readers to the en-gb page.
    */
   productChangelog: boolean;
+  /**
+   * Whether the "Was this page helpful?" form is shown at the bottom of each
+   * guide. The US team does not collect this feedback, so the US site leaves
+   * the form out.
+   */
+  pageFeedback: boolean;
   /**
    * Language shown in the navbar's language slot while the region serves a
    * single locale. It looks like the language dropdown but cannot be opened:
@@ -171,6 +184,7 @@ export const REGIONS: Record<Region, RegionConfig> = {
     aiAssistant: true,
     consentManager: true,
     productChangelog: true,
+    pageFeedback: true,
     siteUrl: 'https://docs.ovhcloud.com',
     apiConsoleUrl: 'https://api.eu.ovhcloud.com/console/',
     corporateUrl: 'https://www.ovhcloud.com/',
@@ -188,11 +202,15 @@ export const REGIONS: Record<Region, RegionConfig> = {
     routePrefix: '/',
     // The US does not run the assistant service.
     aiAssistant: false,
-    // The OVHcloud CMP is not implemented for the US: no consent manager, so
-    // no analytics either.
+    // The OVHcloud CMP is not ready for the US yet: no consent manager, so
+    // none of the analytics it injects either. The cookie policy comes from
+    // the Commanders Act container below in the meantime.
     consentManager: false,
+    cookieScript: 'https://cdn.tagcommander.com/3881/ovhcloud.js',
     // No US edition of the changelog: see `productChangelog` above.
     productChangelog: false,
+    // The US team does not collect page feedback: see `pageFeedback` above.
+    pageFeedback: false,
     siteUrl: 'https://docs.us.ovhcloud.com',
     apiConsoleUrl: 'https://api.us.ovhcloud.com/console',
     corporateUrl: 'https://us.ovhcloud.com/',

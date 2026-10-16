@@ -1,5 +1,34 @@
 # Changelog
 
+## 2026.10.16
+
+### Features
+
+#### All regions
+- **build:** load the Commanders Act cookie policy on the US site
+- **us:** add a Zendesk delta-resync script
+- **us:** drop the page feedback form on the US site
+
+### Fixes
+
+#### EU
+- point the Cloud Disk Array manager link at /public-cloud/
+
+#### All regions
+- move legacy ovh.com manager, sign-in and API hosts to ovhcloud.com
+- **us:** keep each guide's image paths with its resync base
+- **us:** make the resync reusable and image-aware
+
+### Maintenance
+
+#### All regions
+- **us:** regenerate the US redirect plan
+- **i18n:** sort the homeExploreProductPage key
+
+### Documentation
+- EU: 454 guides across de, en, es, fr, it, pl, pt
+- US: 483 guides across en
+
 ## 2026.10.15
 
 ### Features
