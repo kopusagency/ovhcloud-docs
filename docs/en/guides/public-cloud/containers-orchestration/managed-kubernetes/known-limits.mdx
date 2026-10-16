@@ -8,10 +8,10 @@ lastUpdated: 2026-03-17
 
 ## Nodes, pods and etcd limits
 
-|Plan | Max nodes per cluster | Max Pods per node | Max nodes per anti-affinity group | etcd max size |
+|Plan|Max nodes per cluster|Max Pods per node|Max nodes per anti-affinity group|etcd max size|
 |---------|---|---|---|---|
-| Free    |100|110|5|400MB|
-| Standard|500|110|5|8GB|
+|Free|100|110|5|400MB|
+|Standard|500|110|5|8GB|
 
 We have tested our OVHcloud Managed Kubernetes Service plans with a max number of nodes, while higher configurations might work and that there is no hard limits, we recommend staying under these limits for optimal stability.
 
@@ -34,7 +34,6 @@ The Standard plan includes advanced features not available on the Free plan, suc
 
 :::
 
-
 ## Patch, upgrades & maintenances considerations
 
 Any operation requested to our services, such as node deletions, patches or versions updates, follows a **graceful draining procedure** respecting [Pod Disruption Budgets](https://kubernetes.io/docs/tasks/run-application/configure-pdb/) for a maximum duration of 10 minutes. After this period, nodes are forcefully drained to allow operations to continue. Patch and Kubernetes version upgrade are performed using an In Place upgrade procedure, meaning the nodes are fully reinstalled one by one.
@@ -45,7 +44,6 @@ Worker nodes (added manually or through the Cluster Autoscaler) are generally re
 GPU worker nodes (t1 and t2 flavors) may take more than one hour to reach a ready state.
 
 :::
-
 
 If an incident is detected by the OVHcloud monitoring, as part of auto-healing, the nodes can be fully reinstalled after being in 'NotReady' state for more than 10 minutes.
 
@@ -72,7 +70,6 @@ Classic multi-attach (`csi-cinder-classic-multiattach`) is **not supported** for
 
 :::
 
-
 ### Volumes resizing
 
 Kubernetes `Persistent Volume Claims` resizing only allows to expand volumes, not to decrease them.
@@ -93,7 +90,6 @@ OVHcloud Managed Kubernetes supports LUKS encrypted Block Storage volumes using 
 This feature is available in specific regions. For detailed regional availability and storage class specifications, see "[Datacenters, nodes and storage flavors - LUKS encrypted storage classes](/guides/public-cloud/containers-orchestration/managed-kubernetes/datacenters-nodes-storage-flavors)".
 
 :::
-
 
 The following encrypted storage classes are available:
 
@@ -125,42 +121,38 @@ The MKS Cluster's quota relies on your project's quota. If necessary, consult [t
 
 ### Node naming
 
-Due to known limitations currently present in the `Kubelet` service, be careful to set __a unique name__ to all your OpenStack instances running in your tenant **including** your "Managed Kubernetes Service" nodes and the instances that your start directly on OpenStack through the OVHcloud Control Panel or API.
+Due to known limitations currently present in the `Kubelet` service, be careful to set **a unique name** to all your OpenStack instances running in your tenant **including** your "Managed Kubernetes Service" nodes and the instances that your start directly on OpenStack through the OVHcloud Control Panel or API.
 
 ## Ports
 
 To ensure proper operation of your OVHcloud Managed Kubernetes cluster, certain ports must remain open.
 
-### Free plan
+### Free plan (with Calico)
 
 #### Ports to open from public network (INGRESS)
 
-| Port(s)       | Protocol | Usage |
-| ------------- | -------- | ----- |
-| 22            | TCP      | SSH access for node management by OVHcloud |
-| 30000–32767   | TCP      | Needed for [NodePort](https://kubernetes.io/docs/concepts/services-networking/service/#nodeport) and [LoadBalancer](https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer) services |
-| 111           | TCP      | rpcbind (only if using NFS client) |
+| Port(s)       | Source                            | Protocol | Usage |
+| ------------- | --------------------------------- | -------- | ----- |
+| 22            | 178.33.222.162,217.182.145.216/29 | TCP      | SSH access for node management for OVHcloud |
+| 30000–32767   | 0.0.0.0 (only for Public Cluster) | TCP      | Needed for [NodePort](https://kubernetes.io/docs/concepts/services-networking/service/#nodeport) and [LoadBalancer](https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer) services |
 
 #### Ports to open from instances to public network (EGRESS)
 
-| Port(s)                 | Protocol | Usage                                                |
-| ----------------------- | -------- | ---------------------------------------------------- |
-| 443                     | TCP      | Kubelet communication with the kubernetes API server |
-| 80 (169.254.169.254/32) | TCP      | Init service (OpenStack metadata)                    |
-| 25000–31999             | TCP      | TLS tunnel between pods and kubernetes API server    |
-| 8090                    | TCP      | Internal (OVHcloud) node management service          |
-| 123                     | UDP      | NTP servers synchronisation (systemd-timesync)       |
-| 53                      | TCP/UDP  | Allow domain name resolution (systemd-resolve)       |
-| 111                     | TCP      | rpcbind (only if using NFS client)                   |
-| 4443                    | TCP      | Metrics server communication                         |
+| Port(s)                 | Destination        | Protocol | Usage                                                |
+| ----------------------- | ------------------ | -------- | ---------------------------------------------------- |
+| 80,443,4443,8080,8090,25000,250001      | 0.0.0.0/0          | TCP      | kubernetes API server and MKS system                 |
+| 80                      | 169.254.169.254/32 | TCP      | Init service (OpenStack metadata)                    |
+| 123                     | 0.0.0.0/0          | UDP      | NTP servers synchronisation (systemd-timesync)       |
+| 53                      | 0.0.0.0/0          | TCP/UDP  | Allow domain name resolution (systemd-resolve)       |
 
 #### Ports to open from others worker nodes (INGRESS/EGRESS)
 
-| Port(s)       | Protocol | Usage |
-| ------------- | -------- | ----- |
-| 8472          | UDP      | Flannel overlay network (for communication between pods) |
-| 4789          | UDP      | Kubernetes DNS internal usage |
-| 10250         | TCP      | Needed for [communication between apiserver and worker nodes](https://kubernetes.io/docs/concepts/architecture/master-node-communication/#apiserver-to-kubelet) (kubelet) |
+| Port(s)       | Source/Dest            | Protocol | Usage |
+| ------------- | ---------------------- | -------- | ----- |
+| 8472          | default security group | UDP      | Flannel overlay network (for communication between pods) |
+| 4789          | default security group | UDP      | Kubernetes DNS internal usage |
+| 10250         | default security group | TCP      | Needed for [communication between apiserver and worker nodes](https://kubernetes.io/docs/concepts/architecture/master-node-communication/#apiserver-to-kubelet) (kubelet) |
+| 111           | NFS Server             | TCP or UDP      | rpcbind (only if using NFS client) -> refer to your NFS provider |
 
 :::warning
 Blocking any of the above ports may cause cluster malfunction.
@@ -171,29 +163,37 @@ Keep the default OpenStack security group unchanged to avoid disconnecting nodes
 
 :::
 
+### Standard plan (with Private exposition and Cilium)
 
-#### About OpenStack security groups
+#### Ports to open to instances (INGRESS)
 
-In case you want to apply OpenStack security groups onto your nodes, it is mandatory to add the above ports in a ruleset concerning the `0.0.0.0/0` CIDR.
+| Port(s)       | Source                                       | Protocol | Usage |
+| ------------- | -------------------------------------------- | -------- | ----- |
+| 22            | Subnet's CIDR                                | TCP      | SSH access for node management by OVHcloud |
+| 30000–32767   | Subnet's CIDR (LoadBalancer) or 0.0.0.0/0 (NodePort + FloatingIP)     | TCP      | Needed for [NodePort](https://kubernetes.io/docs/concepts/services-networking/service/#nodeport) and [LoadBalancer](https://kubernetes.io/docs/concepts/services-networking/service/#loadbalancer) services |
+| 10250         | Subnet's CIDR | TCP      | Needed for [communication between apiserver and worker nodes](https://kubernetes.io/docs/concepts/architecture/master-node-communication/#apiserver-to-kubelet) (kubelet) |
+
+#### Ports to open from instances (EGRESS)
+
+| Port(s)                 | Destination        | Protocol | Usage                                                |
+| ----------------------- | ------------------ | -------- | ---------------------------------------------------- |
+| 443,3142,4443,5443,8090,25000,25001      | Subnet's CIDR           | TCP      | kubernetes API server and MKS system                 |
+| 80                      | 169.254.169.254/32 | TCP      | Init service (OpenStack metadata)                    |
+| 53                      | 0.0.0.0/0          | TCP/UDP  | Allow domain name resolution (systemd-resolve)       |
+
+#### Ports to open from others worker nodes (INGRESS/EGRESS)
+
+| Port(s)       | Source/Dest                                  | Protocol | Usage |
+| ------------- | -------------------------------------------- | -------- | ----- |
+| 8472          | default security group                       | UDP      | VXLAN Cilium |
+| 4240          | default security group                       | TCP      | Cilium heath-check |
+| -             | default security group                       | ICMP     | Cilium heath-check |
+| 111           | NFS Server                                   | TCP or UDP     | rpcbind (only if using NFS client) -> refer to your NFS provider |
+| 10250         | default security group | TCP      | Needed for [communication between apiserver and worker nodes](https://kubernetes.io/docs/concepts/architecture/master-node-communication/#apiserver-to-kubelet) (kubelet) |
 
 :::warning
-If you remove the default rules accepting all input and output when creating a new security group, make sure to allow the ports needed by your application, as well as the mandatory ports mentioned above.
-
+Those rules need to be adapted to your usage of your MKS cluster. e.g.rules may vary depending on the Cilium's customer configuration push via the `CiliumNodeConfig`. Refer to the [Cilium documentation](https://docs.cilium.io/en/stable/operations/system_requirements/#firewall-rules) to get those information.
 :::
-
-
-:::info
-In order to simplify your policy, you can add these rules which do not specify any port and will allow all internal traffic between pods and services within the cluster:
-
-| Direction | Ether Type | IP Protocol | Port Range | Remote IP Prefix | Description |
-|---|---|---|---|---|---|
-| Ingress | IPv4 | TCP | Any | 10.2.0.0/16 | Allow traffic from pods|
-| Ingress | IPv4 | TCP | Any | 10.3.0.0/16 | Allow traffic from services|
-
-It allows you to trust the internal traffic between pods and services within the cluster.
-
-:::
-
 
 For more details, please refer to the [Creating and configuring a security group in Horizon documentation](/guides/public-cloud/compute/setup-security-group).
 
@@ -233,7 +233,6 @@ Nodes affected in this way will also lack an External-IP.
 
 :::
 
-
 ### Free plan
 
 ### Known not compliant IP ranges
@@ -251,14 +250,12 @@ These subnets must be avoided in your private network to prevent networking issu
 
 :::
 
-
 To prevent network conflicts, it is recommended to **keep the DHCP service running** in your private network.
 
 :::warning
 At the moment, MKS worker nodes cannot use provided subnet DNS nameservers.
 
 :::
-
 
 ### Standard plan
 
@@ -277,7 +274,6 @@ However, these ranges can be customised either when creating a cluster or when r
 The subnet ranges cannot be modified on a running cluster without resetting it and losing all data.
 
 :::
-
 
 ## Cluster health
 
