@@ -1,7 +1,7 @@
 ---
 title: Configure the advanced parameters for Public Cloud Databases
 description: Advanced configuration for Public Cloud Databases engines
-lastUpdated: 2026-07-17
+lastUpdated: 2026-10-08
 ---
 
 import { Tab, Tabs } from '@rspress/core/theme';
@@ -112,7 +112,7 @@ Open the following API call, paste your service ID into the `serviceName` input 
     <Api version="v1" section="/cloud" method="GET" route={"/cloud/project/\\{serviceName\\}/database/postgresql"} />
   </Tab>
   <Tab label="Valkey">
-    <Api version="v1" section="/cloud" method="GET" route={"/cloud/project/\\{serviceName\\}/database/redis"} />
+    <Api version="v1" section="/cloud" method="GET" route={"/cloud/project/\\{serviceName\\}/database/valkey"} />
   </Tab>
 </Tabs>
 
@@ -236,6 +236,6 @@ Execute the advanced configuration retrieval call from above again. The response
 
 We would love to help answer questions and appreciate any feedback you may have.
 
-If you need training or technical assistance to implement our solutions, contact your sales representative or click on [this link](/links/professional-services) to get a quote and ask our Professional Services experts for a custom analysis of your project.
+[[fragment:professional-services|en]]
 
 Are you on Discord? Connect to our channel at [https://discord.gg/ovhcloud](https://discord.gg/ovhcloud) and interact directly with the team that builds our databases service!

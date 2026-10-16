@@ -2,8 +2,10 @@
 //
 // DECLARATION ORDER IS THE CANONICAL ORDER: a multi-key token renders its keys in the
 // order below whatever order it spells them in, so one set has exactly one rendering.
-// The order follows the Manager's sidebar, grouped by universe — product order is purely
-// presentational, and the sidebar is what the reader is already scanning.
+// Keys are grouped by universe. Within a universe the order is presentational only: it was
+// taken from the Manager's sidebar when the keys were written and does not track it, so it
+// no longer matches the sidebar everywhere. Do not reorder entries to follow the sidebar —
+// a move changes the canonical spelling of every multi-key token containing the key.
 
 import { accountContacts } from './keys/account-contacts';
 import { accountDashboard } from './keys/account-dashboard';
@@ -23,12 +25,16 @@ import { iamSamlSso } from './keys/iam-saml-sso';
 import { iamServiceAccounts } from './keys/iam-service-accounts';
 import { logsDataPlatform } from './keys/logs-data-platform';
 import { networkLoadBalancer } from './keys/network-load-balancer';
+import { networkOvhcloudConnect } from './keys/network-ovhcloud-connect';
 import { networkPublicIp } from './keys/network-public-ip';
 import { networkSecurityDashboard } from './keys/network-security-dashboard';
 import { networkVrack } from './keys/network-vrack';
 import { networkVrackServices } from './keys/network-vrack-services';
+import { privatecloudBackupLicenses } from './keys/privatecloud-backup-licenses';
+import { privatecloudHycu } from './keys/privatecloud-hycu';
 import { privatecloudNutanix } from './keys/privatecloud-nutanix';
 import { privatecloudSapHana } from './keys/privatecloud-sap-hana';
+import { privatecloudVeeamEnterprise } from './keys/privatecloud-veeam-enterprise';
 import { privatecloudVmwareVcf } from './keys/privatecloud-vmware-vcf';
 import { privatecloudVmwareVsphere } from './keys/privatecloud-vmware-vsphere';
 import { publiccloudAiDeploy } from './keys/publiccloud-ai-deploy';
@@ -39,6 +45,7 @@ import { publiccloudAnalytics } from './keys/publiccloud-analytics';
 import { publiccloudBilling } from './keys/publiccloud-billing';
 import { publiccloudBlockStorage } from './keys/publiccloud-block-storage';
 import { publiccloudCloudArchive } from './keys/publiccloud-cloud-archive';
+import { publiccloudColdArchive } from './keys/publiccloud-cold-archive';
 import { publiccloudContactsRights } from './keys/publiccloud-contacts-rights';
 import { publiccloudCreditsVouchers } from './keys/publiccloud-credits-vouchers';
 import { publiccloudDatabases } from './keys/publiccloud-databases';
@@ -54,12 +61,16 @@ import { publiccloudPrivateRegistry } from './keys/publiccloud-private-registry'
 import { publiccloudProjectSettings } from './keys/publiccloud-project-settings';
 import { publiccloudProjects } from './keys/publiccloud-projects';
 import { publiccloudPublicIps } from './keys/publiccloud-public-ips';
+import { publiccloudQuantumEmulators } from './keys/publiccloud-quantum-emulators';
+import { publiccloudQuantumQpus } from './keys/publiccloud-quantum-qpus';
 import { publiccloudQuotaRegions } from './keys/publiccloud-quota-regions';
 import { publiccloudRancher } from './keys/publiccloud-rancher';
 import { publiccloudSavingsPlan } from './keys/publiccloud-savings-plan';
 import { publiccloudUsersRoles } from './keys/publiccloud-users-roles';
 import { publiccloudVolumeSnapshot } from './keys/publiccloud-volume-snapshot';
 import { securityKms } from './keys/security-kms';
+import { securitySecretManager } from './keys/security-secret-manager';
+import { storageBackupLicenses } from './keys/storage-backup-licenses';
 import { storageCloudDiskArray } from './keys/storage-cloud-disk-array';
 import { storageEnterpriseFileStorage } from './keys/storage-enterprise-file-storage';
 import { storageNasHa } from './keys/storage-nas-ha';
@@ -86,7 +97,7 @@ import { DOCS_DIR, discoverKeySets } from './sets';
 import type { CpNavKey } from './types';
 
 export const CPNAV_KEYS: Record<string, CpNavKey> = {
-  // --- Web Cloud, in Manager sidebar order -------------------------------------------
+  // --- Web Cloud ---------------------------------------------------------------------
   'web-domains': webDomains,
   'web-domain-dns-zone': webDomainDnsZone,
   'web-dns-zones': webDnsZones,
@@ -102,19 +113,23 @@ export const CPNAV_KEYS: Record<string, CpNavKey> = {
   'web-mx-plan': webMxPlan,
   'web-exchange': webExchange,
   'web-microsoft-365': webMicrosoft365,
-  // --- Hosted Private Cloud, in Manager sidebar order ---------------------------------
+  // --- Hosted Private Cloud -----------------------------------------------------------
   'privatecloud-vmware-vsphere': privatecloudVmwareVsphere,
   'privatecloud-vmware-vcf': privatecloudVmwareVcf,
   'privatecloud-nutanix': privatecloudNutanix,
   'privatecloud-sap-hana': privatecloudSapHana,
-  // --- Bare Metal Cloud, in Manager sidebar order -------------------------------------
+  'privatecloud-veeam-enterprise': privatecloudVeeamEnterprise,
+  'privatecloud-hycu': privatecloudHycu,
+  'privatecloud-backup-licenses': privatecloudBackupLicenses,
+  // --- Bare Metal Cloud ---------------------------------------------------------------
   'baremetal-dedicated-servers': baremetalDedicatedServers,
   'baremetal-vps': baremetalVps,
   'baremetal-backup-agent': baremetalBackupAgent,
+  'storage-backup-licenses': storageBackupLicenses,
   'storage-cloud-disk-array': storageCloudDiskArray,
   'storage-enterprise-file-storage': storageEnterpriseFileStorage,
   'storage-nas-ha': storageNasHa,
-  // --- Public Cloud, in Manager sidebar order ------------------------------------------
+  // --- Public Cloud --------------------------------------------------------------------
   // Every product route carries {projectId}, so no product has a project-independent
   // URL: the chain names the product, the link is always the project list.
   'publiccloud-projects': publiccloudProjects,
@@ -126,12 +141,15 @@ export const CPNAV_KEYS: Record<string, CpNavKey> = {
   'publiccloud-ai-training': publiccloudAiTraining,
   'publiccloud-ai-deploy': publiccloudAiDeploy,
   'publiccloud-ai-endpoints': publiccloudAiEndpoints,
+  'publiccloud-quantum-emulators': publiccloudQuantumEmulators,
+  'publiccloud-quantum-qpus': publiccloudQuantumQpus,
   'publiccloud-users-roles': publiccloudUsersRoles,
   'publiccloud-instances': publiccloudInstances,
   'publiccloud-instance-backup': publiccloudInstanceBackup,
   'publiccloud-block-storage': publiccloudBlockStorage,
   'publiccloud-volume-snapshot': publiccloudVolumeSnapshot,
   'publiccloud-file-storage': publiccloudFileStorage,
+  'publiccloud-cold-archive': publiccloudColdArchive,
   'publiccloud-cloud-archive': publiccloudCloudArchive,
   'publiccloud-load-balancer': publiccloudLoadBalancer,
   'publiccloud-public-ips': publiccloudPublicIps,
@@ -145,18 +163,19 @@ export const CPNAV_KEYS: Record<string, CpNavKey> = {
   'publiccloud-credits-vouchers': publiccloudCreditsVouchers,
   'publiccloud-savings-plan': publiccloudSavingsPlan,
   'publiccloud-project-settings': publiccloudProjectSettings,
-  // --- Network, in Manager sidebar order -----------------------------------------------
+  // --- Network -------------------------------------------------------------------------
   'network-vrack': networkVrack,
   'network-vrack-services': networkVrackServices,
+  'network-ovhcloud-connect': networkOvhcloudConnect,
   'network-public-ip': networkPublicIp,
   'network-load-balancer': networkLoadBalancer,
   'network-security-dashboard': networkSecurityDashboard,
-  // --- Telecom, in Manager sidebar order -----------------------------------------------
+  // --- Telecom -------------------------------------------------------------------------
   'telecom-voip-fax': telecomVoipFax,
   'telecom-sms': telecomSms,
   'telecom-xdsl-fttx': telecomXdslFttx,
   'telecom-otb': telecomOtb,
-  // --- Identity, Security & Operations, in Manager sidebar order ----------------------
+  // --- Identity, Security & Operations ------------------------------------------------
   // The tree groups these under `Identity and access management`, `Security` and
   // `Operations`; those are group nodes, which the docs convention omits.
   'iam-identities': iamIdentities,
@@ -164,6 +183,7 @@ export const CPNAV_KEYS: Record<string, CpNavKey> = {
   'iam-service-accounts': iamServiceAccounts,
   'iam-policies': iamPolicies,
   'security-kms': securityKms,
+  'security-secret-manager': securitySecretManager,
   'logs-data-platform': logsDataPlatform,
   // --- Account and billing ------------------------------------------------------------
   // Reached from the user menu, not the sidebar, so the Manager exposes no order to
@@ -178,6 +198,20 @@ export const CPNAV_KEYS: Record<string, CpNavKey> = {
   'billing-payment-methods': billingPaymentMethods,
   'billing-services': billingServices,
 };
+
+/**
+ * Multi-key combinations that occur in the guides. One rule is generated per entry, so a
+ * combination must be declared before a token can use it; `pnpm cpnav:validate` reports
+ * undeclared ones. They are enumerated rather than computed because a rule per possible
+ * subset is combinatorial and `ReplaceRule.replace` is typed as a plain string.
+ * Order within an entry does not matter — entries are canonicalised.
+ */
+export const CPNAV_SETS: string[][] = [
+  ['iam-policies', 'security-kms'],
+  ['web-email-pro', 'web-exchange'],
+  ['web-email-pro', 'web-mx-plan', 'web-exchange'],
+  ['web-mx-plan', 'web-zimbra', 'web-email-pro', 'web-exchange'],
+];
 
 const ORDER = Object.keys(CPNAV_KEYS);
 

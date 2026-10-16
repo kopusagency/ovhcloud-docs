@@ -4,6 +4,8 @@ description: "Découvrez comment interrompre vos abonnements OVHcloud depuis l'e
 lastUpdated: 2026-01-19
 ---
 
+import { Region } from '@components/Zone';
+
 ## Objectif
 
 Vous souhaitez résilier un ou plusieurs services OVHcloud. Ce guide vous indiquera comment interrompre votre abonnement depuis la page <ManagerLink to="/#/billing/autorenew/services">Mes offres et services</ManagerLink>.
@@ -90,13 +92,15 @@ Pour résilier votre offre [Hosted Exchange](https://www.ovhcloud.com/fr/emails/
 
 Pour résilier votre offre [Private Exchange](https://www.ovhcloud.com/fr/emails/private-exchange/), suivez les instructions de [ce guide](/guides/web-cloud/email-and-collaborative-solutions/microsoft-exchange/manage-billing-exchange#supprimer-des-comptes-1).
 
-#### Office 365 csp 1 <a name="office-csp1"></a>
+<Region zones={['eu']}>
+#### Microsoft 365 (CSP1) <a name="office-csp1"></a>
 
-Pour résilier votre offre [Office 365 csp 1](https://www.ovhcloud.com/fr/collaborative-tools/microsoft-365/), suivez les instructions de [ce guide](/guides/web-cloud/email-and-collaborative-solutions/microsoft-office/office365-csp1#gerer-vos-abonnements).
+Pour résilier votre offre [Microsoft 365 (CSP1)](/links/web/ms365), suivez les instructions du guide « [Gérer un groupe de licences Microsoft 365 OVHcloud (CSP1)](/guides/web-cloud/email-and-collaborative-solutions/microsoft-office/office365-csp1#managesubscriptions) ».
 
-#### Office 365 csp 2 <a name="office-csp2"></a>
+#### Office 365 Revendeurs (CSP2) <a name="office-csp2"></a>
 
-Pour résilier votre offre [Office 365 csp 2](https://www.ovhcloud.com/fr/collaborative-tools/microsoft-365/reseller/), suivez les instructions de [ce guide](/guides/web-cloud/email-and-collaborative-solutions/microsoft-office/office365-csp2#gérer-vos-abonnements).
+Pour résilier votre offre [Office 365 Revendeurs (CSP2)](/links/web/ms365-reseller), suivez les instructions du guide « [Gérer un groupe de licences Office 365 Revendeurs (CSP2) OVHcloud](/guides/web-cloud/email-and-collaborative-solutions/microsoft-office/office365-csp2#gérer-vos-abonnements) ».
+</Region>
 
 #### Certificat SSL Sectigo <a name="ssl_sectigo"></a>
 
@@ -171,7 +175,7 @@ Vérifiez également que les conditions suivantes sont bien remplies :
 
 - Vous devez être le « contact administrateur » du service. Pour plus d'informations, consultez [ce guide](/guides/account-and-service-management/account-information/managing-contacts#définition).
 - Le service est en **renouvellement automatique**. Si votre service est en [renouvellement manuel](/guides/account-and-service-management/managing-billing-payments-and-services/automatic-renewal#auto-vs-manual), il sera suspendu à sa date d'expiration puis supprimé au bout de quelques jours.
-- Le service n'est pas suspendu, notamment en raison d'un défaut de régularisation d'une facture. Vérifiez que vous êtes à jour dans les [paiements](/guides/account-and-service-management/managing-billing-payments-and-services/invoice-management#pay-bills) et [renouvellements](/guides/account-and-service-management/managing-billing-payments-and-services/automatic-renewal#renewal-management) de vos services.
+- Le service n'est pas suspendu, notamment en raison d'un défaut de régularisation d'une facture. Vérifiez que vous êtes à jour dans les [paiements](/guides/account-and-service-management/managing-billing-payments-and-services/invoice-management#pay-bills) et [renouvellements](/guides/account-and-service-management/managing-billing-payments-and-services/automatic-renewal#actions) de vos services.
 
 Si vous ne parvenez toujours pas à résilier votre service, contactez nos équipes du support en ouvrant un ticket depuis le [centre d'aide](https://help.ovhcloud.com/csm?id=csm_get_help).
 
@@ -191,10 +195,10 @@ Vous devez effectuer la procédure de résiliation pour chaque service de façon
 
 La fermeture de votre compte client OVHcloud et la suppression de vos données personnelles n'est possible que si :
 
-1. Vous n'avez plus de services visibles dans la section « [Mes offres et services](https://www.ovh.com/manager/dedicated/#/billing/autoRenew) ». Dans le cas contraire, vous devrez dans un premier temps demander leur résiliation et attendre leur suppression.
-2. Vous n'avez pas de factures en attente de paiement. Dans le cas contraire, vous devez procéder à leur règlement en cliquant sur le bouton <code className="action">Régler immédiatement</code> dans les actions de masse de la page « [Mes factures](https://www.ovh.com/manager/#/dedicated/billing/history) ».
-3. Vous n'avez pas de commande en cours. Vérifiez-le sur [cette page](https://www.ovh.com/manager/#/dedicated/billing/orders/orders).
-4. Votre compte prépayé n'est pas positif. Vérifiez-le sur [cette page](https://www.ovh.com/manager/#/dedicated/billing/payment/ovhaccount).
+1. Vous n'avez plus de services visibles dans la section « <ManagerLink to="/dedicated/#/billing/autoRenew">Mes offres et services</ManagerLink> ». Dans le cas contraire, vous devrez dans un premier temps demander leur résiliation et attendre leur suppression.
+2. Vous n'avez pas de factures en attente de paiement. Dans le cas contraire, vous devez procéder à leur règlement en cliquant sur le bouton <code className="action">Régler immédiatement</code> dans les actions de masse de la page « <ManagerLink to="/#/dedicated/billing/history">Mes factures</ManagerLink> ».
+3. Vous n'avez pas de commande en cours. Vérifiez-le sur <ManagerLink to="/#/dedicated/billing/orders/orders">cette page</ManagerLink>.
+4. Votre compte prépayé n'est pas positif. Vérifiez-le sur <ManagerLink to="/#/dedicated/billing/payment/ovhaccount">cette page</ManagerLink>.
 
 Si les conditions ci-dessus sont remplies, vous pouvez demander à supprimer votre compte OVHcloud et les données liées en suivant ces étapes :
 

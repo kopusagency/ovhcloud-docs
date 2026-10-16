@@ -13,17 +13,15 @@ import { Tab, Tabs } from '@rspress/core/theme';
 
 La [vRack](https://www.ovhcloud.com/it/network/vrack/) OVHcloud è una rete privata che permette di configurare l'indirizzamento tra due o più [Server dedicati](https://www.ovhcloud.com/it/bare-metal/) OVHcloud. ma permette anche di aggiungere [istanze Public Cloud](https://www.ovhcloud.com/it/public-cloud/compute/) alla rete privata per creare un'infrastruttura di risorse fisiche e virtuali.
 
-**Questa guida ti mostra come configurare una rete privata tra un'[istanza Public Cloud](/guides/public-cloud/compute/first-steps-with-public-cloud-instance) e un [Server dedicato](https://www.ovhcloud.com/it/bare-metal/).**
+**Questa guida ti mostra come configurare una rete privata tra un'[istanza Public Cloud](/guides/public-cloud/compute/getting-started) e un [Server dedicato](https://www.ovhcloud.com/it/bare-metal/).**
 
 ## Prerequisiti
 
-* Aver creato un'[istanza Public Cloud OVHcloud](/guides/public-cloud/compute/first-steps-with-public-cloud-instance)
+* Aver creato un'[istanza Public Cloud OVHcloud](/guides/public-cloud/compute/getting-started)
 * Aver attivato un servizio [vRack](https://www.ovhcloud.com/it/network/vrack/)
 * Disporre di un [server dedicato](https://www.ovhcloud.com/it/bare-metal/) compatibile con la vRack
 * Una gamma di indirizzi IP privati di tua scelta
 * Entrambi i servizi devono trovarsi nella stessa vRack.
-
-[[cpnav:publiccloud-projects]]
 
 :::warning
 Questa funzionalità potrebbe non essere disponibile o essere limitata sui [server dedicati **Eco**](https://eco.ovhcloud.com/it/about/).
@@ -33,17 +31,21 @@ Consulta la nostra [pagina comparativa](https://eco.ovhcloud.com/it/compare/) pe
 :::
 
 
+[[cpnav:network-vrack]]
+
 ## Procedura
 
 ### Aggiungere un progetto Public Cloud alla vRack
 
 :::info
-Questo non si applica ai progetti appena creati che vengono consegnati automaticamente con una vRack. Una volta creato il progetto, è possibile visualizzare la vRack aprendo il menu <code className="action">Network</code> nella barra laterale sinistra e selezionando <code className="action">Rete privata vRack</code>.
+Questo non si applica ai progetti appena creati che vengono consegnati automaticamente con una vRack.
 
 È inoltre possibile rimuovere il progetto dalla vRack assegnata e collegarlo ad un'altra vRack se lo si desidera, in particolare se si disponeva già di una vRack esistente con il proprio server o i propri server dedicati.
 
 :::
 
+
+Seleziona la tua vRack nella lista.
 
 Nella lista dei servizi compatibili, seleziona il progetto che vuoi aggiungere alla vRack, poi clicca sul pulsante <code className="action">Aggiungi</code>.
 
@@ -66,7 +68,7 @@ Le potrebbero presentarsi due situazioni:
 
 #### Caso di una nuova istanza
 
-Per maggiori informazioni, consulta la guida [Creare un'istanza Public Cloud](/guides/public-cloud/compute/first-steps-with-public-cloud-instance). Durante la creazione di un'istanza, è possibile scegliere, allo Step 5, una modalità di rete, seguita da una rete privata in cui integrare l'istanza.
+Per maggiori informazioni, consulta la guida [Creare un'istanza Public Cloud](/guides/public-cloud/compute/getting-started). Durante la creazione di un'istanza, è possibile scegliere, allo Step 5, una modalità di rete, seguita da una rete privata in cui integrare l'istanza.
 
 #### Caso di un'istanza esistente
 

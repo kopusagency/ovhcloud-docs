@@ -201,10 +201,11 @@ Standard blocks that must read identically on every page (support scope, recurri
 
 `[[fragment:<key>]]`
 
-Available keys: `support-scope` — the support-scope disclaimer.
+Available keys: `support-scope` — the support-scope disclaimer; `professional-services` — the Professional Services sentence of the *Go further* section.
 
 - **Never paraphrase or paste the text into a guide.** Insert the token — `[[fragment:<key>]]` — so all pages stay in sync; the wording is edited once, centrally.
 - Tokens resolve per locale at build time, before compilation, so a fragment may itself contain `/links/` targets.
+- A key whose body carries a numbered note (`<sup>1</sup>`) also accepts `[[fragment:<key>|n=3]]`, which renders the same body with the note numbered 3 — for a guide whose other footnotes push the note down the sequence. Combine with the pin as `[[fragment:<key>|n=3|en]]` (`|en|n=3` renders the same).
 - An unknown or misspelled key **fails the build** (`remarkNoUnresolvedFragments`).
 - On a page whose prose is **untranslated English** — typically an EN guide that other locales reach through a symlink — pin the token to English with `[[fragment:<key>|en]]`, so the reader does not get a localised block sitting under English prose. `pnpm fragment:validate` enforces this on every symlinked guide, and requires all tokens on a page to agree (either every one carries `|en` or none does). The same modifier exists for CP-NAV tokens: `[[cpnav:<key>|en]]`.
 
@@ -352,7 +353,7 @@ Same route, restricted to So you Start via `brands` and to EU via `regions`:
 
 ### 10b — Zone-aware API links
 
-Generic links to the OVHcloud API follow the reader's commercial zone (EU / CA), like Control Panel links do. Both components are globally registered — **no import needed**. Do not use `/links/api`, `/links/console` or hardcoded `https://eu.api.ovh.com/…` URLs.
+Generic links to the OVHcloud API follow the reader's commercial zone (EU / CA), like Control Panel links do. Both components are globally registered — **no import needed**. Do not use `/links/api`, `/links/console` or hardcoded `https://api.eu.ovhcloud.com/…` URLs.
 
 A generic reference to the API or the API console (targets the zone's gateway page):
 
@@ -583,7 +584,7 @@ Revoke a credential by its ID with:
 
 ```bash
 # Replace <credentialId> with the numeric ID returned by the GET call above
-curl -X DELETE "https://eu.api.ovh.com/v1/me/api/credential/<credentialId>" \
+curl -X DELETE "https://api.eu.ovhcloud.com/v1/me/api/credential/<credentialId>" \
   -H "X-Ovh-Application: <appKey>" \
   -H "X-Ovh-Consumer: <consumerKey>" \
   -H "X-Ovh-Timestamp: $(date +%s)" \

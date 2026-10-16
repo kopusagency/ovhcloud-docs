@@ -1,5 +1,220 @@
 # Changelog
 
+## 2026.10.16
+
+### Features
+
+#### All regions
+- **build:** load the Commanders Act cookie policy on the US site
+- **us:** add a Zendesk delta-resync script
+- **us:** drop the page feedback form on the US site
+
+### Fixes
+
+#### EU
+- point the Cloud Disk Array manager link at /public-cloud/
+
+#### All regions
+- move legacy ovh.com manager, sign-in and API hosts to ovhcloud.com
+- **us:** keep each guide's image paths with its resync base
+- **us:** make the resync reusable and image-aware
+
+### Maintenance
+
+#### All regions
+- **us:** regenerate the US redirect plan
+- **i18n:** sort the homeExploreProductPage key
+
+### Documentation
+- EU: 454 guides across de, en, es, fr, it, pl, pt
+- US: 483 guides across en
+
+## 2026.10.15
+
+### Features
+
+#### US
+- **theme:** tighter product banner, shared with US universe pages
+- **us:** add universe landing pages
+- **us:** serve US guides under /en/
+
+#### All regions
+- **us:** drop the Product changelog link from the US sidebar
+- **us:** add the redirection plan from the Zendesk help centre
+- **api:** lighter API call design, no US flag
+- **us:** show a fixed English language indicator
+- **us:** add a 301.map for the US site
+
+### Fixes
+
+#### All regions
+- **us:** commit the US redirection rule file
+- **us:** drop the arrow from the fixed language indicator
+- **us:** move the images of the guides moved by the sidebar revision
+
+### Documentation
+- EU: 355 guides across de, en, es, fr, it, pl, pt
+- US: 727 guides across en
+
+## 2026.10.14
+
+### Features
+
+#### EU
+- **compute:** update sentence in the architecture guide (#981)
+- **cold archive:** update on getting stard (#915)
+- **Clickhouse:** update guide with the new available regions 1AZ (#837)
+
+### Fixes
+
+#### EU
+- sk-2845 zimbra automatic replies need the keep in inbox action on a forwarding filter (#1000)
+
+### Documentation
+- EU: 154 guides across de, en, es, fr, it, pl, pt
+
+## 2026.10.13
+
+### Fixes
+
+#### EU
+- warn that a redirection forwards spam and document the exchange redirection (#986)
+- document the zimbra service tab and how to choose a service (#984)
+- explain how to get an email out of the Zimbra Spam folder (#980)
+
+### Documentation
+- EU: 494 guides across de, en, es, fr, it, pl, pt
+
+## 2026.10.12
+
+### Fixes
+
+#### All regions
+- **theme:** make file download links visible (#975)
+
+### Documentation
+- EU: 24 guides across de, en, es, fr, it, pl, pt
+
+## 2026.10.09
+
+### Features
+
+#### All regions
+- **theme:** wire page feedback and allow a comment on positive votes
+
+## 2026.10.08
+
+### Features
+
+#### US
+- **region:** add the US documentation site (docs.us.ovhcloud.com) (#960)
+
+### Maintenance
+
+#### EU
+- **docs:** tokenization clean-up & fixes (#959)
+
+### Documentation
+- EU: 210 guides across de, en, es, fr, it, pl, pt
+- US: 778 guides across en
+
+## 2026.10.07
+
+### Features
+- **veeam:** update guides with the canadas ip (#909)
+
+### Documentation
+- 114 guides updated across de, en, es, fr, it, pl, pt
+
+## 2026.10.05
+
+### Maintenance
+- **banner:** remove SIRET banner from FR guides and home page (#923)
+
+### Documentation
+- 54 guides updated across de, en, es, fr, it, pl, pt
+
+## 2026.10.02
+
+### Fixes
+- **docs:** repoint dead anchors of the Public Cloud prices page (#914)
+- improve llms.txt generation
+
+### Maintenance
+- **docs:** Add nav tokens to leftover pages (#912)
+
+### Documentation
+- 856 guides updated across de, en, es, fr, it, pl, pt
+
+## 2026.10.01.1
+
+### Maintenance
+- **docs:** Fix tokenized pages (#903)
+
+### Documentation
+- 510 guides updated across de, en, es, fr, it, pl, pt
+
+## 2026.10.01
+
+### Fixes
+- **scripts:** improve validators for symlink functions (#888)
+
+### Maintenance
+- **docs:** delete leftover bullets from tokenized pages (#895)
+- **docs:** link fixes for LDP pages (#894)
+- **docs:** delete obsolete LDP guide (#889)
+
+### Documentation
+- 398 guides updated across de, en, es, fr, it, pl, pt
+
+## 2026.09.28
+
+### Features
+- **build:** render mermaid diagrams with rspress-plugin-mermaid
+
+### Fixes
+- **cpnav:** minor fixes in procedure (#877)
+- **scripts:** purge legacy excerpt line format (#876)
+
+### Documentation
+- 35 guides updated across de, en, es, fr, it, pl, pt
+
+## 2026.09.25.1
+
+### Features
+- **File storage:** update GS for adding encryption type (#860)
+
+### Fixes
+- **links:** restore link targets misrouted by the migration
+
+### Documentation
+- 276 guides updated across de, en, es, fr, it, pl, pt
+
+## 2026.09.25
+
+### Features
+- live-priced VPS product cards across the Game Panel guides (#857)
+- **vps:** update the Game Panel installation process following the new console manager (#854)
+- **vps:** update the Garry's Mod guide for the native Game Panel image (#855)
+- **opcp:** add docs for OPCP factory reset (#785)
+- **opcp:** add documentation for controller backup (#762)
+
+### Maintenance
+- RM obsolete guide (#832)
+
+### Documentation
+- 362 guides updated across de, en, es, fr, it, pl, pt
+
+## 2026.09.23
+
+### Documentation
+- 97 guides updated across de, en, es, fr, it, pl, pt
+
+## 2026.09.22
+
+### Documentation
+- 4700 guides updated across de, en, es, fr, it, pl, pt
+
 ## 2026.09.21
 
 ### Features

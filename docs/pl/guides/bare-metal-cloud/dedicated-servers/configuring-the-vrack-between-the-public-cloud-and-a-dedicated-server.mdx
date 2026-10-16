@@ -13,17 +13,15 @@ import { Tab, Tabs } from '@rspress/core/theme';
 
 [vRack](https://www.ovhcloud.com/pl/network/vrack/) OVHcloud to prywatna sieć, która umożliwia konfigurację adresowania między dwoma lub kilkoma [Serwerami dedykowanymi](https://www.ovhcloud.com/pl/bare-metal/) OVHcloud. Umożliwia ponadto dodawanie [instancji Public Cloud](https://www.ovhcloud.com/pl/public-cloud/compute/) do Twojej prywatnej sieci w celu utworzenia infrastruktury z zasobów fizycznych i wirtualnych.
 
-**Niniejszy przewodnik wyjaśnia, jak skonfigurować sieć prywatną między [instancją Public Cloud](/guides/public-cloud/compute/first-steps-with-public-cloud-instance) a [serwerem dedykowanym](https://www.ovhcloud.com/pl/bare-metal/).**
+**Niniejszy przewodnik wyjaśnia, jak skonfigurować sieć prywatną między [instancją Public Cloud](/guides/public-cloud/compute/getting-started) a [serwerem dedykowanym](https://www.ovhcloud.com/pl/bare-metal/).**
 
 ## Wymagania początkowe
 
-* Utworzenie [instancji Public Cloud](/guides/public-cloud/compute/first-steps-with-public-cloud-instance)
+* Utworzenie [instancji Public Cloud](/guides/public-cloud/compute/getting-started)
 * Aktywowanie usługi [vRack](https://www.ovhcloud.com/pl/network/vrack/)
 * Posiadanie [serwera dedykowanego](https://www.ovhcloud.com/pl/bare-metal/) kompatybilnego z usługą vRack
 * Wybrany zakres prywatnych adresów IP
 * Obie usługi muszą znajdować się w tym samym vRack.
-
-[[cpnav:publiccloud-projects]]
 
 :::warning
 Funkcja ta może być niedostępna lub ograniczona na [serwerach dedykowanych **Eco**](https://eco.ovhcloud.com/pl/about/).
@@ -34,17 +32,21 @@ Aby uzyskać więcej informacji, zapoznaj się z naszym [porównaniem](https://e
 
 
 
+[[cpnav:network-vrack]]
+
 ## W praktyce
 
 ### Dodaj projekt Public Cloud do sieci vRack
 
 :::info
-Nie dotyczy to nowo utworzonych projektów, które są automatycznie dostarczane z siecią vRack. Aby wyświetlić usługę vRack po utworzeniu projektu, otwórz menu <code className="action">Sieć</code> na lewym pasku bocznym i kliknij na <code className="action">Prywatna sieć vRack</code>.
+Nie dotyczy to nowo utworzonych projektów, które są automatycznie dostarczane z siecią vRack.
 
 Możesz również usunąć przypisany projekt z sieci vRack i przypisać go do innej sieci vRack, jeśli chcesz, zwłaszcza jeśli posiadasz już istniejący vRack na swoim (swoich) serwerze(ach) dedykowanym(ych).
 
 :::
 
+
+Wybierz vRack z listy.
 
 Na liście dostępnych usług zaznacz projekt, który chcesz dodać do szafy vRack, następnie kliknij przycisk <code className="action">Dodaj</code>.
 
@@ -67,13 +69,13 @@ Mogą wystąpić dwie sytuacje:
 
 #### Przypadki nowej instancji
 
-Jeśli potrzebujesz pomocy, zapoznaj się z przewodnikiem [Tworzenie instancji Public Cloud](/guides/public-cloud/compute/first-steps-with-public-cloud-instance). Podczas tworzenia instancji możesz w etapie 5 określić sieć prywatną, do której chcesz zintegrować Twoją instancję.
+Jeśli potrzebujesz pomocy, zapoznaj się z przewodnikiem [Tworzenie instancji Public Cloud](/guides/public-cloud/compute/getting-started). Podczas tworzenia instancji możesz w etapie 5 określić sieć prywatną, do której chcesz zintegrować Twoją instancję.
 
 #### Przypadki istniejącej instancji
 
 Po połączeniu projektu z vRack możesz utworzyć sieć prywatną i przypisać ją do istniejących instancji.
 
-W karcie <code className="action">Public Cloud</code> kliknij <code className="action">Private Network</code> w menu po lewej stronie, pod **Network**.
+W karcie <code className="action">Public Cloud</code> kliknij <code className="action">Private Network</code> w menu po lewej stronie, pod **Sieć**.
 
 Kliknij przycisk <code className="action">Utwórz prywatną sieć</code>.
 
