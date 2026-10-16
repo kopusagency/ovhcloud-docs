@@ -4,6 +4,8 @@ description: "Déployez une landing zone hub and spoke en production sur OVHclou
 lastUpdated: 2026-06-15
 ---
 
+import Api from '@components/Api';
+
 ## Objectif
 
 Ce guide accompagne les architectes cloud dans le déploiement d'une landing zone hub and spoke sur OVHcloud Public Cloud à l'aide d'un **vRack partagé unique avec routage en transit** — la topologie hub and spoke la plus simple disponible sur OVHcloud.
@@ -602,7 +604,9 @@ Configurez une alerte de consommation pour chaque projet dans la console OVHclou
 2. Dans l'encadré **Alerte de consommation à la demande**, cliquez sur <code className="action">Créer une alerte</code>.
 3. Renseignez l'**Adresse e-mail** à prévenir et le montant du **Seuil de déclenchement**, puis cliquez sur <code className="action">Enregistrer</code>.
 
-L'alerte est basée sur la projection de consommation en fin de mois et est envoyée par e-mail. Les notifications par webhook ne sont pas disponibles dans la console OVHcloud.
+L'alerte est basée sur la projection de consommation en fin de mois et est envoyée par e-mail. Pour définir plusieurs seuils par projet (par exemple 80 % et 100 % de votre budget), créez une alerte par seuil avec l'API OVHcloud : <Api version="v1" section="/cloud" method="POST" route={"/cloud/project/\{serviceName\}/alerting"} />
+
+Les notifications par webhook ne sont pas disponibles.
 {/* CP-STEPS-END:budget-alerts */}
 
 #### 8.4 Empreinte carbone

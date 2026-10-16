@@ -4,6 +4,8 @@ description: "Deploy a production-ready hub and spoke landing zone on OVHcloud P
 lastUpdated: 2026-06-15
 ---
 
+import Api from '@components/Api';
+
 ## Objective
 
 This guide walks cloud architects through deploying a hub and spoke landing zone on OVHcloud Public Cloud using a **single shared vRack with transit routing** — the simplest hub and spoke topology available on OVHcloud.
@@ -602,7 +604,9 @@ Set up a consumption alert for each project in the OVHcloud Console:
 2. In the **On-demand consumption alert** card, click <code className="action">Create an alert</code>.
 3. Enter the **Email address** to notify and the **Trigger threshold** amount, then click <code className="action">Save</code>.
 
-The alert is based on the projected consumption at the end of the month and is sent by email. Webhook notifications are not available in the OVHcloud Console.
+The alert is based on the projected consumption at the end of the month and is sent by email. To set several thresholds per project (for example 80% and 100% of your budget), create one alert per threshold with the OVHcloud API: <Api version="v1" section="/cloud" method="POST" route={"/cloud/project/\{serviceName\}/alerting"} />
+
+Webhook notifications are not available.
 {/* CP-STEPS-END:budget-alerts */}
 
 #### 8.4 Carbon footprint
