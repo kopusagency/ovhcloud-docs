@@ -13331,15 +13331,6 @@
   "sidebar.gen.storageAndBackupFileStoragePublicCloudFileStorageKeyConcepts": {
     "en": "Key concepts"
   },
-  "sidebar.gen.storageAndBackupManageBackupOverview": {
-    "fr": "Managed Backup for VMware - Démarrer",
-    "en": "Managed Backup for VMware - Getting started",
-    "de": "Managed Backup for VMware - Getting started",
-    "es": "Managed Backup for VMware - Getting started",
-    "it": "Managed Backup for VMware - Getting started",
-    "pl": "Managed Backup for VMware - Getting started",
-    "pt": "Managed Backup for VMware - Getting started"
-  },
   "sidebar.gen.storageAndBackupObjectStorage": {
     "en": "Object Storage"
   },
