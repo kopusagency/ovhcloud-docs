@@ -1,116 +1,148 @@
 ---
-title: Personnaliser davantage votre première application
-description: "Dans ce tutoriel, vous découvrirez des fonctionnalités avancées du visual app builder pour personnaliser les aspects visuels d'une application simple"
-lastUpdated: 2026-09-14
+title: Customise your first application further
+description: Find out how to add a ranked chart to your Getting Started application, display its figures in millions and deploy the change without downtime
+lastUpdated: 2026-10-14
 ---
 
-## Objectif
+## Objective
 
-Dans ce tutoriel, vous découvrirez des fonctionnalités avancées du visual app builder pour **personnaliser les aspects visuels** d'une application simple.
+This tutorial picks up the application you built in the Getting Started guide and adds two things to it: a chart that ranks your 7 busiest stations, and a **number format** that displays ride counts in millions of passengers rather than as long strings of digits.
 
-:::info
-Ce tutoriel contient un contenu étendu pour la section *Démarrage* intitulée [Créer et déployer une application front-end](/guides/public-cloud/data-platform/getting-started-visualize-data).
-:::
+You build both in the **Visual Editor** of the **Mosaic** template, as in [Expose and visualise your data](/guides/public-cloud/data-platform/getting-started-expose-and-visualize), then deploy them as a new version of your application.
 
-## Prérequis
+## Requirements
 
-Ce tutoriel suppose que vous avez suivi **les cinq sections** du [tutoriel de Démarrage](/guides/public-cloud/data-platform/landing-page-getting-started). Votre Data Processing Engine, votre Lakehouse Manager, votre Analytics Manager ont été configurés comme décrit sur leurs pages respectives, et vous avez déployé une API ainsi qu'une APP que vous allez personnaliser.
-
-## Créer un chart plus avancé
-
-Tout d'abord, découvrons un nouveau type de chart : un chart à barres horizontales pour afficher les 7 stations les plus fréquentées en termes de trafic total.
-
-Plutôt que de choisir une query déjà préparée dans l'Analytics Manager, vous pouvez aussi **créer de nouvelles queries à la volée** lors de la création d'un chart. Pour cela, réduisez le premier panneau et **créez** un second panneau à côté.
-
-<img className="thumbnail" alt="Application Services" src="/images/public-cloud/data-platform/getting-further/app-manager/picts/create-other-panel.png" loading="lazy" />
-
-Dans le second panneau, cliquez sur l'icône ➕ et sélectionnez **HTML**. Nommez-le *Top 7 Stations* avec le style **H1**.
-
-<img className="thumbnail" alt="Application Services" src="/images/public-cloud/data-platform/getting-further/app-manager/picts/create-other-html.png" loading="lazy" />
-
-Dans le second panneau, cliquez sur l'icône ➕ et sélectionnez Chart. Choisissez le type *Recharts - Bar Horizontal*.
-
-<img className="thumbnail" alt="Application Services" src="/images/public-cloud/data-platform/getting-further/app-manager/picts/create-other-chart.png" loading="lazy" />
-
-Dans l'onglet Request, choisissez le mode _Request_ et saisissez *rides* comme data (Sum et Descending) et *station_name* comme scale.
-
-<img className="thumbnail" alt="Application Services" src="/images/public-cloud/data-platform/getting-further/app-manager/picts/create-other-chart2.png" loading="lazy" />
-<img className="thumbnail" alt="Application Services" src="/images/public-cloud/data-platform/getting-further/app-manager/picts/create-other-chart3.png" loading="lazy" />
-
-Une dernière étape ! Les queries peuvent être entièrement personnalisées à l'aide de l'éditeur JSON avancé. Plus précisément, vous devez ajouter un paramètre personnalisé pour **limiter le nombre** de stations à 7. Pour cela, passez en mode avancé de votre query comme indiqué ci-dessous et ajoutez simplement `"limit":7,` sous la ligne 2 de l'objet JSON "data" :
-
-<img className="thumbnail" alt="Application Services" src="/images/public-cloud/data-platform/getting-further/app-manager/picts/query-advanced.png" loading="lazy" />
-
-Jusqu'ici, votre dashboard devrait ressembler à ceci. N'oubliez pas de **sauvegarder**.
-
-<img className="thumbnail" alt="Application Services" src="/images/public-cloud/data-platform/getting-further/app-manager/picts/chart-intermediate-new.png" loading="lazy" />
-
-## Aller plus loin dans la personnalisation
-
-Il y a beaucoup de choses que vous pouvez faire dans l'app builder pour concevoir votre application exactement comme vous le souhaitez.
-
-### Unités
-
-Cliquez sur le bouton **play** en haut du dashboard pour passer en mode lecture seule. Survolez les barres du chart *Top 7 stations*.
-
-<img className="thumbnail" alt="Application Services" src="/images/public-cloud/data-platform/getting-further/app-manager/picts/show-units.png" loading="lazy" />
-
-Ces unités pourraient être formatées en millions pour plus de clarté. Pour cela, allez dans l'onglet **Formatter**. Une measure appelée *RIDES* a déjà été ajoutée en choisissant le template de Démarrage.
+To follow this tutorial you need the `analytics` application from [Expose and visualise your data](/guides/public-cloud/data-platform/getting-started-expose-and-visualize), with its version `v2.0.0` running.
 
 :::info
-Plus généralement, si vous devez ajouter une nouvelle measure, elle doit porter le **même nom que l'attribut** que vous essayez de formater.
+The *Visual Editor* tab only appears on a running version. Everything below happens on the version that currently serves your users, and you copy it at the end to publish your changes.
 :::
 
-<img className="thumbnail" alt="Application Services" src="/images/public-cloud/data-platform/getting-further/app-manager/picts/new-formatter.png" loading="lazy" />
+## What you will build
 
-Concernant les paramètres de formatage, saisissez *Mpax* pour unit, *0* pour round (pour afficher des entiers), et *0.000001* pour multiplicator (pour afficher des millions).
+| Stage | Where | Result |
+|---|---|---|
+| 1. Declare a number format | *Formats* in the Visual Editor | A `Rides` format that displays values in millions of passengers (`Mpax`) |
+| 2. Add a heading and a ranked chart | The *Home* page of the application | A *Top 7 stations* bar chart that uses the `Rides` format |
+| 3. Deploy a new version | **Applications & APIs** | Version `v3.0.0`, which replaces `v2.0.0` without interruption |
+
+## Instructions
+
+### Step 1: Open the Visual Editor
+
+Open **Applications & APIs**, then your `analytics` application, then its version `v2.0.0`, and go to the *Visual Editor* tab.
+
+The editor opens on *Home*, the page that the Mosaic template creates in every application. It holds two containers: *Filters* at the top, and an empty container below it. This tutorial fills the empty one. The *Rides analytics* page you built in the Getting Started guide stays as it is.
+
+<img className="thumbnail" alt="The Home page of the analytics application in the Visual Editor, with an empty Filters container and an empty container below it" src="/images/public-cloud/data-platform/getting-further/customize-first-app/picts/01-home-dashboard.png" loading="lazy" />
+
+### Step 2: Declare a number format
+
+Your ride counts run into the millions, and a chart that prints `25833640` is hard to read. A number format fixes that once for the whole application.
+
+Click **Formats** in the toolbar. The *Number and date formats* dialog lists the formats the application already has, such as percentages and shortened numbers.
+
+Under *Measures*, enter `Rides` in the name field and click **Add**. Then fill in the new entry:
+
+| Field | Value | Effect |
+|---|---|---|
+| Unit | `Mpax` | Appended after the number: millions of passengers |
+| Multiplier | `0.000001` | Turns a number of rides into millions |
+| Decimals | `2` | Rounds to 2 decimals |
+
+Leave *Shorten above* and *Suffixes* empty. Next to the name of the entry, a preview applies the format to a sample value, `1.23Mpax`: check it before you save.
+
+<img className="thumbnail" alt="The Number and date formats dialog with the Rides entry: unit Mpax, multiplier 0.000001, 2 decimals and the preview 1.23Mpax" src="/images/public-cloud/data-platform/getting-further/customize-first-app/picts/02-formatter-measure.png" loading="lazy" />
+
+Click **Save**, then **Close**.
 
 :::info
-Le Formatter fonctionne en mode autosave : vos modifications sont enregistrées au fil de la saisie, il n'y a donc pas de bouton d'enregistrement à cliquer.
+The formats are saved in the sources of the version, in `config/formatter.json`, and are shared by every chart of the application. They travel with the version when you copy it in Step 5.
 :::
 
-<img className="thumbnail" alt="Application Services" src="/images/public-cloud/data-platform/getting-further/app-manager/picts/formatter-round.png" loading="lazy" />
+### Step 3: Add a heading
 
-Voici le résultat :
+Point at the empty container below *Filters* and click its **+ Add** button, then select **Basic › HTML**.
 
-<img className="thumbnail" alt="Application Services" src="/images/public-cloud/data-platform/getting-further/app-manager/picts/formatter-round2.png" loading="lazy" />
+The *HTML options* panel opens on the right. In *HTML*, enter:
 
-## Reconstruire et déployer la nouvelle version de votre application
+```html
+<h1 class='text-xl'>Top 7 Stations</h1>
+```
 
-Dernière étape : publiez les changements récents du dashboard en production. Pour cela, n'oubliez pas de sauvegarder puis retournez à l'onglet **Overview** de l'Application Manager. Vous devez d'abord cliquer sur **Stop** pour arrêter l'application actuellement déployée. Dès qu'elle s'est arrêtée, cliquez sur **Build**, puis sur **Deploy**.
+<img className="thumbnail" alt="The Top 7 Stations heading in the container, with the HTML options panel open on the right" src="/images/public-cloud/data-platform/getting-further/customize-first-app/picts/03-title-block.png" loading="lazy" />
 
-:::info
-Le processus de **build** prend généralement quelques minutes. Si vous êtes curieux de savoir ce qui se passe ou si le build échoue : ouvrez la console de logs en développant le panneau de version et inspectez les logs. N'hésitez pas à envoyer les logs à notre équipe support si vous ne savez pas comment résoudre le problème vous-même !
+:::warning
+The content of an HTML block is injected as it is. Anyone who can edit the dashboard can run a script in the session of every reader, so only give edit access to people you trust.
 :::
 
-Votre application est **live** et peut désormais être accédée en ligne !  
-Le lien peut être obtenu dans l'onglet Overview en cliquant sur **Open**.
+Close the options panel before you add the chart: while it is open, it covers the **+ Add** button of the container.
 
-<img className="thumbnail" alt="Application Services" src="/images/public-cloud/data-platform/getting-further/app-manager/picts/open-app.png" loading="lazy" />
+### Step 4: Add the ranked chart
 
-<img className="thumbnail" alt="Application Services" src="/images/public-cloud/data-platform/getting-further/app-manager/picts/dashboard-final-new.png" loading="lazy" />
+Click **+ Add** in the same container again and select **Charts › Bar horizontal**.
 
-Vos données sont maintenant disponibles dans l'application.
+In the *General* tab, name the chart `Top 7 stations`.
 
-**Vous avez terminé le tutoriel avancé de l'application builder !** Vous êtes désormais prêt à créer des applications de données complexes sur la Platform.
+Open the *Data* tab. Leave **Data source** on *Query builder*, then describe the ranking:
 
-Bien sûr, vous pouvez revenir à ce tutoriel à tout moment ! Nous vous encourageons à consulter le reste de la documentation pour approfondir un composant spécifique du produit si besoin.
+- Under *Measures*, click **+ Add** and select `rides` with the `sum` aggregation.
+- Under *Group by*, click **+ Add** and select `station_name`.
+- Under *Order by*, click **+ a criterion** and select `rides`, `descending`.
+- In *Row limit*, enter `7`, to keep only the 7 busiest stations.
 
-De plus, n'hésitez pas à **nous contacter** si vous avez besoin de quoi que ce soit, notre équipe support & produit se consacre à vous aider à livrer plus rapidement toutes les applications d'IA que vous avez en tête.
-## À la recherche de plus de flexibilité ?
+<img className="thumbnail" alt="The Data tab of the chart: rides summed, grouped by station_name, ordered by rides descending, with a row limit of 7" src="/images/public-cloud/data-platform/getting-further/customize-first-app/picts/04-chart-data.png" loading="lazy" />
 
-Le visual app builder est idéal pour démarrer rapidement, mais si vous êtes développeur et recherchez un **contrôle total sur le code de votre application**, nous proposons des templates supplémentaires construits avec des frameworks front-end modernes.
+Open the *Format* tab. It lists the fields of the chart. On the `rides` row, select the **Rides** format you declared in Step 2: the preview reads `1.23Mpax`. The axis and the tooltips of the chart now use it.
 
-Ces templates se connectent à la même Front API et vous permettent de créer des applications entièrement personnalisées avec votre propre workflow de développement.
+<img className="thumbnail" alt="The Format tab of the chart, with the Rides format selected for the rides field and the preview 1.23Mpax" src="/images/public-cloud/data-platform/getting-further/customize-first-app/picts/05-chart-format.png" loading="lazy" />
 
-[Créer une application personnalisée avec React, Vite & Shadcn](/guides/public-cloud/data-platform/tutorials-app-development-react-shadcn)
+Click **Apply**. The chart queries your data through your API and draws the 7 busiest stations, with an axis in `Mpax`.
 
-## Aller plus loin
+<img className="thumbnail" alt="The Top 7 stations bar chart drawn under the heading, with its axis in Mpax and its options open on the right" src="/images/public-cloud/data-platform/getting-further/customize-first-app/picts/06-chart-added.png" loading="lazy" />
 
-[[fragment:professional-services]]
+Click **Save** in the toolbar. The counter next to it goes back to *no changes*.
 
-Posez vos questions, faites-nous part de vos commentaires et interagissez directement avec l’équipe qui développe la Data Platform sur le [canal Discord](https://discord.gg/ovhcloud) dédié.
+<img className="thumbnail" alt="The saved dashboard with the heading and the chart, and the toolbar counter showing no changes" src="/images/public-cloud/data-platform/getting-further/customize-first-app/picts/07-dashboard-saved.png" loading="lazy" />
 
-Si vous avez besoin d'une assistance concernant vos services OVHcloud, créez une demande depuis notre [centre d'aide](/links/support-contact).
+### Step 5: Deploy a new version
 
-Rejoignez notre [communauté d'utilisateurs](/links/community).
+Saving writes your changes into the sources of `v2.0.0`, but your users are still served the build made before them. To publish them, copy the running version:
+
+1. Go back to the overview of your application.
+2. On the `v2.0.0` row, open the **…** menu and select **Copy**.
+3. Name the copy `v3.0.0`, tick **Auto Build** and **Auto Deploy**, and click **Create**.
+
+<img className="thumbnail" alt="The Versions list of the analytics application with v3.0.0 just created, v2.0.0 still deployed and marked Rebuild needed, and v1.0.0 stopped" src="/images/public-cloud/data-platform/getting-further/customize-first-app/picts/08-version-copied.png" loading="lazy" />
+
+`v2.0.0` keeps serving your users while `v3.0.0` builds and deploys. Data Platform switches to `v3.0.0` once it is ready, then stops `v2.0.0`.
+
+The build takes a couple of minutes. To follow it, open the *Builds* tab of the version and click the logs icon. The *Build Logs* dialog shows the state of the build, its time in the queue and each step as it runs.
+
+<img className="thumbnail" alt="The Build Logs dialog of version v3.0.0, in progress, streaming the first build steps" src="/images/public-cloud/data-platform/getting-further/customize-first-app/picts/09-build-logs.png" loading="lazy" />
+
+### Step 6: Open your application
+
+Once `v3.0.0` is running, open your application and sign in with **Data Platform**. *Home* now shows the *Top 7 Stations* heading and the ranked chart, with its figures in millions of passengers.
+
+## What you have built
+
+Your application has a number format shared by all its charts, and a ranked chart on its *Home* page, deployed as version `v3.0.0` without interrupting your users. You can reuse the same format in every chart that displays rides.
+
+## Looking for more flexibility?
+
+The Visual Editor is the quickest way to build an application. If you are a developer looking for **full control over your application code**, Data Platform also provides templates built with modern front-end frameworks.
+
+These templates connect to the same API and let you build fully custom applications with your own development workflow.
+
+[Build a custom app with React, Vite & Shadcn](/guides/public-cloud/data-platform/tutorials-app-development-react-shadcn)
+
+## Go further
+
+[[fragment:professional-services|en]]
+
+Ask questions, give your feedback and interact directly with the team building the Data Platform on the dedicated [Discord channel](https://discord.gg/ovhcloud).
+
+If you need support with your OVHcloud services, create a request in our [Help Centre](/links/support-contact).
+
+Join our [community of users](/links/community).
