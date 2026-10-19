@@ -1,9 +1,10 @@
 ---
 title: Kafka - Comment activer le Schema Registry
 description: Découvrez comment activer le Schema Registry de votre service Kafka et enregistrer votre premier schéma
-lastUpdated: 2026-10-14
+lastUpdated: 2026-10-19
 ---
 
+import { Tab, Tabs } from '@rspress/core/theme';
 import Api from '@components/Api';
 
 ## Objectif
@@ -16,39 +17,42 @@ Ce guide explique comment activer le Schema Registry de votre service Kafka depu
 
 ## Prérequis
 
-- Un [projet Public Cloud](/links/public-cloud/public-cloud) dans votre compte OVHcloud
-- Un [service Kafka](/guides/public-cloud/data-analytics/analytics/kafka-create-cluster) [acceptant les connexions entrantes](/guides/public-cloud/data-analytics/analytics/kafka-incoming-connections) depuis votre adresse IP, avec au moins un utilisateur
-- Pour utiliser l'API : un accès à l'[API OVHcloud](/guides/manage-and-operate/api/first-steps)
+- Disposer d'un [projet Public Cloud](/links/public-cloud/public-cloud) dans votre compte OVHcloud
+- Disposer d'un [service Kafka](/guides/public-cloud/data-analytics/analytics/kafka-create-cluster) [acceptant les connexions entrantes](/guides/public-cloud/data-analytics/analytics/kafka-incoming-connections) depuis votre adresse IP, avec au moins un utilisateur
+- Disposer d'un accès à l'[API OVHcloud](/guides/manage-and-operate/api/first-steps) (pour les étapes via l'API)
 
 [[cpnav:publiccloud-analytics]]
 
 ## En pratique
 
-### Activer le Schema Registry depuis l'espace client
+### Activer le Schema Registry
 
-{/* CP-STEPS-START:enable-schema-registry */}
-Accédez à l'onglet <code className="action">Configuration</code> de votre service Kafka. Faites défiler jusqu'à la section spécifique à Kafka et cliquez sur le bouton bascule du Schema Registry pour l'activer.
+<Tabs>
+  <Tab label="Espace client OVHcloud">
+    {/* CP-STEPS-START:enable-schema-registry */}
+    Accédez à l'onglet <code className="action">Configuration</code> de votre service Kafka. Faites défiler jusqu'à la section spécifique à Kafka et cliquez sur le bouton bascule du Schema Registry pour l'activer.
 
-![Activer le schema registry](/images/public-cloud/data-analytics/analytics/kafka-enable-schema-registry/kafka_enable_schema_registry.png)
+    ![Activer le Schema Registry](/images/public-cloud/data-analytics/analytics/kafka-enable-schema-registry/kafka_enable_schema_registry.png)
 
-Le Schema Registry peut être désactivé avec le même bouton bascule.
-{/* CP-STEPS-END:enable-schema-registry */}
+    Le Schema Registry peut être désactivé avec le même bouton bascule.
+    {/* CP-STEPS-END:enable-schema-registry */}
+  </Tab>
+  <Tab label="API OVHcloud">
+    Modifiez votre service en passant `schemaRegistry` à `true` (ou à `false` pour désactiver le Schema Registry) :
 
-### Activer le Schema Registry avec l'API
+    <Api version="v1" section="/cloud" method="PUT" route={"/cloud/project/\{serviceName\}/database/kafka/\{clusterId\}"} />
 
-Modifiez votre service en passant `schemaRegistry` à `true` (ou `false` pour le désactiver) :
-
-<Api version="v1" section="/cloud" method="PUT" route={"/cloud/project/\{serviceName\}/database/kafka/\{clusterId\}"} />
-
-```json
-{
-  "schemaRegistry": true
-}
-```
+    ```json
+    {
+      "schemaRegistry": true
+    }
+    ```
+  </Tab>
+</Tabs>
 
 ### Récupérer le point d'accès du Schema Registry
 
-Une fois activé, un point d'accès `kafkaSchemaRegistry` est ajouté à votre service. Vous le trouvez dans le détail du service :
+Une fois le Schema Registry activé, un point d'accès `kafkaSchemaRegistry` est ajouté à votre service. Vous le trouvez dans la liste `endpoints` du détail du service :
 
 <Api version="v1" section="/cloud" method="GET" route={"/cloud/project/\{serviceName\}/database/kafka/\{clusterId\}"} />
 
@@ -69,7 +73,7 @@ Le Schema Registry utilise HTTPS avec le certificat CA de votre service, ainsi q
 
 Un utilisateur a besoin d'une ACL Schema Registry pour lire ou enregistrer des schémas. Sans elle, chaque requête renvoie `401 Unauthorized`.
 
-Par exemple, pour permettre à l'utilisateur `app-orders` d'enregistrer des schémas pour le subject `orders-value`, créez l'ACL suivante :
+Par exemple, pour permettre à l'utilisateur `app-orders` d'enregistrer des schémas pour le subject `orders-value`, créez l'ACL suivante :
 
 <Api version="v1" section="/cloud" method="POST" route={"/cloud/project/\{serviceName\}/database/kafka/\{clusterId\}/schemaRegistryAcl"} />
 
@@ -85,7 +89,7 @@ Consultez le [guide des ACL](/guides/public-cloud/data-analytics/analytics/kafka
 
 ### Enregistrer et lister des schémas
 
-Téléchargez le certificat CA de votre service sous le nom `ca.pem` (consultez [Se connecter à un cluster Kafka en CLI](/guides/public-cloud/data-analytics/analytics/kafka-connect-cluster-cli)), puis enregistrez un schéma Avro pour le subject `orders-value` :
+Téléchargez le certificat CA de votre service sous le nom `ca.pem` (consultez le guide « [Se connecter à un cluster Kafka en CLI](/guides/public-cloud/data-analytics/analytics/kafka-connect-cluster-cli) »), puis enregistrez un schéma Avro pour le subject `orders-value` :
 
 ```bash
 curl --cacert ca.pem -u 'app-orders:<password>' \
@@ -94,13 +98,13 @@ curl --cacert ca.pem -u 'app-orders:<password>' \
   -d '{"schema":"{\"type\":\"record\",\"name\":\"Order\",\"fields\":[{\"name\":\"amount\",\"type\":\"int\"}]}"}'
 ```
 
-Le Schema Registry renvoie l'identifiant du schéma :
+Le Schema Registry renvoie l'identifiant du schéma :
 
 ```json
 {"id":1}
 ```
 
-Listez les subjects auxquels l'utilisateur a accès :
+Listez les subjects auxquels l'utilisateur a accès :
 
 ```bash
 curl --cacert ca.pem -u 'app-orders:<password>' https://<host>:<port>/subjects
@@ -110,7 +114,7 @@ curl --cacert ca.pem -u 'app-orders:<password>' https://<host>:<port>/subjects
 ["orders-value"]
 ```
 
-## Votre avis nous intéresse !
+## Votre avis nous intéresse !
 
 Nous serions ravis de répondre à vos questions et apprécions tout retour que vous pourriez nous faire.
 

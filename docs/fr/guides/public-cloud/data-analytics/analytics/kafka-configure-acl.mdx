@@ -1,9 +1,10 @@
 ---
 title: Kafka - Comment utiliser les listes de contrôle d'accès (ACL)
 description: Découvrez comment accorder des permissions sur les topics et le Schema Registry à vos utilisateurs Kafka avec les listes de contrôle d'accès (ACL)
-lastUpdated: 2026-10-14
+lastUpdated: 2026-10-19
 ---
 
+import { Tab, Tabs } from '@rspress/core/theme';
 import Api from '@components/Api';
 
 ## Objectif
@@ -14,9 +15,9 @@ Un utilisateur Kafka n'a aucun accès à vos topics tant que vous ne lui en acco
 
 ## Prérequis
 
-- Un [projet Public Cloud](/links/public-cloud/public-cloud) dans votre compte OVHcloud
-- Un [service Kafka](/guides/public-cloud/data-analytics/analytics/kafka-create-cluster) [acceptant les connexions entrantes](/guides/public-cloud/data-analytics/analytics/kafka-incoming-connections), avec au moins un utilisateur et un topic
-- Pour utiliser l'API : un accès à l'[API OVHcloud](/guides/manage-and-operate/api/first-steps)
+- Disposer d'un [projet Public Cloud](/links/public-cloud/public-cloud) dans votre compte OVHcloud
+- Disposer d'un [service Kafka](/guides/public-cloud/data-analytics/analytics/kafka-create-cluster) [acceptant les connexions entrantes](/guides/public-cloud/data-analytics/analytics/kafka-incoming-connections), avec au moins un utilisateur et un topic
+- Disposer d'un accès à l'[API OVHcloud](/guides/manage-and-operate/api/first-steps) (pour les étapes via l'API)
 
 [[cpnav:publiccloud-analytics]]
 
@@ -24,7 +25,7 @@ Un utilisateur Kafka n'a aucun accès à vos topics tant que vous ne lui en acco
 
 ### Accès par défaut
 
-À la création de votre service, l'utilisateur admin préconfiguré `avnadmin` dispose de la permission `admin` sur tous les topics (`*`) et peut écrire dans le Schema Registry.
+À la création de votre service, l'utilisateur admin préconfiguré `avnadmin` dispose de la permission `admin` sur tous les topics (`*`) et peut écrire dans le Schema Registry une fois celui-ci activé.
 
 Tout utilisateur que vous créez ensuite n'a **aucun accès**. Tant que vous n'ajoutez pas d'ACL pour cet utilisateur, la production ou la consommation de messages sur un topic échoue avec l'erreur `TOPIC_AUTHORIZATION_FAILED`.
 
@@ -32,14 +33,14 @@ Nous vous recommandons de créer un utilisateur par application et de ne lui acc
 
 ### Permissions
 
-Pour un utilisateur et un topic (ou tous les topics avec `*`), vous pouvez accorder l'une des permissions suivantes :
+Pour un utilisateur et un topic (ou tous les topics avec `*`), vous pouvez accorder l'une des permissions suivantes :
 
-- **admin** : accès complet au topic, y compris sa gestion
-- **read** : consommer les messages du topic
-- **write** : produire des messages dans le topic
-- **readwrite** : produire et consommer des messages
+- **admin** : accès complet au topic, y compris sa gestion
+- **read** : consommer les messages du topic
+- **write** : produire des messages dans le topic
+- **readwrite** : produire et consommer des messages
 
-La liste des permissions disponibles sur votre service est également renvoyée par l'API :
+La liste des permissions disponibles sur votre service est également renvoyée par l'API :
 
 <Api version="v1" section="/cloud" method="GET" route={"/cloud/project/\{serviceName\}/database/kafka/\{clusterId\}/permissions"} />
 
@@ -51,70 +52,73 @@ La liste des permissions disponibles sur votre service est également renvoyée 
 }
 ```
 
-### Configurer les ACL de topic depuis l'espace client
+### Configurer les ACL de topic
 
-{/* CP-STEPS-START:configure-acls-on-topics */}
-Cliquez sur le bouton <code className="action">Ajouter une ACL</code> depuis l'onglet <code className="action">ACL</code> :
+<Tabs>
+  <Tab label="Espace client OVHcloud">
+    {/* CP-STEPS-START:configure-acls-on-topics */}
+    Dans l'onglet <code className="action">ACL</code>, cliquez sur le bouton <code className="action">Ajouter une ACL</code> :
 
-![Activer les ACL](/images/public-cloud/data-analytics/analytics/kafka-configure-acl/kafka_acl.v2.png)
+    ![Activer les ACL](/images/public-cloud/data-analytics/analytics/kafka-configure-acl/kafka_acl.v2.png)
 
-Sélectionnez l'utilisateur, saisissez le nom du topic (ou `*` pour tous les topics) et choisissez la permission :
+    Sélectionnez l'utilisateur, saisissez le nom du topic (ou `*` pour tous les topics) et choisissez la permission :
 
-![Définir les ACL](/images/public-cloud/data-analytics/analytics/kafka-configure-acl/kafka_add_entry1.v2.png)
-{/* CP-STEPS-END:configure-acls-on-topics */}
+    ![Définir les ACL](/images/public-cloud/data-analytics/analytics/kafka-configure-acl/kafka_add_entry1.v2.png)
+    {/* CP-STEPS-END:configure-acls-on-topics */}
+  </Tab>
+  <Tab label="API OVHcloud">
+    Créez une ACL :
 
-### Configurer les ACL de topic avec l'API
+    <Api version="v1" section="/cloud" method="POST" route={"/cloud/project/\{serviceName\}/database/kafka/\{clusterId\}/topicAcl"} />
 
-Créez une ACL :
+    ```json
+    {
+      "username": "app-orders",
+      "topic": "orders",
+      "permission": "readwrite"
+    }
+    ```
 
-<Api version="v1" section="/cloud" method="POST" route={"/cloud/project/\{serviceName\}/database/kafka/\{clusterId\}/topicAcl"} />
+    L'API renvoie l'ACL avec son identifiant :
 
-```json
-{
-  "username": "app-orders",
-  "topic": "orders",
-  "permission": "readwrite"
-}
-```
+    ```json
+    {
+      "id": "1f2e3d4c-5b6a-4789-9abc-def012345678",
+      "username": "app-orders",
+      "topic": "orders",
+      "permission": "readwrite"
+    }
+    ```
 
-L'API renvoie l'ACL avec son identifiant :
+    Listez et supprimez les ACL :
 
-```json
-{
-  "id": "1f2e3d4c-5b6a-4789-9abc-def012345678",
-  "username": "app-orders",
-  "topic": "orders",
-  "permission": "readwrite"
-}
-```
+    <Api version="v1" section="/cloud" method="GET" route={"/cloud/project/\{serviceName\}/database/kafka/\{clusterId\}/topicAcl"} />
 
-Lister et supprimer des ACL :
+    <Api version="v1" section="/cloud" method="DELETE" route={"/cloud/project/\{serviceName\}/database/kafka/\{clusterId\}/topicAcl/\{aclId\}"} />
 
-<Api version="v1" section="/cloud" method="GET" route={"/cloud/project/\{serviceName\}/database/kafka/\{clusterId\}/topicAcl"} />
-
-<Api version="v1" section="/cloud" method="DELETE" route={"/cloud/project/\{serviceName\}/database/kafka/\{clusterId\}/topicAcl/\{aclId\}"} />
-
-:::info
-Les anciennes routes `/acl` gèrent les mêmes ACL que les routes `/topicAcl`.
-:::
+    :::info
+    Les anciennes routes `/acl` gèrent les mêmes ACL que les routes `/topicAcl`.
+    :::
+  </Tab>
+</Tabs>
 
 ### Configurer les ACL Schema Registry avec l'API
 
 Une fois le [Schema Registry activé](/guides/public-cloud/data-analytics/analytics/kafka-enable-schema-registry), un utilisateur a également besoin d'une ACL Schema Registry pour lire ou enregistrer des schémas.
 
-Deux permissions sont disponibles :
+Deux permissions sont disponibles :
 
-- **schema_registry_read** : lire les schémas
-- **schema_registry_write** : lire et enregistrer des schémas
+- **schema_registry_read** : lire les schémas
+- **schema_registry_write** : lire et enregistrer des schémas
 
-La ressource est :
+La ressource est :
 
-- `Subject:<nom du subject>`, par exemple `Subject:orders-value`, ou `Subject:*` pour tous les subjects ;
+- `Subject:<nom du subject>`, par exemple `Subject:orders-value`, ou `Subject:*` pour tous les subjects ;
 - `Config:`, pour la configuration globale de compatibilité du Schema Registry.
 
 Par défaut, `avnadmin` dispose de la permission `schema_registry_write` sur `Config:` et sur `Subject:*`.
 
-Créez une ACL Schema Registry :
+Créez une ACL Schema Registry :
 
 <Api version="v1" section="/cloud" method="POST" route={"/cloud/project/\{serviceName\}/database/kafka/\{clusterId\}/schemaRegistryAcl"} />
 
@@ -126,12 +130,12 @@ Créez une ACL Schema Registry :
 }
 ```
 
-Avec cette ACL, `app-orders` peut enregistrer des schémas pour le subject `orders-value`. Le Schema Registry se comporte ainsi pour cet utilisateur :
+Avec cette ACL, `app-orders` peut enregistrer des schémas pour le subject `orders-value`. Le Schema Registry se comporte ainsi pour tout utilisateur :
 
-- sans aucune ACL Schema Registry, chaque requête renvoie `401 Unauthorized` ;
+- sans aucune ACL Schema Registry, chaque requête renvoie `401 Unauthorized` ;
 - un subject non couvert par ses ACL est signalé comme introuvable (`404`).
 
-Lister et supprimer des ACL Schema Registry :
+Listez et supprimez les ACL Schema Registry :
 
 <Api version="v1" section="/cloud" method="GET" route={"/cloud/project/\{serviceName\}/database/kafka/\{clusterId\}/schemaRegistryAcl"} />
 
@@ -143,7 +147,7 @@ Lister et supprimer des ACL Schema Registry :
 
 [Kafka - Comment activer l'API REST](/guides/public-cloud/data-analytics/analytics/kafka-enable-rest-api)
 
-## Votre avis nous intéresse !
+## Votre avis nous intéresse !
 
 Nous serions ravis de répondre à vos questions et apprécions tout retour que vous pourriez nous faire.
 
