@@ -15,6 +15,7 @@
 - **db:** update sentences about pricing (#991)
 
 #### All regions
+- **retrievability:** restore probe coverage lost to the cleaned .md export (#1042)
 - **llms:** clean the per-page Markdown export (#1028)
 
 ### Maintenance
@@ -26,7 +27,7 @@
 - **build:** upgrade Rspress to 2.0.23
 
 ### Documentation
-- EU: 493 guides across de, en, es, fr, it, pl, pt
+- EU: 1258 guides across de, en, es, fr, it, pl, pt
 
 ## 2026.10.16
 
