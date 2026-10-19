@@ -1,7 +1,7 @@
 ---
 title: Kafka - Comment activer l'API REST
 description: Découvrez comment activer l'API REST de votre service Kafka pour produire et consommer des messages en HTTPS
-lastUpdated: 2026-10-14
+lastUpdated: 2026-10-19
 ---
 
 import Api from '@components/Api';
@@ -16,16 +16,16 @@ Ce guide explique comment activer l'API REST de votre service Kafka avec l'API O
 
 ## Prérequis
 
-- Un [projet Public Cloud](/links/public-cloud/public-cloud) dans votre compte OVHcloud
-- Un [service Kafka](/guides/public-cloud/data-analytics/analytics/kafka-create-cluster) [acceptant les connexions entrantes](/guides/public-cloud/data-analytics/analytics/kafka-incoming-connections) depuis votre adresse IP
-- Un topic, et un utilisateur disposant de la permission `readwrite` sur ce topic (consultez le [guide des ACL](/guides/public-cloud/data-analytics/analytics/kafka-configure-acl))
-- Un accès à l'[API OVHcloud](/guides/manage-and-operate/api/first-steps)
+- Disposer d'un [projet Public Cloud](/links/public-cloud/public-cloud) dans votre compte OVHcloud
+- Disposer d'un [service Kafka](/guides/public-cloud/data-analytics/analytics/kafka-create-cluster) [acceptant les connexions entrantes](/guides/public-cloud/data-analytics/analytics/kafka-incoming-connections) depuis votre adresse IP
+- Disposer d'un topic et d'un utilisateur ayant la permission `readwrite` sur ce topic (consultez le [guide des ACL](/guides/public-cloud/data-analytics/analytics/kafka-configure-acl))
+- Disposer d'un accès à l'[API OVHcloud](/guides/manage-and-operate/api/first-steps)
 
 ## En pratique
 
 ### Activer l'API REST
 
-Modifiez votre service en passant `restApi` à `true` (ou `false` pour la désactiver) :
+Modifiez votre service en passant `restApi` à `true` (ou `false` pour la désactiver) :
 
 <Api version="v1" section="/cloud" method="PUT" route={"/cloud/project/\{serviceName\}/database/kafka/\{clusterId\}"} />
 
@@ -37,7 +37,7 @@ Modifiez votre service en passant `restApi` à `true` (ou `false` pour la désac
 
 ### Récupérer le point d'accès de l'API REST
 
-Une fois activée, un point d'accès `kafkaRestApi` est ajouté à votre service. Vous le trouvez dans le détail du service :
+Une fois l'API REST activée, un point d'accès `kafkaRestApi` est ajouté à votre service. Vous le trouvez dans la liste `endpoints` du détail du service :
 
 <Api version="v1" section="/cloud" method="GET" route={"/cloud/project/\{serviceName\}/database/kafka/\{clusterId\}"} />
 
@@ -52,7 +52,7 @@ Une fois activée, un point d'accès `kafkaRestApi` est ajouté à votre service
 }
 ```
 
-L'API REST utilise HTTPS avec le certificat CA de votre service, ainsi que le nom et le mot de passe d'un utilisateur Kafka. Téléchargez le certificat CA sous le nom `ca.pem` (consultez [Se connecter à un cluster Kafka en CLI](/guides/public-cloud/data-analytics/analytics/kafka-connect-cluster-cli)).
+L'API REST utilise HTTPS avec le certificat CA de votre service, ainsi que le nom et le mot de passe d'un utilisateur Kafka. Téléchargez le certificat CA sous le nom `ca.pem` (consultez le guide « [Se connecter à un cluster Kafka en CLI](/guides/public-cloud/data-analytics/analytics/kafka-connect-cluster-cli) »).
 
 :::info
 Un utilisateur que vous venez de créer peut être refusé avec `401 Unauthorized` pendant environ une minute, le temps qu'il soit disponible sur l'API REST.
@@ -70,7 +70,7 @@ curl --cacert ca.pem -u 'app-orders:<password>' https://<host>:<port>/topics
 
 ### Produire un message
 
-Envoyez un message JSON avec la clé `order-1` dans le topic `orders` :
+Envoyez un message JSON avec la clé `order-1` dans le topic `orders` :
 
 ```bash
 curl --cacert ca.pem -u 'app-orders:<password>' \
@@ -79,7 +79,7 @@ curl --cacert ca.pem -u 'app-orders:<password>' \
   -d '{"records":[{"key":"order-1","value":{"amount":42}}]}'
 ```
 
-L'API REST renvoie la partition et l'offset du message :
+L'API REST renvoie la partition et l'offset du message :
 
 ```json
 {"key_schema_id":null,"offsets":[{"offset":0,"partition":0}],"value_schema_id":null}
@@ -87,7 +87,7 @@ L'API REST renvoie la partition et l'offset du message :
 
 ### Consommer des messages
 
-La consommation se fait en trois étapes : créer une instance de consommateur dans un groupe de consommateurs, l'abonner au topic, puis lire les messages.
+La consommation se fait en trois étapes : créer une instance de consommateur dans un groupe de consommateurs, l'abonner au topic, puis lire les messages.
 
 ```bash
 # 1. Créer l'instance de consommateur "c1" dans le groupe "orders-readers"
@@ -108,13 +108,13 @@ curl --cacert ca.pem -u 'app-orders:<password>' \
   https://<host>:<port>/consumers/orders-readers/instances/c1/records
 ```
 
-L'API REST renvoie les messages du topic :
+L'API REST renvoie les messages du topic :
 
 ```json
 [{"key":"order-1","offset":0,"partition":0,"timestamp":1791971865910,"topic":"orders","value":{"amount":42}}]
 ```
 
-Une fois terminé, supprimez l'instance de consommateur :
+Une fois terminé, supprimez l'instance de consommateur :
 
 ```bash
 curl --cacert ca.pem -u 'app-orders:<password>' \
@@ -128,12 +128,12 @@ curl --cacert ca.pem -u 'app-orders:<password>' \
 
 [Kafka - Comment activer le Schema Registry](/guides/public-cloud/data-analytics/analytics/kafka-enable-schema-registry)
 
-## Votre avis nous intéresse !
+## Votre avis nous intéresse !
 
 Nous serions ravis de répondre à vos questions et apprécions tout retour que vous pourriez nous faire.
 
 [[fragment:professional-services]]
 
-Vous êtes sur Discord ? Rejoignez notre chaîne via [https://discord.gg/ovhcloud](https://discord.gg/ovhcloud) et interagissez directement avec l’équipe qui développe notre service Analytics !
+Vous êtes sur Discord ? Rejoignez notre chaîne via [https://discord.gg/ovhcloud](https://discord.gg/ovhcloud) et interagissez directement avec l'équipe qui développe notre service Analytics !
 
 Rejoignez notre [communauté d'utilisateurs](/links/community).

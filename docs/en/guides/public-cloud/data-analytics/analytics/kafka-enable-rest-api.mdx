@@ -1,7 +1,7 @@
 ---
 title: Kafka - How to enable the REST API
-description: Learn how to enable the REST API of your Kafka service and produce and consume messages over HTTPS
-lastUpdated: 2026-10-14
+description: Find out how to enable the REST API of your Kafka service and produce and consume messages over HTTPS
+lastUpdated: 2026-10-19
 ---
 
 import Api from '@components/Api';
@@ -23,9 +23,9 @@ This guide explains how to enable the REST API of your Kafka service with the OV
 
 ## Instructions
 
-### Enable the REST API
+### Enabling the REST API
 
-Update your service with `restApi` set to `true` (or `false` to disable it):
+Update your service with `restApi` set to `true` (or `false` to disable the REST API):
 
 <Api version="v1" section="/cloud" method="PUT" route={"/cloud/project/\{serviceName\}/database/kafka/\{clusterId\}"} />
 
@@ -35,9 +35,9 @@ Update your service with `restApi` set to `true` (or `false` to disable it):
 }
 ```
 
-### Retrieve the REST API endpoint
+### Retrieving the REST API endpoint
 
-Once enabled, a `kafkaRestApi` endpoint is added to your service. You can find it in the service details:
+Once the REST API is enabled, a `kafkaRestApi` endpoint is added to your service. You can find it in the `endpoints` list of the service details:
 
 <Api version="v1" section="/cloud" method="GET" route={"/cloud/project/\{serviceName\}/database/kafka/\{clusterId\}"} />
 
@@ -58,7 +58,7 @@ The REST API uses HTTPS with the CA certificate of your service, and the usernam
 A user you have just created can be rejected with `401 Unauthorized` for about a minute, until it is available on the REST API.
 :::
 
-### List topics
+### Listing topics
 
 ```bash
 curl --cacert ca.pem -u 'app-orders:<password>' https://<host>:<port>/topics
@@ -68,7 +68,7 @@ curl --cacert ca.pem -u 'app-orders:<password>' https://<host>:<port>/topics
 ["orders","__consumer_offsets"]
 ```
 
-### Produce a message
+### Producing a message
 
 Send a JSON message with the key `order-1` to the `orders` topic:
 
@@ -85,7 +85,7 @@ The REST API returns the partition and offset of the message:
 {"key_schema_id":null,"offsets":[{"offset":0,"partition":0}],"value_schema_id":null}
 ```
 
-### Consume messages
+### Consuming messages
 
 Consuming takes three steps: create a consumer instance in a consumer group, subscribe it to the topic, then read the records.
 
@@ -132,7 +132,7 @@ curl --cacert ca.pem -u 'app-orders:<password>' \
 
 We would love to help answer questions and appreciate any feedback you may have.
 
-[[fragment:professional-services]]
+[[fragment:professional-services|en]]
 
 Are you on Discord? Connect to our channel at [https://discord.gg/ovhcloud](https://discord.gg/ovhcloud) and interact directly with the team that builds our Analytics service!
 

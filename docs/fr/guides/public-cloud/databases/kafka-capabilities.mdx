@@ -1,10 +1,9 @@
 ---
 title: Capacités et limitations pour Analytics avec Kafka
 description: Découvrez les capacités et limitations d'Analytics pour Kafka
-lastUpdated: 2026-10-14
+lastUpdated: 2026-10-19
 ---
 
-import Api from '@components/Api';
 
 
 ## Objectif
@@ -112,9 +111,9 @@ Nous autorisons environ 100 connexions par 4 Go de RAM, avec un plafond de 1000 
 
 Ainsi, par exemple, sur un serveur disposant de 7 Go de mémoire, vous obtiendrez environ 200 connexions, et avec 15 Go de mémoire, vous obtiendrez 400 connexions.
 
-#### Schema registry
+#### Schema Registry
 
-Le schema registry est pris en charge et peut être activé sur un service Kafka en cours d'exécution. Les utilisateurs ont besoin d'une ACL Schema Registry pour lire ou enregistrer des schémas. Consultez le [guide du Schema Registry](/guides/public-cloud/data-analytics/analytics/kafka-enable-schema-registry) pour plus d'informations.
+Le Schema Registry est pris en charge et peut être activé sur un service Kafka en cours d'exécution. Les utilisateurs ont besoin d'une ACL Schema Registry pour lire ou enregistrer des schémas. Consultez le [guide du Schema Registry](/guides/public-cloud/data-analytics/analytics/kafka-enable-schema-registry) pour plus d'informations.
 
 #### API REST
 
@@ -142,7 +141,7 @@ Veuillez noter que si le service d'analytics est supprimé, les logs et métriqu
 
 La création d'utilisateurs est possible via le Control Panel et l'API.
 
-Vous pouvez spécifier un nom d'utilisateur pour chaque utilisateur. L'utilisateur préconfiguré `avnadmin` dispose de la permission **admin** sur tous les topics. Tout autre utilisateur n'a aucun accès tant que vous ne lui en accordez pas avec une liste de contrôle d'accès (ACL). Consultez le [guide des ACL](/guides/public-cloud/data-analytics/analytics/kafka-configure-acl) pour plus d'informations.
+Vous pouvez spécifier un nom d'utilisateur pour chaque utilisateur. L'utilisateur préconfiguré `avnadmin` dispose de la permission `admin` sur tous les topics. Tout autre utilisateur n'a aucun accès tant que vous ne lui en accordez pas avec une liste de contrôle d'accès (ACL). Consultez le [guide des ACL](/guides/public-cloud/data-analytics/analytics/kafka-configure-acl) pour plus d'informations.
 
 Par défaut, vous pouvez créer jusqu'à 50 utilisateurs de service par service. Si vous avez besoin de plus de 50 utilisateurs, contactez le support OVHcloud pour demander une augmentation de cette limite.
 

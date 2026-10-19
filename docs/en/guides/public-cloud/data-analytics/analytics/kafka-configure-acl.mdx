@@ -1,16 +1,17 @@
 ---
 title: Kafka - How to use Access Control Lists (ACLs)
-description: Learn how to grant topic and Schema Registry permissions to your Kafka users with Access Control Lists (ACLs)
-lastUpdated: 2026-10-14
+description: Find out how to grant topic and Schema Registry permissions to your Kafka users with Access Control Lists (ACLs)
+lastUpdated: 2026-10-19
 ---
 
+import { Tab, Tabs } from '@rspress/core/theme';
 import Api from '@components/Api';
 
 ## Objective
 
 Apache Kafka is an open-source, distributed event streaming platform designed for real-time, large-scale data processing with high scalability, durability, and low latency.
 
-A Kafka user has no access to your topics until you grant it with an access control list (ACL). This guide explains how to create topic ACLs from the OVHcloud Control Panel or the OVHcloud API, and Schema Registry ACLs from the OVHcloud API.
+A Kafka user has no access to your topics until you grant it access with an access control list (ACL). This guide explains how to create topic ACLs from the OVHcloud Control Panel or the OVHcloud API, and Schema Registry ACLs from the OVHcloud API.
 
 ## Requirements
 
@@ -18,13 +19,13 @@ A Kafka user has no access to your topics until you grant it with an access cont
 - A [Kafka service](/guides/public-cloud/data-analytics/analytics/kafka-create-cluster) [accepting incoming connections](/guides/public-cloud/data-analytics/analytics/kafka-incoming-connections), with at least one user and one topic
 - To use the API: access to the [OVHcloud API](/guides/manage-and-operate/api/first-steps)
 
-[[cpnav:publiccloud-analytics]]
+[[cpnav:publiccloud-analytics|en]]
 
 ## Instructions
 
 ### Default access
 
-When your service is created, the preconfigured admin user `avnadmin` has the `admin` permission on all topics (`*`) and can write to the Schema Registry.
+When your service is created, the preconfigured admin user `avnadmin` has the `admin` permission on all topics (`*`) and can write to the Schema Registry once it is enabled.
 
 Any user you create afterwards has **no access**. Until you add an ACL for this user, producing to or consuming from a topic fails with the error `TOPIC_AUTHORIZATION_FAILED`.
 
@@ -51,54 +52,57 @@ The list of permissions available on your service is also returned by the API:
 }
 ```
 
-### Configure topic ACLs from the Control Panel
+### Configuring topic ACLs
 
-{/* CP-STEPS-START:configure-acls-on-topics */}
-Click the <code className="action">Add an ACL</code> button from the <code className="action">ACL</code> tab:
+<Tabs>
+  <Tab label="OVHcloud Control Panel">
+    {/* CP-STEPS-START:configure-acls-on-topics */}
+    In the <code className="action">ACL</code> tab, click the <code className="action">Add an ACL</code> button:
 
-![Enable ACLs](/images/public-cloud/data-analytics/analytics/kafka-configure-acl/kafka_acl.v2.png)
+    ![Enable ACLs](/images/public-cloud/data-analytics/analytics/kafka-configure-acl/kafka_acl.v2.png)
 
-Select the user, enter the topic name (or `*` for all topics) and choose the permission:
+    Select the user, enter the topic name (or `*` for all topics) and choose the permission:
 
-![Define ACLs](/images/public-cloud/data-analytics/analytics/kafka-configure-acl/kafka_add_entry1.v2.png)
-{/* CP-STEPS-END:configure-acls-on-topics */}
+    ![Define ACLs](/images/public-cloud/data-analytics/analytics/kafka-configure-acl/kafka_add_entry1.v2.png)
+    {/* CP-STEPS-END:configure-acls-on-topics */}
+  </Tab>
+  <Tab label="OVHcloud API">
+    Create an ACL:
 
-### Configure topic ACLs with the API
+    <Api version="v1" section="/cloud" method="POST" route={"/cloud/project/\{serviceName\}/database/kafka/\{clusterId\}/topicAcl"} />
 
-Create an ACL:
+    ```json
+    {
+      "username": "app-orders",
+      "topic": "orders",
+      "permission": "readwrite"
+    }
+    ```
 
-<Api version="v1" section="/cloud" method="POST" route={"/cloud/project/\{serviceName\}/database/kafka/\{clusterId\}/topicAcl"} />
+    The API returns the ACL with its identifier:
 
-```json
-{
-  "username": "app-orders",
-  "topic": "orders",
-  "permission": "readwrite"
-}
-```
+    ```json
+    {
+      "id": "1f2e3d4c-5b6a-4789-9abc-def012345678",
+      "username": "app-orders",
+      "topic": "orders",
+      "permission": "readwrite"
+    }
+    ```
 
-The API returns the ACL with its identifier:
+    List and delete ACLs:
 
-```json
-{
-  "id": "1f2e3d4c-5b6a-4789-9abc-def012345678",
-  "username": "app-orders",
-  "topic": "orders",
-  "permission": "readwrite"
-}
-```
+    <Api version="v1" section="/cloud" method="GET" route={"/cloud/project/\{serviceName\}/database/kafka/\{clusterId\}/topicAcl"} />
 
-List and delete ACLs:
+    <Api version="v1" section="/cloud" method="DELETE" route={"/cloud/project/\{serviceName\}/database/kafka/\{clusterId\}/topicAcl/\{aclId\}"} />
 
-<Api version="v1" section="/cloud" method="GET" route={"/cloud/project/\{serviceName\}/database/kafka/\{clusterId\}/topicAcl"} />
+    :::info
+    The older `/acl` routes manage the same ACLs as the `/topicAcl` routes.
+    :::
+  </Tab>
+</Tabs>
 
-<Api version="v1" section="/cloud" method="DELETE" route={"/cloud/project/\{serviceName\}/database/kafka/\{clusterId\}/topicAcl/\{aclId\}"} />
-
-:::info
-The older `/acl` routes manage the same ACLs as the `/topicAcl` routes.
-:::
-
-### Configure Schema Registry ACLs with the API
+### Configuring Schema Registry ACLs with the API
 
 Once the [Schema Registry is enabled](/guides/public-cloud/data-analytics/analytics/kafka-enable-schema-registry), a user also needs a Schema Registry ACL to read or register schemas.
 
@@ -126,7 +130,7 @@ Create a Schema Registry ACL:
 }
 ```
 
-With this ACL, `app-orders` can register schemas for the `orders-value` subject. The Schema Registry behaves as follows for this user:
+With this ACL, `app-orders` can register schemas for the `orders-value` subject. The Schema Registry behaves as follows for any user:
 
 - without any Schema Registry ACL, every request returns `401 Unauthorized`;
 - a subject not covered by its ACLs is reported as not found (`404`).
@@ -147,7 +151,7 @@ List and delete Schema Registry ACLs:
 
 We would love to help answer questions and appreciate any feedback you may have.
 
-[[fragment:professional-services]]
+[[fragment:professional-services|en]]
 
 Are you on Discord? Connect to our channel at [https://discord.gg/ovhcloud](https://discord.gg/ovhcloud) and interact directly with the team that builds our Analytics service!
 

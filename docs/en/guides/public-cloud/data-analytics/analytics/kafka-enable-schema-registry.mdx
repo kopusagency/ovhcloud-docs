@@ -1,9 +1,10 @@
 ---
 title: Kafka - How to enable the Schema Registry
-description: Learn how to enable the Schema Registry for your Kafka service and register your first schema
-lastUpdated: 2026-10-14
+description: Find out how to enable the Schema Registry for your Kafka service and register your first schema
+lastUpdated: 2026-10-19
 ---
 
+import { Tab, Tabs } from '@rspress/core/theme';
 import Api from '@components/Api';
 
 ## Objective
@@ -20,35 +21,38 @@ This guide explains how to enable the Schema Registry for your Kafka service fro
 - A [Kafka service](/guides/public-cloud/data-analytics/analytics/kafka-create-cluster) [accepting incoming connections](/guides/public-cloud/data-analytics/analytics/kafka-incoming-connections) from your IP address, with at least one user
 - To use the API: access to the [OVHcloud API](/guides/manage-and-operate/api/first-steps)
 
-[[cpnav:publiccloud-analytics]]
+[[cpnav:publiccloud-analytics|en]]
 
 ## Instructions
 
-### Enable the Schema Registry from the Control Panel
+### Enabling the Schema Registry
 
-{/* CP-STEPS-START:enable-schema-registry */}
-Go to the <code className="action">Configuration</code> tab of your Kafka service. Scroll to the Kafka specific section and click the Schema Registry toggle to enable it.
+<Tabs>
+  <Tab label="OVHcloud Control Panel">
+    {/* CP-STEPS-START:enable-schema-registry */}
+    Go to the <code className="action">Configuration</code> tab of your Kafka service. Scroll to the Kafka-specific section and click the Schema Registry toggle to enable it.
 
-![Enable schema registry](/images/public-cloud/data-analytics/analytics/kafka-enable-schema-registry/kafka_enable_schema_registry.png)
+    ![Enable the Schema Registry](/images/public-cloud/data-analytics/analytics/kafka-enable-schema-registry/kafka_enable_schema_registry.png)
 
-The Schema Registry can be disabled with the same toggle.
-{/* CP-STEPS-END:enable-schema-registry */}
+    The Schema Registry can be disabled with the same toggle.
+    {/* CP-STEPS-END:enable-schema-registry */}
+  </Tab>
+  <Tab label="OVHcloud API">
+    Update your service with `schemaRegistry` set to `true` (or `false` to disable the Schema Registry):
 
-### Enable the Schema Registry with the API
+    <Api version="v1" section="/cloud" method="PUT" route={"/cloud/project/\{serviceName\}/database/kafka/\{clusterId\}"} />
 
-Update your service with `schemaRegistry` set to `true` (or `false` to disable it):
+    ```json
+    {
+      "schemaRegistry": true
+    }
+    ```
+  </Tab>
+</Tabs>
 
-<Api version="v1" section="/cloud" method="PUT" route={"/cloud/project/\{serviceName\}/database/kafka/\{clusterId\}"} />
+### Retrieving the Schema Registry endpoint
 
-```json
-{
-  "schemaRegistry": true
-}
-```
-
-### Retrieve the Schema Registry endpoint
-
-Once enabled, a `kafkaSchemaRegistry` endpoint is added to your service. You can find it in the service details:
+Once the Schema Registry is enabled, a `kafkaSchemaRegistry` endpoint is added to your service. You can find it in the `endpoints` list of the service details:
 
 <Api version="v1" section="/cloud" method="GET" route={"/cloud/project/\{serviceName\}/database/kafka/\{clusterId\}"} />
 
@@ -65,9 +69,9 @@ Once enabled, a `kafkaSchemaRegistry` endpoint is added to your service. You can
 
 The Schema Registry uses HTTPS with the CA certificate of your service, and the username and password of a Kafka user.
 
-### Grant access to the Schema Registry
+### Granting access to the Schema Registry
 
-A user needs a Schema Registry ACL before it can read or register schemas. Without one, every request returns `401 Unauthorized`.
+A user needs a Schema Registry ACL to read or register schemas. Without one, every request returns `401 Unauthorized`.
 
 For example, to let the user `app-orders` register schemas for the `orders-value` subject, create the following ACL:
 
@@ -83,7 +87,7 @@ For example, to let the user `app-orders` register schemas for the `orders-value
 
 See the [ACL guide](/guides/public-cloud/data-analytics/analytics/kafka-configure-acl) for the available permissions and resources.
 
-### Register and list schemas
+### Registering and listing schemas
 
 Download the CA certificate of your service as `ca.pem` (see [Connect to a Kafka cluster with CLI](/guides/public-cloud/data-analytics/analytics/kafka-connect-cluster-cli)), then register an Avro schema for the `orders-value` subject:
 
@@ -114,7 +118,7 @@ curl --cacert ca.pem -u 'app-orders:<password>' https://<host>:<port>/subjects
 
 We would love to help answer questions and appreciate any feedback you may have.
 
-[[fragment:professional-services]]
+[[fragment:professional-services|en]]
 
 Are you on Discord? Connect to our channel at [https://discord.gg/ovhcloud](https://discord.gg/ovhcloud) and interact directly with the team that builds our Analytics service!
 
