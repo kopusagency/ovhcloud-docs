@@ -1,30 +1,30 @@
 ---
 title: Kafka MirrorMaker - How to replicate topics between two Kafka services
-description: Learn how to replicate Kafka topics from one Kafka service to another with Kafka MirrorMaker and the OVHcloud API
-lastUpdated: 2026-10-14
+description: Find out how to replicate Kafka topics from one Kafka service to another with Kafka MirrorMaker and the OVHcloud API
+lastUpdated: 2026-10-20
 ---
 
 import Api from '@components/Api';
 
 ## Objective
 
-Kafka MirrorMaker copies the messages of Kafka topics from a source Kafka service to a target Kafka service, continuously. You can use it to migrate to a new Kafka service or version, or to keep a copy of your topics in another service.
+Kafka MirrorMaker continuously copies the messages of Kafka topics from a source Kafka service to a target Kafka service. You can use it to migrate to a new Kafka service or version, or to keep a copy of your topics in another service.
 
 This guide explains how to replicate a topic between two Kafka services of the same Public Cloud project with the OVHcloud API.
 
 ## Requirements
 
 - A [Public Cloud project](/links/public-cloud/public-cloud) in your OVHcloud account
-- Two [Kafka services](/guides/public-cloud/data-analytics/analytics/kafka-create-cluster) in this project: a source and a target. They can run different Kafka versions; this guide was tested from Kafka 3.9 to Kafka 4.3.
+- Two [Kafka services](/guides/public-cloud/data-analytics/analytics/kafka-create-cluster) in this project: a source and a target. They can run different Kafka versions; this guide was tested with a Kafka 3.9 source and a Kafka 4.3 target.
 - A topic to replicate on the source service, here `inventory`
 - A Kafka MirrorMaker service in the same project
 - Access to the [OVHcloud API](/guides/manage-and-operate/api/first-steps)
 
 ## Instructions
 
-### Step 1 - Link both Kafka services to MirrorMaker
+### Step 1 - Linking both Kafka services to MirrorMaker
 
-Create one integration for the source service and one for the target service, on your MirrorMaker service:
+On your MirrorMaker service, create one integration for the source service and one for the target service:
 
 <Api version="v1" section="/cloud" method="POST" route={"/cloud/project/\{serviceName\}/database/kafkaMirrorMaker/\{clusterId\}/integration"} />
 
@@ -46,7 +46,7 @@ Create one integration for the source service and one for the target service, on
 
 In both cases, `sourceServiceId` is the Kafka service and `destinationServiceId` is the MirrorMaker service. Keep the `id` returned for each integration.
 
-### Step 2 - Create the replication flow
+### Step 2 - Creating the replication flow
 
 Create a replication flow from the source integration to the target integration:
 
@@ -81,21 +81,21 @@ The API returns the replication flow with its default replication policy:
 }
 ```
 
-In this request:
+In this replication flow:
 
 - `topics` lists the topics to replicate, and `topicExcludeList` the topics to leave out;
 - `syncGroupOffsets` copies the offsets of the consumer groups to the target service, every `syncInterval` seconds;
 - `emitHeartbeats` makes MirrorMaker write heartbeat messages to the target service.
 
-### Step 3 - Check the replicated topic
+### Step 3 - Checking the replicated topic
 
-With the default replication policy, the replicated topic is created on the target service with the alias of the source service as prefix. For the `inventory` topic, the target service contains a topic named like `xxxxxxxxx.kafka-xxxxxxxx.inventory`, with the same messages as the source topic.
+With the default replication policy, the replicated topic is created on the target service with the alias of the source service as a prefix. For the `inventory` topic, the target service contains a topic of the form `xxxxxxxxx.kafka-xxxxxxxx.inventory`, with the same messages as the source topic.
 
 MirrorMaker also creates its own topics on the target service: `heartbeats`, `xxxxxxxxx.kafka-xxxxxxxx.checkpoints.internal`, and topics starting with `mm2-`.
 
 To read the replicated messages, grant your users a `read` ACL on the replicated topic of the target service. See the [ACL guide](/guides/public-cloud/data-analytics/analytics/kafka-configure-acl).
 
-### Step 4 - Manage the replication flow
+### Step 4 - Managing the replication flow
 
 Read or delete a replication flow:
 

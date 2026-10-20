@@ -1,7 +1,7 @@
 ---
 title: Kafka MirrorMaker - Comment répliquer des topics entre deux services Kafka
 description: Découvrez comment répliquer des topics Kafka d'un service Kafka vers un autre avec Kafka MirrorMaker et l'API OVHcloud
-lastUpdated: 2026-10-14
+lastUpdated: 2026-10-20
 ---
 
 import Api from '@components/Api';
@@ -14,17 +14,17 @@ Ce guide explique comment répliquer un topic entre deux services Kafka du même
 
 ## Prérequis
 
-- Un [projet Public Cloud](/links/public-cloud/public-cloud) dans votre compte OVHcloud
-- Deux [services Kafka](/guides/public-cloud/data-analytics/analytics/kafka-create-cluster) dans ce projet : une source et une cible. Ils peuvent utiliser des versions de Kafka différentes ; ce guide a été testé de Kafka 3.9 vers Kafka 4.3.
-- Un topic à répliquer sur le service source, ici `inventory`
-- Un service Kafka MirrorMaker dans le même projet
-- Un accès à l'[API OVHcloud](/guides/manage-and-operate/api/first-steps)
+- Disposer d'un [projet Public Cloud](/links/public-cloud/public-cloud) dans votre compte OVHcloud
+- Disposer de deux [services Kafka](/guides/public-cloud/data-analytics/analytics/kafka-create-cluster) dans ce projet : une source et une cible. Ils peuvent utiliser des versions de Kafka différentes ; ce guide a été testé de Kafka 3.9 vers Kafka 4.3.
+- Disposer d'un topic à répliquer sur le service source, ici `inventory`
+- Disposer d'un service Kafka MirrorMaker dans le même projet
+- Disposer d'un accès à l'[API OVHcloud](/guides/manage-and-operate/api/first-steps)
 
 ## En pratique
 
 ### Étape 1 - Relier les deux services Kafka à MirrorMaker
 
-Créez une intégration pour le service source et une pour le service cible, sur votre service MirrorMaker :
+Sur votre service MirrorMaker, créez une intégration pour le service source et une autre pour le service cible :
 
 <Api version="v1" section="/cloud" method="POST" route={"/cloud/project/\{serviceName\}/database/kafkaMirrorMaker/\{clusterId\}/integration"} />
 
@@ -48,7 +48,7 @@ Dans les deux cas, `sourceServiceId` est le service Kafka et `destinationService
 
 ### Étape 2 - Créer le flux de réplication
 
-Créez un flux de réplication de l'intégration source vers l'intégration cible :
+Créez un flux de réplication de l'intégration source vers l'intégration cible :
 
 <Api version="v1" section="/cloud" method="POST" route={"/cloud/project/\{serviceName\}/database/kafkaMirrorMaker/\{clusterId\}/replication"} />
 
@@ -64,7 +64,7 @@ Créez un flux de réplication de l'intégration source vers l'intégration cibl
 }
 ```
 
-L'API renvoie le flux de réplication avec sa politique de réplication par défaut :
+L'API renvoie le flux de réplication avec sa politique de réplication par défaut :
 
 ```json
 {
@@ -81,23 +81,23 @@ L'API renvoie le flux de réplication avec sa politique de réplication par déf
 }
 ```
 
-Dans cette requête :
+Dans ce flux de réplication :
 
-- `topics` liste les topics à répliquer, et `topicExcludeList` les topics à exclure ;
-- `syncGroupOffsets` copie les offsets des groupes de consommateurs vers le service cible, toutes les `syncInterval` secondes ;
-- `emitHeartbeats` fait écrire des messages de heartbeat par MirrorMaker sur le service cible.
+- `topics` liste les topics à répliquer, et `topicExcludeList` les topics à exclure ;
+- `syncGroupOffsets` copie les offsets des groupes de consommateurs vers le service cible, toutes les `syncInterval` secondes ;
+- `emitHeartbeats` demande à MirrorMaker d'écrire des messages de heartbeat sur le service cible.
 
 ### Étape 3 - Vérifier le topic répliqué
 
 Avec la politique de réplication par défaut, le topic répliqué est créé sur le service cible avec l'alias du service source en préfixe. Pour le topic `inventory`, le service cible contient un topic nommé sur le modèle `xxxxxxxxx.kafka-xxxxxxxx.inventory`, avec les mêmes messages que le topic source.
 
-MirrorMaker crée également ses propres topics sur le service cible : `heartbeats`, `xxxxxxxxx.kafka-xxxxxxxx.checkpoints.internal`, ainsi que des topics commençant par `mm2-`.
+MirrorMaker crée également ses propres topics sur le service cible : `heartbeats`, `xxxxxxxxx.kafka-xxxxxxxx.checkpoints.internal`, ainsi que des topics commençant par `mm2-`.
 
-Pour lire les messages répliqués, accordez à vos utilisateurs une ACL `read` sur le topic répliqué du service cible. Consultez le [guide des ACL](/guides/public-cloud/data-analytics/analytics/kafka-configure-acl).
+Pour lire les messages répliqués, accordez à vos utilisateurs une ACL `read` sur le topic répliqué du service cible. Consultez le guide « [Kafka - Comment utiliser les listes de contrôle d'accès (ACL)](/guides/public-cloud/data-analytics/analytics/kafka-configure-acl) ».
 
 ### Étape 4 - Gérer le flux de réplication
 
-Consultez ou supprimez un flux de réplication :
+Consultez ou supprimez un flux de réplication :
 
 <Api version="v1" section="/cloud" method="GET" route={"/cloud/project/\{serviceName\}/database/kafkaMirrorMaker/\{clusterId\}/replication/\{replicationId\}"} />
 
@@ -105,14 +105,14 @@ Consultez ou supprimez un flux de réplication :
 
 ## Aller plus loin
 
-[Capacités et limitations d'Analytics avec Kafka MirrorMaker](/guides/public-cloud/databases/mirrormaker-capabilities)
+[Capacités et limitations pour Analytics avec Kafka MirrorMaker](/guides/public-cloud/databases/mirrormaker-capabilities)
 
-## Votre avis nous intéresse !
+## Votre avis nous intéresse !
 
 Nous serions ravis de répondre à vos questions et apprécions tout retour que vous pourriez nous faire.
 
 [[fragment:professional-services]]
 
-Vous êtes sur Discord ? Rejoignez notre chaîne via [https://discord.gg/ovhcloud](https://discord.gg/ovhcloud) et interagissez directement avec l’équipe qui développe notre service Analytics !
+Vous êtes sur Discord ? Rejoignez notre chaîne via [https://discord.gg/ovhcloud](https://discord.gg/ovhcloud) et interagissez directement avec l'équipe qui développe notre service Analytics !
 
-Rejoignez notre [communauté d'utilisateurs](/links/community).
+Échangez avec notre [communauté d'utilisateurs](/links/community).

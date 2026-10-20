@@ -76,7 +76,7 @@ Once your service is up and running, you will be able to specify IP addresses (o
 
 #### Kafka replication and data retention
 
-You can select a Kafka source cluster and a Kafka destination cluster from the same Public Cloud project, each linked to the MirrorMaker service with an integration.
+You can select a Kafka source cluster and a Kafka target cluster from the same Public Cloud project, each linked to the MirrorMaker service with an integration.
 External Kafka clusters are not supported so far.
 
 You need at least 2 Kafka clusters to create replication flows.
@@ -84,13 +84,13 @@ You need at least 2 Kafka clusters to create replication flows.
 Replication flows allowed parameters are:
 
 - Source and target integrations
-- Topics to replicate, and topics to exclude
+- Topics to replicate and topics to exclude
 - Sync group offsets (true/false)
 - Sync interval in seconds (s)
 - Heartbeats (true/false)
-- Replication policy: `DefaultReplicationPolicy` (default) or `IdentityReplicationPolicy`
+- Replication policy: `org.apache.kafka.connect.mirror.DefaultReplicationPolicy` (default) or `org.apache.kafka.connect.mirror.IdentityReplicationPolicy`
 
-With the default replication policy, a replicated topic is created on the target cluster with the alias of the source cluster as prefix, for example `xxxxxxxxx.kafka-xxxxxxxx.inventory` for the `inventory` topic.
+With the default replication policy, a replicated topic is created on the target cluster with the alias of the source cluster as a prefix, for example `xxxxxxxxx.kafka-xxxxxxxx.inventory` for the `inventory` topic.
 
 Data retention is only limited by your cluster storage space.
 

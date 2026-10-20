@@ -73,9 +73,9 @@ Une fois votre service opérationnel, vous pourrez spécifier des adresses IP (o
 
 #### Source Kafka et connecteurs
 
-Un service Kafka Connect lit et écrit dans un service Kafka du même projet Public Cloud, auquel il est relié par une intégration. Consultez le [guide Kafka Connect](/guides/public-cloud/data-analytics/analytics/kafkaconnect-create-connector) pour relier vos services et créer un connecteur, ainsi que la [liste des connecteurs disponibles](/guides/public-cloud/databases/kafkaconnect-available-connectors).
+Un service Kafka Connect lit et écrit dans un service Kafka du même projet Public Cloud, auquel il est relié par une intégration. Consultez le guide « [Kafka Connect - Comment relier Kafka Connect à Kafka et créer un connecteur](/guides/public-cloud/data-analytics/analytics/kafkaconnect-create-connector) » pour relier vos services et créer un connecteur, ainsi que la [liste des connecteurs disponibles](/guides/public-cloud/databases/kafkaconnect-available-connectors).
 
-Lorsqu'un connecteur accède à un système externe (base de données, stockage, API), l'adresse IP de votre nœud Kafka Connect doit être autorisée par ce système.
+Lorsqu'un connecteur accède à un système externe (base de données, stockage, API), les adresses IP de vos nœuds Kafka Connect doivent être autorisées par ce système. Ces adresses IP pouvant changer (reportez-vous à la section « [Réseau](#réseau) »), vérifiez-les de nouveau si le connecteur ne parvient plus à joindre ce système.
 
 #### Paramètres avancés
 
