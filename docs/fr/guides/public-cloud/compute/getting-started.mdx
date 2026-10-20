@@ -1,7 +1,7 @@
 ---
 title: "Comment créer une instance Public Cloud et s'y connecter"
 description: Découvrez comment configurer des instances Public Cloud dans votre espace client OVHcloud ainsi que les premières étapes avec vos instances
-lastUpdated: 2026-05-27
+lastUpdated: 2026-10-20
 ---
 
 import { Tab, Tabs } from '@rspress/core/theme';
@@ -163,28 +163,28 @@ Les clés SSH publiques ajoutées à votre espace client OVHcloud seront disponi
 
 Avant de créer votre instance, nous vous recommandons d'étudier la manière dont l'instance sera utilisée en termes de mise en réseau.
 
-- Si vous n'avez pas besoin de configurer l'instance avec un réseau privé pour le moment, vous pouvez passer à l'[étape 4](#etape-4-creer-linstance). Vous pouvez créer une instance exposée à l'Internet public (voir le **Mode Public** [ci-dessous](#networking-modes).)
+- Si vous n'avez pas besoin de configurer l'instance avec un réseau privé pour le moment, vous pouvez passer à l'[étape 4](#etape-4-creer-linstance). Vous pouvez activer la connectivité publique lors de la création de l'instance (voir **Connectivité publique** [ci-dessous](#networking-modes).)
 - Si l'instance doit être connectée à un nouveau réseau privé (OVHcloud [vRack](https://www.ovhcloud.com/fr/network/vrack/)), notez que le vRack est créé automatiquement lors de la création de votre projet Public Cloud. Aucune action préalable n’est donc requise. Pour plus d’informations, consultez le [guide sur le vRack Public Cloud](/guides/public-cloud/network-services/vrack).
 
 <a name="networking-modes"></a>
 
 <details>
 
-<summary>Public Cloud Networking - Modes</summary>
+<summary>Public Cloud Networking - Connectivité publique</summary>
 
-**Mode Public**
+**Connectivité publique**
 
-Les instances en mode public sont exposées à Internet directement via IPv4/IPv6. Les adresses IP ne peuvent pas être modifiées, mais les instances peuvent avoir des adresses [Additional IP](https://www.ovhcloud.com/fr/network/additional-ip/) attachées ([y compris votre propre IP](https://www.ovhcloud.com/fr/network/byoip/)) et elles peuvent être connectées à un [vRack](https://www.ovhcloud.com/fr/network/vrack/).
+Toutes les instances sont créées dans un réseau privé. La connectivité publique est une option que vous activez séparément, avec trois choix possibles :
 
-**Mode Privé**
+- **Basic IP** : adresse IP publique directement liée à l'instance (attachement direct au réseau Ext-Net), exposée immédiatement via IPv4/IPv6.
+- **Additional IP** : adresse IP publique indépendante de l'instance ([y compris votre propre IP via BYOIP](https://www.ovhcloud.com/fr/network/byoip/)), qui peut être attachée, détachée ou déplacée vers une autre ressource (y compris hors Public Cloud). Les instances avec une [Additional IP](https://www.ovhcloud.com/fr/network/additional-ip/) peuvent également être connectées à un [vRack](https://www.ovhcloud.com/fr/network/vrack/).
+- **Floating IP** : adresse IP publique réutilisable, associée à l'instance via une [Gateway](https://www.ovhcloud.com/fr/public-cloud/gateway/) (ou utilisée avec un [Load Balancer](https://www.ovhcloud.com/fr/public-cloud/load-balancer/)). Comme l'Additional IP, elle peut être détachée et réattachée à tout moment, mais elle est réservée à l'usage Public Cloud/cloud-natif et nécessite une Gateway.
 
-Les instances en mode privé peuvent uniquement être exposées à Internet via un service [Gateway](https://www.ovhcloud.com/fr/public-cloud/gateway/) ou [Load Balancer](https://www.ovhcloud.com/fr/public-cloud/load-balancer/) et des adresses [Floating IP](https://www.ovhcloud.com/fr/public-cloud/floating-ip/).
+Pour plus d'informations, veuillez consulter nos guides dans la section [Public Cloud Network Services](/guides/public-cloud/network-services/overview). Le [guide des concepts](/guides/public-cloud/network-services/concepts) fournit une introduction au Public Cloud Networking, et le [guide des types d'IP Public Cloud](/guides/public-cloud/network-services/additional-ip-vs-floating-ip) compare les trois types d'adresses IP publiques.
 
-Pour plus d'informations, veuillez consulter nos guides dans la section [Public Cloud Network Services](/guides/public-cloud/network-services/overview). Le [guide des concepts](/guides/public-cloud/network-services/concepts) fournit une introduction au Public Cloud Networking.
+**Local Zones**
 
-**Mode Privé Local**
-
-Le mode privé local ne s'applique que si vous créez une instance dans une **Local Zone**. Les instances peuvent être exposées à Internet directement via IPv4/IPv6. Seules les instances d'une même Local Zone peuvent être connectées via des réseaux privés. Les Local Zones ne sont pas compatibles avec le [vRack](https://www.ovhcloud.com/fr/network/vrack/). Dans ce mode, DHCP fournit automatiquement des adresses IP à vos instances.
+Dans une **Local Zone**, les instances peuvent être exposées à Internet directement via IPv4/IPv6. Seules les instances d'une même Local Zone peuvent être connectées via des réseaux privés. Les Local Zones ne sont pas compatibles avec le [vRack](https://www.ovhcloud.com/fr/network/vrack/). Dans les Local Zones, DHCP fournit automatiquement des adresses IP à vos instances.
 
 Pour en savoir plus, consultez la [page web des Local Zones](https://www.ovhcloud.com/fr/public-cloud/local-zone-compute/).
 
@@ -248,9 +248,9 @@ Pour en savoir plus, consultez la [page web des Local Zones](https://www.ovhclou
     La section **Paramètres de réseaux** se divise en deux parties :
 
     - **Private network** : sélectionnez un réseau privé existant ou cliquez sur <code className="action">Créer un réseau privé</code>. Si un réseau privé est sélectionné mais ne possède pas de gateway, activez le bouton bascule <code className="action">Attribuer une gateway</code> pour attacher une gateway automatiquement.
-    - **Attribuer une connectivité publique** : activez le bouton bascule pour assigner une IP publique. Choisissez <code className="action">Basic Public IP</code> (gratuite, liée à la durée de vie de l'instance, incompatible avec une gateway) ou <code className="action">Attribuer une Floating IP (Réutilisable)</code> (persistante et réutilisable).
+    - **Attribuer une connectivité publique** : activez le bouton bascule pour assigner une IP publique. Choisissez <code className="action">Basic Public IP</code> (facturée à la seconde, liée à la durée de vie de l'instance, incompatible avec une gateway) ou <code className="action">Attribuer une Floating IP (Réutilisable)</code> (persistante et réutilisable).
 
-    Consultez l'[Étape 3](#networking-modes) pour un aperçu des modes réseau.
+    Consultez l'[Étape 3](#networking-modes) pour un aperçu des options de connectivité publique.
 
     **4.8 Facturation**
 
@@ -636,7 +636,7 @@ Consultez notre [guide dédié](/guides/public-cloud/compute/configuring-additio
 
 ## Aller plus loin
 
-[Comment activer une licence Windows pour une instance en mode privé](/guides/public-cloud/compute/activate-windows-license-private-mode)
+[Comment activer une licence Windows pour une instance sans Basic IP](/guides/public-cloud/compute/activate-windows-license-private-mode)
 
 [Comment réinitialiser un mot de passe administrateur Windows](/guides/bare-metal-cloud/virtual-private-servers/resetting-a-windows-password)
 

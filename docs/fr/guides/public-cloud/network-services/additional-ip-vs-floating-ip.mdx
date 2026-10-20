@@ -1,7 +1,7 @@
 ---
 title: Concepts - Types d'IP Public Cloud
 description: Découvrez comment utiliser les adresses IP publiques dans le cadre du réseau Public Cloud - Basic IP, Additional IP et Floating IP
-lastUpdated: 2026-10-13
+lastUpdated: 2026-10-20
 ---
 
 ## Objectif
@@ -25,6 +25,10 @@ Les Additional IP et les Floating IP offrent une gestion flexible de l'accès pu
 Une Basic IP est l'adresse IP publique qu'une instance reçoit lorsqu'elle est attachée directement à **Ext-Net**, le réseau public géré par OVHcloud dans chaque région. Vous obtenez une Basic IP en la sélectionnant explicitement lors de la création d'une instance.
 
 Une Basic IP est fournie sous la forme d'un couple d'adresses : une IPv4 et une IPv6. Chaque adresse peut être supprimée séparément ; la suppression de l'une n'entraîne pas la suppression de l'autre.
+
+:::info
+Dans les régions 3-AZ, l'adresse IPv6 d'une Basic IP ne peut pas encore être provisionnée depuis l'espace client OVHcloud.
+:::
 
 Une Basic IP est liée à l'instance pour laquelle elle a été créée. Elle ne peut pas être déplacée vers une autre instance ou un autre service réseau, et la suppression est la seule action possible sur cette adresse. Si vous supprimez une Basic IP, ou si vous détachez l'interface Ext-Net de l'instance, l'adresse est définitivement relâchée et ne peut pas vous être réattribuée. Pour une adresse qui doit survivre à une instance donnée, utilisez plutôt une Additional IP ou une Floating IP.
 

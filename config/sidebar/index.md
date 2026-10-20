@@ -780,7 +780,7 @@
             + [Managing your Public Cloud instances](public-cloud/compute/first-steps-with-public-cloud-instance)
             + [Starting an instance on an attached volume](public-cloud/compute/start-instance-on-attached-volume)
             + [Shelve or pause an instance](public-cloud/compute/suspend-or-pause-an-instance)
-            + [Activating a Windows licence for an instance in private mode](public-cloud/compute/activate-windows-license-private-mode)
+            + [Activating a Windows licence for an instance without a Basic IP](public-cloud/compute/activate-windows-license-private-mode)
             + [First steps with preinstalled applications](public-cloud/compute/apps-first-steps)
         + [Configuration](products/public-cloud-compute-configuration)
             + [Project management](public-cloud-compute-configuration-project-management)
